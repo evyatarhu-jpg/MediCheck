@@ -1694,7 +1694,7 @@
     }
 
 
-    /* v6.22 – jump directly to recognized results */
+    /* v6.23 – jump directly to recognized results */
     .app-version {
       display:inline-block;
       margin-right:6px;
@@ -1746,7 +1746,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.22</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.23</span></div>
       <div id="stepBadge" class="step">מסך פתיחה</div>
     </div>
     <div class="progress"><div id="progressBar"></div></div>
@@ -1913,7 +1913,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.22 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.23 · שלב 3</div>
 
     <div class="info">
       לכל הוראה מוצגת האריזה שהותאמה והחישוב לפי הנתונים שעל האריזה.
@@ -2390,7 +2390,15 @@ async function captureOrderLine() {
   preview.style.display = "block";
 
   closeOrderCamera();
-  recognizeOrder();
+
+  var status = document.getElementById("orderOcrStatus");
+  if (status) {
+    status.classList.remove("hidden");
+    status.innerHTML = "התמונה צולמה. מזהה כעת את התרופות והמינונים...";
+    status.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  await recognizeOrder();
 }
 
 async function imageVariant(file, mode) {
@@ -2670,10 +2678,28 @@ async function runOrderOcr(file) {
     var form = new FormData();
     form.append("image", uploadBlob, "order-line.jpg");
 
-    var response = await fetch("/api/ocr-order", {
-      method: "POST",
-      body: form
-    });
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() {
+      controller.abort();
+    }, 180000);
+
+    var response;
+
+    try {
+      response = await fetch("/api/ocr-order", {
+        method: "POST",
+        body: form,
+        credentials: "same-origin",
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (response.status === 401) {
+      window.location.href = "/login";
+      throw new Error("פג תוקף החיבור. יש להתחבר מחדש.");
+    }
 
     var data = await readJsonResponse(response);
 
@@ -2706,7 +2732,22 @@ async function runOrderOcr(file) {
 
   } catch (error) {
     console.error(error);
-    status.innerHTML = "OCR נכשל: " + error.message;
+
+    var message =
+      error && error.name === "AbortError"
+        ? "ה־OCR לא השלים את הזיהוי בזמן. ייתכן שמנוע הזיהוי עדיין נטען בשרת."
+        : ("OCR נכשל: " + (error.message || String(error)));
+
+    status.innerHTML = message;
+
+    var warning = document.getElementById("orderRecognitionWarning");
+    if (warning) {
+      warning.innerHTML =
+        "<strong>לא ניתן היה לזהות את ההוראות.</strong><br>" +
+        escapeHtml(message) +
+        "<br>אפשר לצלם שוב או לבחור תמונה קיימת.";
+      warning.classList.remove("hidden");
+    }
 
     return {
       text: "",
@@ -6053,8 +6094,66 @@ function finishPreparedVerification() {
 
 
 
+var ocrWarmupStarted = false;
+
+async function warmupOcrEngine() {
+  if (ocrWarmupStarted) return;
+  ocrWarmupStarted = true;
+
+  var status = document.getElementById("orderOcrStatus");
+
+  try {
+    if (status) {
+      status.classList.remove("hidden");
+      status.innerHTML = "מכין את מנוע הזיהוי...";
+    }
+
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function() {
+      controller.abort();
+    }, 180000);
+
+    var response;
+
+    try {
+      response = await fetch("/api/ocr-warmup", {
+        method: "POST",
+        credentials: "same-origin",
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (response.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
+
+    var data = await readJsonResponse(response);
+
+    if (data.ok && status && !selectedOrderFile) {
+      status.innerHTML = "✓ מנוע הזיהוי מוכן. צלם את ההוראות.";
+      setTimeout(function() {
+        if (!selectedOrderFile) {
+          status.classList.add("hidden");
+        }
+      }, 1800);
+    }
+  } catch (error) {
+    console.error("OCR warmup failed", error);
+
+    if (status && !selectedOrderFile) {
+      status.classList.remove("hidden");
+      status.innerHTML =
+        "מנוע הזיהוי עדיין לא מוכן. אפשר לצלם; אם הזיהוי ייכשל תוצג הודעה מפורטת.";
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   showScreen("orderScreen");
+  warmupOcrEngine();
 
   setTimeout(function() {
     if (!selectedOrderFile && !orderCameraStream) {
