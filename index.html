@@ -1,0 +1,5994 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d6efd">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>MediCheck</title>
+
+<script>
+(function () {
+  try {
+    var shortSide = Math.min(window.screen.width || 9999, window.screen.height || 9999);
+    var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+
+    if (coarse && shortSide <= 600) {
+      document.documentElement.classList.add("phone-ui");
+    } else if (coarse && shortSide <= 1100) {
+      document.documentElement.classList.add("tablet-ui");
+    }
+  } catch (e) {}
+})();
+</script>
+
+<style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --blue: #0d6efd;
+      --blue-dark: #123a63;
+      --bg: #eef3f9;
+      --line: #dbe4ee;
+      --muted: #667085;
+      --ok-bg: #ecfdf3;
+      --ok: #166534;
+      --bad-bg: #fef2f2;
+      --bad: #991b1b;
+      --warn-bg: #fff8e6;
+      --warn: #7a5200;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: #1f2937;
+      font-family: Arial, sans-serif;
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+    }
+
+    body { min-height: 100dvh; }
+
+    .app {
+      width: 100vw;
+      max-width: 100vw;
+      min-height: 100dvh;
+      margin: 0;
+      padding:
+        calc(12px + env(safe-area-inset-top))
+        14px
+        calc(24px + env(safe-area-inset-bottom));
+      background: white;
+    }
+
+    .hidden { display: none !important; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: -12px -14px 18px;
+      padding:
+        calc(12px + env(safe-area-inset-top))
+        14px
+        12px;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #edf1f5;
+    }
+
+    .toprow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 800;
+      color: var(--blue-dark);
+    }
+
+    .step {
+      font-size: 15px;
+      color: var(--muted);
+      background: #f3f6fa;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 7px 10px;
+    }
+
+    .progress {
+      height: 8px;
+      margin-top: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e8edf4;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0;
+      background: var(--blue);
+      transition: width .2s ease;
+    }
+
+    .hero {
+      padding: 18px 0 8px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 14px;
+      border-radius: 28px;
+      background: var(--blue);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      font-weight: 800;
+      box-shadow: 0 10px 28px rgba(13,110,253,.2);
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--blue-dark);
+      font-size: clamp(38px, 11vw, 46px);
+      line-height: 1.05;
+    }
+
+    h2 {
+      margin: 8px 0 16px;
+      color: var(--blue-dark);
+      font-size: clamp(30px, 8.5vw, 36px);
+      line-height: 1.15;
+    }
+
+    p {
+      font-size: 19px;
+      line-height: 1.55;
+      margin: 8px 0;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .card {
+      width: 100%;
+      margin-top: 16px;
+      padding: 18px;
+      background: #f9fbfd;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(16,24,40,.04);
+    }
+
+    label {
+      display: block;
+      margin: 20px 0 8px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 62px;
+      padding: 13px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      background: white;
+      color: #111827;
+      font-size: 21px;
+    }
+
+    input[type="file"] {
+      min-height: 64px;
+      padding: 13px;
+      font-size: 17px;
+    }
+
+    button {
+      width: 100%;
+      min-height: 66px;
+      margin-top: 16px;
+      padding: 16px 18px;
+      border: 0;
+      border-radius: 16px;
+      font-size: 22px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary { background: var(--blue); color: white; }
+    .secondary { background: #e9eef5; color: var(--blue-dark); }
+
+    .preview {
+      width: 100%;
+      max-height: 48dvh;
+      object-fit: contain;
+      display: none;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+    }
+
+    .info, .success, .danger, .warning {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 14px;
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .info {
+      background: #eef6ff;
+      border: 1px solid #c7dcf5;
+    }
+
+    .success {
+      background: var(--ok-bg);
+      border: 1px solid #86d39a;
+      color: var(--ok);
+    }
+
+    .danger {
+      background: var(--bad-bg);
+      border: 1px solid #f3a5a5;
+      color: var(--bad);
+    }
+
+    .warning {
+      background: var(--warn-bg);
+      border: 1px solid #f0c36d;
+      color: var(--warn);
+    }
+
+    .tip {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .raw {
+      max-height: 210px;
+      overflow: auto;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: white;
+      direction: ltr;
+      text-align: left;
+      white-space: pre-wrap;
+      font-size: 15px;
+    }
+
+    .big-status {
+      margin-bottom: 8px;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .prepare-box {
+      margin-top: 18px;
+      padding: 24px 18px;
+      text-align: center;
+      background: #eef7ff;
+      border: 2px solid var(--blue);
+      border-radius: 20px;
+      font-size: 19px;
+    }
+
+    .prepare-value {
+      margin: 16px 0;
+      color: var(--blue);
+      font-size: 48px;
+      font-weight: 800;
+    }
+
+    .prototype-note {
+      margin-top: 26px;
+      color: #7b8794;
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+  
+    /* Always use the full phone viewport. */
+    html, body, .app {
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
+    }
+
+    .app {
+      margin: 0 !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+
+    @media (max-width: 900px) {
+      h1 { font-size: 42px; }
+      h2 { font-size: 32px; }
+      p, .info, .success, .danger, .warning { font-size: 19px; }
+      label { font-size: 21px; }
+      input, select { font-size: 21px; min-height: 62px; }
+      button { font-size: 22px; min-height: 64px; }
+      .card { padding: 18px 14px; }
+    }
+
+  
+    /* Live camera scanner for a single medication-order line */
+    .camera-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      direction: rtl;
+    }
+
+    .camera-modal.hidden { display: none !important; }
+
+    .camera-header {
+      min-height: 64px;
+      padding: calc(12px + env(safe-area-inset-top)) 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: white;
+      background: rgba(0,0,0,.78);
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .camera-close {
+      width: auto;
+      min-height: 44px;
+      margin: 0;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.16);
+      color: white;
+      font-size: 17px;
+    }
+
+    .camera-stage {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: #111;
+    }
+
+    .camera-stage video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .scan-mask {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.58) 0%,
+          rgba(0,0,0,.58) 36%,
+          transparent 36%,
+          transparent 58%,
+          rgba(0,0,0,.58) 58%,
+          rgba(0,0,0,.58) 100%
+        );
+    }
+
+    .scan-box {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      top: 36%;
+      height: 22%;
+      border: 3px solid #fff;
+      border-radius: 14px;
+      pointer-events: none;
+    }
+
+    .scan-guide {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: calc(47% - 1px);
+      height: 2px;
+      background: #0d6efd;
+      box-shadow: 0 0 8px rgba(13,110,253,.8);
+      pointer-events: none;
+    }
+
+    .camera-hint {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 61%;
+      color: white;
+      text-align: center;
+      font-size: 17px;
+      line-height: 1.4;
+      text-shadow: 0 2px 4px #000;
+      pointer-events: none;
+    }
+
+    .camera-controls {
+      padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+      background: #000;
+    }
+
+    .camera-capture {
+      margin: 0;
+      min-height: 64px;
+      background: #0d6efd;
+      color: white;
+      font-size: 21px;
+    }
+
+    .order-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+
+    /* Batch medication-order review */
+    .orders-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .order-item {
+      padding: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      background: #ffffff;
+    }
+
+    .order-item.incomplete {
+      border-color: #f0c36d;
+      background: #fffdf7;
+    }
+
+    .order-item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .order-check {
+      width: 28px !important;
+      min-width: 28px !important;
+      height: 28px !important;
+      min-height: 28px !important;
+      margin: 0 !important;
+      accent-color: var(--blue);
+    }
+
+    .order-item-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue-dark);
+    }
+
+    .order-source {
+      margin: 8px 0 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f3f6fa;
+      color: #5b6470;
+      direction: ltr;
+      text-align: left;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .order-fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .order-fields label {
+      margin: 0 0 5px;
+      font-size: 16px;
+    }
+
+    .order-fields input,
+    .order-fields select {
+      min-height: 54px;
+      font-size: 18px;
+    }
+
+    .order-grid-3 {
+      display: grid;
+      grid-template-columns: 1.25fr .8fr .9fr;
+      gap: 8px;
+    }
+
+    .batch-count {
+      margin-top: 12px;
+      font-weight: 800;
+      color: var(--blue-dark);
+    }
+
+    .active-order-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #eef6ff;
+      border: 1px solid #c7dcf5;
+    }
+
+    @media (max-width: 560px) {
+      .order-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Larger live-camera frame for several medication orders */
+    #orderCameraModal .scan-mask {
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.58) 0%,
+          rgba(0,0,0,.58) 12%,
+          transparent 12%,
+          transparent 86%,
+          rgba(0,0,0,.58) 86%,
+          rgba(0,0,0,.58) 100%
+        );
+    }
+
+    #orderCameraModal .scan-box {
+      left: 4%;
+      right: 4%;
+      top: 12%;
+      height: 74%;
+      border-radius: 16px;
+    }
+
+    #orderCameraModal .scan-guide {
+      display: none;
+    }
+
+    #orderCameraModal .camera-hint {
+      top: 88%;
+      font-size: 16px;
+    }
+
+
+    /* Batch package scan + matching */
+    .package-camera-mask {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.55) 0%,
+          rgba(0,0,0,.55) 6%,
+          transparent 6%,
+          transparent 90%,
+          rgba(0,0,0,.55) 90%,
+          rgba(0,0,0,.55) 100%
+        );
+    }
+
+    .package-camera-box {
+      position: absolute;
+      left: 3%;
+      right: 3%;
+      top: 6%;
+      height: 84%;
+      border: 3px solid #fff;
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .package-camera-hint {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      top: 91%;
+      color: white;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.35;
+      text-shadow: 0 2px 4px #000;
+      pointer-events: none;
+    }
+
+    .packages-list,
+    .matches-list,
+    .preparations-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .package-card,
+    .match-card,
+    .prep-card {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+    }
+
+    .package-card h3,
+    .match-card h3,
+    .prep-card h3 {
+      margin: 0 0 10px;
+      color: var(--blue-dark);
+      font-size: 20px;
+    }
+
+    .package-source {
+      margin: 8px 0 12px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: #f3f6fa;
+      direction: ltr;
+      text-align: left;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .package-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+    }
+
+    .package-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr .8fr .8fr;
+      gap: 8px;
+    }
+
+    .match-ok {
+      border-color: #8dc8a5;
+      background: #f4fbf6;
+    }
+
+    .match-stop {
+      border-color: #df9a9a;
+      background: #fff7f7;
+    }
+
+    .match-warn {
+      border-color: #e6c16c;
+      background: #fffdf6;
+    }
+
+    .match-status {
+      font-weight: 800;
+      margin-top: 8px;
+    }
+
+    .prep-value {
+      font-size: 30px;
+      font-weight: 900;
+      margin: 8px 0 10px;
+      color: var(--blue-dark);
+    }
+
+    .prep-stop .prep-value {
+      color: #a61b1b;
+    }
+
+    @media (max-width: 560px) {
+      .package-grid,
+      .package-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    .order-selection-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .order-selection-toolbar button {
+      flex: 1;
+      min-height: 48px;
+      border-radius: 12px;
+      border: 1px solid #b9c7d6;
+      background: #f3f7fb;
+      color: #123a63;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .order-item.selected {
+      border: 2px solid #1d74f5;
+      background: #f3f8ff;
+    }
+
+    .selection-count {
+      margin: 8px 0 0;
+      font-weight: 800;
+      color: #123a63;
+    }
+
+    #orderSelectionError {
+      margin-top: 10px;
+    }
+
+  
+    /* =========================================================
+       Responsive sizing: phone vs tablet
+       - phone: larger text/touch targets
+       - tablet: slightly more compact
+       - browser pinch-zoom remains available
+       ========================================================= */
+
+    @media (max-width: 599px) {
+      .app {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+      }
+
+      .topbar {
+        margin-left: -10px;
+        margin-right: -10px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .brand {
+        font-size: 26px !important;
+      }
+
+      .step {
+        font-size: 16px !important;
+        padding: 8px 11px !important;
+      }
+
+      h1 {
+        font-size: 40px !important;
+      }
+
+      h2 {
+        font-size: 34px !important;
+        line-height: 1.18 !important;
+      }
+
+      p,
+      .info,
+      .success,
+      .danger,
+      .warning {
+        font-size: 21px !important;
+        line-height: 1.55 !important;
+      }
+
+      .tip {
+        font-size: 17px !important;
+        line-height: 1.5 !important;
+      }
+
+      label {
+        font-size: 22px !important;
+      }
+
+      input,
+      select {
+        min-height: 64px !important;
+        font-size: 22px !important;
+        padding: 13px 14px !important;
+      }
+
+      button {
+        min-height: 66px !important;
+        font-size: 23px !important;
+        line-height: 1.25 !important;
+      }
+
+      .card {
+        padding: 18px 12px !important;
+        border-radius: 18px !important;
+      }
+
+      .raw,
+      .order-source,
+      .package-source {
+        font-size: 16px !important;
+      }
+
+      .order-item-title,
+      .package-card h3,
+      .match-card h3,
+      .prep-card h3 {
+        font-size: 21px !important;
+      }
+
+      .order-fields label {
+        font-size: 18px !important;
+      }
+
+      .order-fields input,
+      .order-fields select {
+        font-size: 20px !important;
+        min-height: 58px !important;
+      }
+
+      .big-status {
+        font-size: 30px !important;
+      }
+
+      .prep-value,
+      .prepare-value {
+        font-size: 42px !important;
+      }
+
+      .preview {
+        max-height: 52dvh !important;
+      }
+    }
+
+    @media (min-width: 600px) and (max-width: 1100px) {
+      .app {
+        width: min(94vw, 900px) !important;
+        max-width: 900px !important;
+        margin: 0 auto !important;
+        padding-left: 22px !important;
+        padding-right: 22px !important;
+      }
+
+      .topbar {
+        margin-left: -22px;
+        margin-right: -22px;
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .brand {
+        font-size: 22px !important;
+      }
+
+      .step {
+        font-size: 14px !important;
+      }
+
+      h1 {
+        font-size: 36px !important;
+      }
+
+      h2 {
+        font-size: 29px !important;
+      }
+
+      p,
+      .info,
+      .success,
+      .danger,
+      .warning {
+        font-size: 17px !important;
+      }
+
+      .tip {
+        font-size: 14px !important;
+      }
+
+      label {
+        font-size: 18px !important;
+      }
+
+      input,
+      select {
+        min-height: 54px !important;
+        font-size: 18px !important;
+      }
+
+      button {
+        min-height: 58px !important;
+        font-size: 19px !important;
+      }
+
+      .card {
+        padding: 18px !important;
+      }
+
+      .order-item-title,
+      .package-card h3,
+      .match-card h3,
+      .prep-card h3 {
+        font-size: 19px !important;
+      }
+
+      .raw,
+      .order-source,
+      .package-source {
+        font-size: 14px !important;
+      }
+
+      .prep-value,
+      .prepare-value {
+        font-size: 40px !important;
+      }
+
+      .preview {
+        max-height: 46dvh !important;
+      }
+    }
+
+    @media (min-width: 1101px) {
+      .app {
+        width: min(100%, 980px) !important;
+        max-width: 980px !important;
+        margin: 0 auto !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+      }
+
+      .topbar {
+        margin-left: -24px;
+        margin-right: -24px;
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+    }
+
+
+    /* =========================================================
+       Forced large-phone UI.
+       Uses physical screen size + coarse pointer, so it still
+       works if Samsung/Chrome renders the page with a wide viewport.
+       ========================================================= */
+
+    .phone-ui body {
+      font-size: 24px !important;
+      line-height: 1.55 !important;
+    }
+
+    .phone-ui .app {
+      width: 100% !important;
+      max-width: none !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+
+    .phone-ui .topbar {
+      margin-left: -8px !important;
+      margin-right: -8px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+      min-height: 68px !important;
+    }
+
+    .phone-ui .brand {
+      font-size: 30px !important;
+      line-height: 1.1 !important;
+    }
+
+    .phone-ui .step {
+      font-size: 18px !important;
+      padding: 9px 12px !important;
+    }
+
+    .phone-ui h1 {
+      font-size: 44px !important;
+      line-height: 1.1 !important;
+      margin: 20px 0 16px !important;
+    }
+
+    .phone-ui h2 {
+      font-size: 38px !important;
+      line-height: 1.18 !important;
+      margin: 20px 0 16px !important;
+    }
+
+    .phone-ui h3 {
+      font-size: 27px !important;
+      line-height: 1.25 !important;
+    }
+
+    .phone-ui p,
+    .phone-ui .info,
+    .phone-ui .success,
+    .phone-ui .danger,
+    .phone-ui .warning {
+      font-size: 24px !important;
+      line-height: 1.55 !important;
+    }
+
+    .phone-ui .tip {
+      font-size: 20px !important;
+      line-height: 1.5 !important;
+    }
+
+    .phone-ui label {
+      font-size: 25px !important;
+      line-height: 1.35 !important;
+      margin-bottom: 8px !important;
+    }
+
+    .phone-ui input,
+    .phone-ui select,
+    .phone-ui textarea {
+      width: 100% !important;
+      min-height: 72px !important;
+      font-size: 25px !important;
+      line-height: 1.3 !important;
+      padding: 14px 14px !important;
+      border-radius: 14px !important;
+    }
+
+    .phone-ui button,
+    .phone-ui .primary,
+    .phone-ui .secondary {
+      min-height: 76px !important;
+      font-size: 27px !important;
+      line-height: 1.2 !important;
+      padding: 15px 14px !important;
+      border-radius: 16px !important;
+    }
+
+    .phone-ui .card,
+    .phone-ui .order-item,
+    .phone-ui .package-card,
+    .phone-ui .match-card,
+    .phone-ui .prep-card {
+      padding: 18px 12px !important;
+      border-radius: 18px !important;
+    }
+
+    .phone-ui .order-item-title,
+    .phone-ui .package-card h3,
+    .phone-ui .match-card h3,
+    .phone-ui .prep-card h3 {
+      font-size: 26px !important;
+    }
+
+    .phone-ui .raw,
+    .phone-ui .order-source,
+    .phone-ui .package-source {
+      font-size: 19px !important;
+      line-height: 1.45 !important;
+    }
+
+    .phone-ui .order-check {
+      width: 34px !important;
+      height: 34px !important;
+      min-width: 34px !important;
+      min-height: 34px !important;
+    }
+
+    .phone-ui .order-fields,
+    .phone-ui .order-grid-3,
+    .phone-ui .package-grid,
+    .phone-ui .package-grid-3 {
+      grid-template-columns: 1fr !important;
+      gap: 14px !important;
+    }
+
+    .phone-ui .order-selection-toolbar {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 10px !important;
+    }
+
+    .phone-ui .order-selection-toolbar button {
+      width: 100% !important;
+      font-size: 22px !important;
+      min-height: 62px !important;
+    }
+
+    .phone-ui .selection-count,
+    .phone-ui .batch-count,
+    .phone-ui .match-status {
+      font-size: 22px !important;
+      line-height: 1.4 !important;
+    }
+
+    .phone-ui .prep-value,
+    .phone-ui .prepare-value,
+    .phone-ui .big-status {
+      font-size: 46px !important;
+      line-height: 1.1 !important;
+    }
+
+    .phone-ui .preview {
+      width: 100% !important;
+      max-height: 50dvh !important;
+      object-fit: contain !important;
+    }
+
+    /* Slightly reduce tablet size independently */
+    .tablet-ui body {
+      font-size: 17px !important;
+    }
+
+    .tablet-ui h2 {
+      font-size: 28px !important;
+    }
+
+    .tablet-ui button {
+      font-size: 18px !important;
+      min-height: 56px !important;
+    }
+
+    .tablet-ui input,
+    .tablet-ui select {
+      font-size: 18px !important;
+      min-height: 54px !important;
+    }
+
+
+    /* Preparation card with package image on the LEFT */
+    .prep-card-layout {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      direction: ltr;
+    }
+
+    .prep-card-text {
+      grid-column: 2;
+      direction: rtl;
+      text-align: right;
+      min-width: 0;
+    }
+
+    .prep-thumb-wrap {
+      grid-column: 1;
+      direction: ltr;
+    }
+
+    .prep-package-thumb {
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      cursor: zoom-in;
+      display: block;
+    }
+
+    .prep-thumb-placeholder {
+      width: 96px;
+      min-height: 96px;
+      border: 1px dashed #b9c7d6;
+      border-radius: 12px;
+      background: #f5f7fa;
+      color: #667085;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 13px;
+      padding: 6px;
+      direction: rtl;
+    }
+
+    .image-zoom-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: rgba(0,0,0,.88);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .image-zoom-modal.hidden {
+      display: none !important;
+    }
+
+    .image-zoom-card {
+      width: min(96vw, 900px);
+      max-height: 92vh;
+      background: #fff;
+      border-radius: 18px;
+      padding: 12px;
+      position: relative;
+    }
+
+    .image-zoom-card img {
+      display: block;
+      width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .image-zoom-close {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 12px;
+      background: #123a63;
+      color: #fff;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .global-back {
+      width: auto !important;
+      min-height: 44px !important;
+      padding: 7px 13px !important;
+      margin: 8px 0 0 !important;
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 12px;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 17px !important;
+      font-weight: 800;
+    }
+
+    .global-back.hidden {
+      display: none !important;
+    }
+
+    .phone-ui .prep-card-layout {
+      grid-template-columns: 92px minmax(0, 1fr) !important;
+      gap: 12px !important;
+    }
+
+    .phone-ui .prep-package-thumb,
+    .phone-ui .prep-thumb-placeholder {
+      width: 92px !important;
+      height: 104px !important;
+      min-height: 104px !important;
+    }
+
+    .phone-ui .global-back {
+      min-height: 54px !important;
+      font-size: 21px !important;
+      padding: 9px 14px !important;
+    }
+
+
+    /* v6.10 – natural package presentation */
+    .prep-thumb-wrap {
+      width: 128px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .prep-package-thumb {
+      width: 118px !important;
+      height: auto !important;
+      max-height: 190px !important;
+      object-fit: contain !important;
+      object-position: center center !important;
+      aspect-ratio: auto !important;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      cursor: zoom-in;
+      display: block;
+    }
+
+    .prep-thumb-placeholder {
+      width: 118px !important;
+      min-height: 150px !important;
+      height: auto !important;
+    }
+
+    .prep-card-layout {
+      grid-template-columns: 128px minmax(0, 1fr) !important;
+      align-items: start !important;
+    }
+
+    .prep-image-caption {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.25;
+      color: #475467;
+      text-align: center;
+      direction: rtl;
+    }
+
+    .phone-ui .prep-thumb-wrap {
+      width: 118px !important;
+    }
+
+    .phone-ui .prep-package-thumb {
+      width: 110px !important;
+      height: auto !important;
+      max-height: 185px !important;
+    }
+
+    .phone-ui .prep-thumb-placeholder {
+      width: 110px !important;
+      min-height: 145px !important;
+      height: auto !important;
+    }
+
+    .phone-ui .prep-card-layout {
+      grid-template-columns: 118px minmax(0, 1fr) !important;
+    }
+
+    @media (max-width: 390px) {
+      .prep-card-layout,
+      .phone-ui .prep-card-layout {
+        grid-template-columns: 102px minmax(0, 1fr) !important;
+        gap: 9px !important;
+      }
+
+      .prep-thumb-wrap,
+      .phone-ui .prep-thumb-wrap {
+        width: 98px !important;
+      }
+
+      .prep-package-thumb,
+      .phone-ui .prep-package-thumb {
+        width: 94px !important;
+        height: auto !important;
+        max-height: 165px !important;
+      }
+    }
+
+
+    /* v6.11 – compact one-line recognition rows */
+    .compact-list-card {
+      padding: 0 !important;
+      overflow: hidden;
+    }
+
+    .compact-row {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 10px;
+      direction: rtl;
+    }
+
+    .compact-row.selected {
+      background: #f3f8ff;
+    }
+
+    .compact-row-warning {
+      background: #fffaf0;
+    }
+
+    .compact-summary {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: #123a63;
+      direction: ltr;
+      text-align: right;
+      unicode-bidi: plaintext;
+    }
+
+    .compact-summary::-webkit-scrollbar {
+      display: none;
+    }
+
+    .compact-edit-btn {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: 58px !important;
+      min-height: 40px !important;
+      padding: 6px 10px !important;
+      margin: 0 !important;
+      border: 1px solid #b9c7d6 !important;
+      border-radius: 10px !important;
+      background: #f3f7fb !important;
+      color: #123a63 !important;
+      font-size: 15px !important;
+      font-weight: 800 !important;
+    }
+
+    .compact-edit-panel {
+      border-top: 1px solid #e2e8f0;
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .compact-edit-panel.hidden {
+      display: none !important;
+    }
+
+    .compact-edit-grid-order {
+      display: grid;
+      grid-template-columns: 1.55fr .7fr .65fr .75fr;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .compact-edit-grid-package {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .compact-edit-grid-values {
+      display: grid;
+      grid-template-columns: 1fr .8fr .9fr;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: end;
+    }
+
+    .compact-edit-panel label {
+      font-size: 14px !important;
+      margin: 0 0 4px !important;
+    }
+
+    .compact-edit-panel input,
+    .compact-edit-panel select {
+      min-height: 46px !important;
+      font-size: 16px !important;
+      padding: 8px 9px !important;
+    }
+
+    .compact-source {
+      margin-top: 8px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: #f3f6fa;
+      font-size: 12px !important;
+      color: #667085;
+      direction: ltr;
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+
+    .compact-warning-badge {
+      flex: 0 0 auto;
+      color: #9a6700;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .compact-package-warning {
+      margin: 8px 12px 12px;
+    }
+
+    .phone-ui .compact-row {
+      min-height: 66px !important;
+      gap: 8px !important;
+      padding: 9px 8px !important;
+    }
+
+    .phone-ui .compact-summary {
+      font-size: 20px !important;
+    }
+
+    .phone-ui .compact-edit-btn {
+      min-height: 46px !important;
+      min-width: 62px !important;
+      font-size: 17px !important;
+      padding: 6px 9px !important;
+    }
+
+    .phone-ui .compact-edit-grid-order,
+    .phone-ui .compact-edit-grid-package,
+    .phone-ui .compact-edit-grid-values {
+      grid-template-columns: 1fr 1fr !important;
+    }
+
+    .phone-ui .compact-edit-panel label {
+      font-size: 17px !important;
+    }
+
+    .phone-ui .compact-edit-panel input,
+    .phone-ui .compact-edit-panel select {
+      min-height: 54px !important;
+      font-size: 18px !important;
+    }
+
+
+    /* v6.12 – batch verification of prepared medications */
+    .verify-plan-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .verify-item {
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .verify-item.match {
+      border-color: #8dc8a5;
+      background: #f4fbf6;
+    }
+
+    .verify-item.stop {
+      border-color: #df9a9a;
+      background: #fff7f7;
+    }
+
+    .verify-item.review {
+      border-color: #e6c16c;
+      background: #fffdf6;
+    }
+
+    .verify-line {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .verify-name {
+      font-weight: 900;
+      color: #123a63;
+      font-size: 19px;
+    }
+
+    .verify-status {
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .verify-expected {
+      margin-top: 6px;
+      font-size: 16px;
+    }
+
+    .verify-manual {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .verify-manual input {
+      min-height: 50px;
+    }
+
+    .prepared-camera-mask {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,.52) 0%,
+          rgba(0,0,0,.52) 5%,
+          transparent 5%,
+          transparent 91%,
+          rgba(0,0,0,.52) 91%,
+          rgba(0,0,0,.52) 100%
+        );
+    }
+
+    .prepared-camera-box {
+      position: absolute;
+      left: 3%;
+      right: 3%;
+      top: 5%;
+      height: 86%;
+      border: 3px solid #fff;
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .prepared-camera-hint {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      top: 92%;
+      color: #fff;
+      text-align: center;
+      font-size: 15px;
+      text-shadow: 0 2px 4px #000;
+      pointer-events: none;
+    }
+
+    .verification-note {
+      border: 1px solid #bfd1e4;
+      background: #f6f9fc;
+      border-radius: 12px;
+      padding: 11px;
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    .phone-ui .verify-name {
+      font-size: 22px !important;
+    }
+
+    .phone-ui .verify-status {
+      font-size: 21px !important;
+    }
+
+    .phone-ui .verify-expected {
+      font-size: 19px !important;
+    }
+
+    .phone-ui .verify-manual {
+      grid-template-columns: 1fr !important;
+    }
+
+
+    /* v6.13 – navigation visibility + cache/debug UX */
+    .app-version {
+      display: inline-block;
+      margin-right: 6px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: #eef4fb;
+      color: #526579;
+      font-size: 11px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+
+    .global-back {
+      background: #eef3f8 !important;
+      color: #123a63 !important;
+      border: 1px solid #bfd0e0 !important;
+      box-shadow: none !important;
+    }
+
+    .prepare-next-button {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      width: 100% !important;
+      margin-top: 14px !important;
+      margin-bottom: 10px !important;
+      background: #0d6efd !important;
+      color: #fff !important;
+      border: 0 !important;
+      position: sticky;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 15;
+      box-shadow: 0 4px 14px rgba(13,110,253,.28);
+    }
+
+    .phone-ui .prepare-next-button {
+      min-height: 78px !important;
+      font-size: 25px !important;
+    }
+
+
+    /* v6.20 – jump directly to recognized results */
+    .app-version {
+      display:inline-block;
+      margin-right:6px;
+      padding:2px 6px;
+      border-radius:8px;
+      background:#eef4fb;
+      color:#526579;
+      font-size:11px;
+      font-weight:700;
+      vertical-align:middle;
+    }
+
+    .source-toggle {
+      width:100%;
+      min-height:44px !important;
+      margin:8px 0 10px !important;
+      padding:8px 10px !important;
+      border:1px solid #c7d4e0 !important;
+      border-radius:10px !important;
+      background:#f5f8fb !important;
+      color:#123a63 !important;
+      font-size:15px !important;
+      font-weight:800 !important;
+    }
+
+    .recognition-source-collapsed {
+      display:none !important;
+    }
+
+    .recognition-result-anchor {
+      scroll-margin-top: 92px;
+    }
+
+    .phone-ui .source-toggle {
+      min-height:52px !important;
+      font-size:18px !important;
+    }
+
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="toprow">
+      <div class="brand">MediCheck <span class="app-version">v6.20</span></div>
+      <div id="stepBadge" class="step">מסך פתיחה</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <button id="globalBackButton" class="global-back hidden" type="button" onclick="goBackOneScreen()">
+      ↩ חזרה למסך הקודם
+    </button>
+  </div>
+
+  <section id="homeScreen">
+    <div class="hero">
+      <div class="logo">M</div>
+      <h1>MediCheck</h1>
+      <div class="subtitle">Medication Preparation Safety</div>
+    </div>
+
+    <div class="card">
+      <h2>הכנת תרופה חדשה</h2>
+      <p>זיהוי הוראה רפואית, זיהוי תכשיר, חישוב הכנה ואימות הכמות.</p>
+      <button class="primary" type="button" onclick="startOrderScan()">התחל הכנת תרופה</button>
+    </div>
+
+    <div class="prototype-note">
+      Prototype בלבד – אינו מיועד לקבלת החלטות קליניות או למתן תרופות בפועל. OCR מתבצע בשרת ה־Codespace ללא API חיצוני.
+    </div>
+  </section>
+
+  <section id="orderScreen" class="hidden">
+    <h2>זיהוי ההוראות הרפואיות</h2><div style="font-size:13px;color:#667085;margin-top:-8px;margin-bottom:10px;">זיהוי אוטומטי לאחר צילום</div>
+
+    <div class="card">
+      <label>סריקת רשימת ההוראות</label>
+
+      <div class="order-actions">
+        <button class="primary" type="button" onclick="openOrderCamera()">
+          📷 פתח מצלמה לסריקת ההוראות
+        </button>
+
+        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#eef3f8; color:#123a63;">
+          בחירת תמונה קיימת
+          <input id="orderImageInput" type="file" accept="image/*"
+                 onchange="handleOrderImage(event)" style="display:none;">
+        </label>
+      </div>
+
+      <div class="tip">
+        אפשר לצלם כמה הוראות יחד. מיד לאחר הצילום האפליקציה תזהה ותציג אותן אוטומטית.
+      </div>
+
+      <img id="orderPreview" class="preview" alt="תצוגת ההוראות">
+<div id="orderOcrStatus" class="info hidden"></div>
+
+      <div id="orderOcrTextBox" class="info hidden">
+        <strong>הטקסט שהמצלמה קראה:</strong>
+        <div id="orderOcrRawText" class="raw"></div>
+      </div>
+
+      <div id="orderRecognitionWarning" class="warning hidden"></div>
+
+      <button id="orderSourceToggle" class="source-toggle hidden" type="button"
+              onclick="toggleRecognitionSource('order')">
+        הצג צילום מקור ו־OCR
+      </button>
+
+      <div id="ordersReviewSection" class="hidden recognition-result-anchor">
+        <div id="ordersCount" class="batch-count"></div>
+        <div class="tip">
+          סמן ✓ רק ליד התרופות שבכוונתך להכין כעת. ניתן לתקן כל שדה לפני האישור.
+        </div>
+
+        <div class="order-selection-toolbar">
+          <button type="button" onclick="selectAllDetectedOrders()">✓ בחר את כולן</button>
+          <button type="button" onclick="clearAllDetectedOrders()">נקה בחירה</button>
+        </div>
+
+        <div id="selectedOrdersCount" class="selection-count">לא נבחרו תרופות להכנה</div>
+        <div id="orderSelectionError" class="warning hidden"></div>
+
+        <div id="detectedOrdersContainer" class="orders-list"></div>
+
+        <button class="secondary" type="button" onclick="addManualOrder()">
+          + הוסף הוראה ידנית
+        </button>
+
+        <div class="warning">
+          בחירת התרופות ואישור הפרטים נעשים ידנית. OCR אינו מקור סמכות להוראה רפואית. האפליקציה בודקת גם התאמה בסיסית בין דרך המתן לצורת התכשיר.
+        </div>
+
+        <button class="primary" type="button" onclick="confirmSelectedOrders()">
+          אישור ההוראות שסומנו והמשך
+        </button>
+      </div>
+
+      <button class="secondary" type="button" onclick="goHome()">חזרה</button>
+    </div>
+  </section>
+
+  <section id="medicationScreen" class="hidden">
+    <h2>זיהוי האריזות והתאמה להוראות</h2><div style="font-size:13px;color:#667085;margin-top:-8px;margin-bottom:10px;">זיהוי והתאמה אוטומטיים לאחר צילום</div>
+
+    <div id="orderInfoBox" class="info"></div>
+
+    <div class="card">
+      <label>צלם את כל האריזות / הבקבוקים יחד</label>
+
+      <div class="order-actions">
+        <button class="primary" type="button" onclick="openMedicationBatchCamera()">
+          📷 פתח מצלמה לסריקת כל האריזות
+        </button>
+
+        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#eef3f8; color:#123a63;">
+          בחירת תמונה קיימת
+          <input id="medicationImageInput" type="file" accept="image/*"
+                 onchange="handleMedicationBatchImage(event)" style="display:none;">
+        </label>
+      </div>
+
+      <div class="tip">
+        אפשר לצלם כמה אריזות יחד. מיד לאחר הצילום האפליקציה תזהה ותתאים אותן אוטומטית להוראות.
+      </div>
+
+      <img id="medicationPreview" class="preview" alt="תצוגת האריזות">
+<div id="medOcrStatus" class="info hidden"></div>
+
+      <div id="medOcrTextBox" class="info hidden">
+        <strong>הטקסט שהמצלמה קראה:</strong>
+        <div id="medOcrRawText" class="raw"></div>
+      </div>
+
+      <div id="packageRecognitionWarning" class="warning hidden"></div>
+
+      <button id="medSourceToggle" class="source-toggle hidden" type="button"
+              onclick="toggleRecognitionSource('med')">
+        הצג צילום מקור ו־OCR
+      </button>
+
+      <div id="packagesReviewSection" class="hidden recognition-result-anchor">
+        <div id="packagesCount" class="batch-count"></div>
+
+        <div class="tip">
+          האפליקציה מנסה לזהות את כל האריזות אוטומטית. בדוק את הפרטים ותיקן אותם אם צריך.
+        </div>
+
+        <div id="detectedPackagesContainer" class="packages-list"></div>
+
+        <button class="secondary" type="button" onclick="addManualPackage()">
+          + הוסף אריזה ידנית
+        </button>
+
+        <h3 style="margin-top:22px;">התאמה אוטומטית להוראות</h3>
+        <div id="matchesContainer" class="matches-list"></div>
+
+        <div class="warning">
+          ההתאמה בשלב זה מבוססת על זהות החומר הפעיל והנתונים שעל האריזה.
+          לפני שימוש קליני יש צורך במקור תרופתי מוסמך ובאימות אנושי.
+        </div>
+
+        <button class="primary" type="button" onclick="confirmBatchMatchesAndPrepare()">
+          הצג חישובי הכנה / STOP
+        </button>
+      </div>
+
+      <button class="secondary" type="button" onclick="backToOrder()">חזרה להוראות</button>
+    </div>
+  </section>
+
+  <section id="prepareScreen" class="hidden">
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.20 · שלב 3</div>
+
+    <div class="info">
+      לכל הוראה מוצגת האריזה שהותאמה והחישוב לפי הנתונים שעל האריזה.
+    </div>
+
+    <div id="batchPreparationsContainer" class="preparations-list"></div>
+
+    <div class="warning">
+      Prototype בלבד. האפליקציה עדיין אינה בודקת מידע תרופתי מלא כגון אפשרות חצייה/פתיחת קפסולה,
+      הוראות רה-קונסטיטוציה, התאמת דרך מתן, קצב מתן או מינוני מקסימום.
+    </div>
+
+    <button id="goToPreparedVerificationButton"
+            class="primary prepare-next-button"
+            type="button"
+            onclick="openPreparedVerificationStep()">
+      המשך לשלב 4 – אימות התרופות שהוכנו
+    </button>
+
+    <button class="secondary" type="button" onclick="backToMedication()">חזרה לאריזות</button>
+  </section>
+
+  <section id="verifyScreen" class="hidden">
+    <h2>אימות התרופות שהוכנו</h2>
+
+    <div class="verification-note">
+      צלם יחד את כל התרופות שהוכנו ואת כל המזרקים/מיכלים. רצוי שהמזרקים יהיו מסומנים
+      בשם התרופה ובכמות שהוכנה. האפליקציה תשווה את מה שניתן לקרוא בתמונה להוראות ולחישובים.
+    </div>
+
+    <div class="card">
+      <div class="order-actions">
+        <button class="primary" type="button" onclick="openPreparedBatchCamera()">
+          📷 צלם את כל ההכנות והמזרקים
+        </button>
+
+        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#eef3f8; color:#123a63;">
+          בחירת תמונה קיימת
+          <input id="preparedBatchImageInput" type="file" accept="image/*"
+                 onchange="handlePreparedBatchImage(event)" style="display:none;">
+        </label>
+      </div>
+
+      <img id="preparedBatchPreview" class="preview" alt="תצוגת התרופות שהוכנו">
+
+      <button id="recognizePreparedBatchButton" class="primary hidden" type="button"
+              onclick="recognizePreparedBatch()">
+        בדוק התאמה להוראות
+      </button>
+
+      <div id="preparedOcrStatus" class="info hidden"></div>
+
+      <div id="preparedOcrTextBox" class="info hidden">
+        <strong>הטקסט שנקרא מההכנות:</strong>
+        <div id="preparedOcrRawText" class="raw"></div>
+      </div>
+
+      <div class="warning">
+        צילום יכול לאמת מידע גלוי בלבד. הוא אינו יכול להוכיח מהו החומר שנמצא בתוך מזרק לא מסומן.
+        אם הכמות או הזהות אינן קריאות בבירור, האפליקציה תדרוש אימות ידני ולא תציג MATCH אוטומטי.
+      </div>
+
+      <div id="preparedVerificationResults" class="verify-plan-list"></div>
+
+      <button id="finishVerificationButton" class="primary hidden" type="button"
+              onclick="finishPreparedVerification()">
+        סיום אימות והצגת סיכום
+      </button>
+
+      <button class="secondary" type="button" onclick="backToPreparation()">חזרה להוראות ההכנה</button>
+    </div>
+  </section>
+
+  <section id="finalScreen" class="hidden">
+    <h2>סיכום אימות</h2>
+    <div id="finalStatus" class="info"></div>
+    <div id="finalSummary" class="card"></div>
+
+    <button class="secondary" type="button" onclick="backToPreparation()">חזרה להוראות ההכנה</button>
+    <button class="primary" type="button" onclick="resetApp()">הכנה חדשה</button>
+  </section>
+
+  
+  
+  
+  <div id="preparedBatchCameraModal" class="camera-modal hidden">
+    <div class="camera-header">
+      <span>צילום כל התרופות שהוכנו</span>
+      <button class="camera-close" type="button" onclick="closePreparedBatchCamera()">סגור</button>
+    </div>
+
+    <div class="camera-stage">
+      <video id="preparedBatchCameraVideo" autoplay playsinline muted></video>
+      <div class="prepared-camera-mask"></div>
+      <div id="preparedBatchScanBox" class="prepared-camera-box"></div>
+      <div class="prepared-camera-hint">
+        הכנס למסגרת את כל המזרקים/המיכלים כך שהמדבקות והכמויות גלויים
+      </div>
+    </div>
+
+    <div class="camera-controls">
+      <button class="camera-capture" type="button" onclick="capturePreparedBatch()">
+        צלם את כל ההכנות
+      </button>
+    </div>
+  </div>
+
+<div id="packageImageZoomModal" class="image-zoom-modal hidden" onclick="closePackageImageZoom(event)">
+    <div class="image-zoom-card" onclick="event.stopPropagation()">
+      <img id="packageImageZoomImg" alt="תמונת אריזת התרופה">
+      <button class="image-zoom-close" type="button" onclick="closePackageImageZoom()">
+        סגור וחזור להוראה
+      </button>
+    </div>
+  </div>
+
+<div id="medicationBatchCameraModal" class="camera-modal hidden">
+    <div class="camera-header">
+      <span>סריקת מספר אריזות</span>
+      <button class="camera-close" type="button" onclick="closeMedicationBatchCamera()">סגור</button>
+    </div>
+
+    <div class="camera-stage">
+      <video id="medicationBatchCameraVideo" autoplay playsinline muted></video>
+      <div class="package-camera-mask"></div>
+      <div id="medicationBatchScanBox" class="package-camera-box"></div>
+      <div class="package-camera-hint">
+        מקם את כל האריזות בתוך המסגרת כך שהשמות והחוזקים גלויים
+      </div>
+    </div>
+
+    <div class="camera-controls">
+      <button class="camera-capture" type="button" onclick="captureMedicationBatch()">
+        צלם את כל האריזות
+      </button>
+    </div>
+  </div>
+
+<div id="orderCameraModal" class="camera-modal hidden">
+    <div class="camera-header">
+      <span>סריקת רשימת הוראות</span>
+      <button class="camera-close" type="button" onclick="closeOrderCamera()">סגור</button>
+    </div>
+
+    <div class="camera-stage">
+      <video id="orderCameraVideo" autoplay playsinline muted></video>
+      <div class="scan-mask"></div>
+      <div class="scan-box"></div>
+      <div class="scan-guide"></div>
+      <div class="camera-hint">מקם את רשימת התרופות והמינונים בתוך המסגרת</div>
+    </div>
+
+    <div class="camera-controls">
+      <button class="camera-capture" type="button" onclick="captureOrderLine()">
+        צלם את ההוראות
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var currentOrder = {};
+var detectedOrders = [];
+var selectedOrders = [];
+var currentMedication = {};
+var expectedPreparation = null;
+var expectedUnit = null;
+var selectedOrderFile = null;
+var lastOrderOcrImageBlob = null;
+var selectedMedicationFile = null;
+var orderCameraStream = null;
+var medicationBatchCameraStream = null;
+var detectedPackages = [];
+var packageMatches = [];
+var lastMedicationOcrImageBlob = null;
+var currentScreenId = "homeScreen";
+var preparationPlan = [];
+var preparedBatchCameraStream = null;
+var selectedPreparedBatchFile = null;
+var preparedVerificationResults = [];
+var lastConfirmedOrdersSignature = "";
+var lastVerificationPlanSignature = "";
+
+var drugAliases = [
+  { canonical: "Aspirin", aliases: ["aspirin","pulv.aspirin","acetylsalicylic","אספירין"] },
+  { canonical: "Captopril", aliases: ["captopril","captorpil","susp. captopril","קפטופריל"] },
+  { canonical: "Phenobarbital", aliases: ["phenobarbital","phenobarbit","phenobarb","פנוברביטל"] },
+  { canonical: "Levetiracetam", aliases: ["levetiracetam","levetirac","keppra","קפרה","לבטירצטם"] },
+  { canonical: "Vitamin D3", aliases: ["vitamin d3","vit d3","cholecalciferol","colecalciferol","ויטמין d3","ויטמין די 3"] },
+  { canonical: "Amoxicillin", aliases: ["amoxicillin","amoxycillin","moxypen","moxipen","moxypan","מוקסיפן","מוקספן","מוקספין"] },
+  { canonical: "Metronidazole", aliases: ["metronidazole","flagyl","מטרונידזול","פלגיל"] },
+  { canonical: "Azithromycin", aliases: ["azithromycin","zithromax","azithro","אזיתרומיצין"] },
+  { canonical: "Cephalexin", aliases: ["cephalexin","cefalexin","keflex","צפלקסין"] },
+  { canonical: "Cefuroxime", aliases: ["cefuroxime","zinnat","צפורוקסים"] },
+  { canonical: "Ceftriaxone", aliases: ["ceftriaxone","rocephin","צפטריאקסון"] },
+  { canonical: "Vancomycin", aliases: ["vancomycin","ונקומיצין"] },
+  { canonical: "Gentamicin", aliases: ["gentamicin","גנטמיצין"] },
+  { canonical: "Paracetamol", aliases: ["paracetamol","acetaminophen","אקמול"] },
+  { canonical: "Ibuprofen", aliases: ["ibuprofen","nurofen","איבופרופן","נורופן"] },
+  { canonical: "Furosemide", aliases: ["furosemide","lasix","פוסיד","פורוסמיד"] },
+  { canonical: "Spironolactone", aliases: ["spironolactone","aldactone","ספירונולקטון"] },
+  { canonical: "Enalapril", aliases: ["enalapril","אנלפריל"] },
+  { canonical: "Carvedilol", aliases: ["carvedilol","קרבדילול"] },
+  { canonical: "Propranolol", aliases: ["propranolol","דרלין"] },
+  { canonical: "Clonidine", aliases: ["clonidine","קלונידין"] },
+  { canonical: "Midazolam", aliases: ["midazolam","דורמיקום"] },
+  { canonical: "Morphine", aliases: ["morphine","מורפין"] },
+  { canonical: "Fentanyl", aliases: ["fentanyl","פנטניל"] },
+  { canonical: "Ketamine", aliases: ["ketamine","קטמין"] },
+  { canonical: "Dexmedetomidine", aliases: ["dexmedetomidine","precedex","דקסמדטומידין"] }
+];
+
+function setStep(label, percent) {
+  document.getElementById("stepBadge").innerText = label;
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function showScreen(id) {
+  ["homeScreen","orderScreen","medicationScreen","prepareScreen","verifyScreen","finalScreen"]
+    .forEach(function(x) { document.getElementById(x).classList.add("hidden"); });
+
+  document.getElementById(id).classList.remove("hidden");
+  currentScreenId = id;
+
+  var backButton = document.getElementById("globalBackButton");
+  if (backButton) {
+    if (id === "homeScreen") {
+      backButton.classList.add("hidden");
+    } else {
+      backButton.classList.remove("hidden");
+    }
+  }
+
+  window.scrollTo(0, 0);
+
+  if (id === "homeScreen") setStep("מסך פתיחה", 0);
+  if (id === "orderScreen") setStep("שלב 1 מתוך 4", 25);
+  if (id === "medicationScreen") setStep("שלב 2 מתוך 4", 50);
+  if (id === "prepareScreen") setStep("שלב 3 מתוך 4", 75);
+  if (id === "verifyScreen") setStep("שלב 4 מתוך 4", 100);
+  if (id === "finalScreen") setStep("הושלם", 100);
+}
+
+function goBackOneScreen() {
+  closeOrderCamera();
+  closeMedicationBatchCamera();
+  closePreparedBatchCamera();
+
+  if (currentScreenId === "orderScreen") {
+    showScreen("homeScreen");
+    return;
+  }
+
+  if (currentScreenId === "medicationScreen") {
+    showScreen("orderScreen");
+    return;
+  }
+
+  if (currentScreenId === "prepareScreen") {
+    showScreen("medicationScreen");
+    return;
+  }
+
+  if (currentScreenId === "verifyScreen") {
+    showScreen("prepareScreen");
+    return;
+  }
+
+  if (currentScreenId === "finalScreen") {
+    showScreen("verifyScreen");
+    return;
+  }
+
+  showScreen("homeScreen");
+}
+
+function startOrderScan() { showScreen("orderScreen"); }
+function goHome() { closeOrderCamera(); closeMedicationBatchCamera(); showScreen("homeScreen"); }
+function backToOrder() { showScreen("orderScreen"); }
+function backToMedication() { showScreen("medicationScreen"); }
+function backToPreparation() { showScreen("prepareScreen"); }
+
+function previewImage(event, previewId) {
+  var file = event.target.files[0];
+  if (!file) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById(previewId);
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+async function handleOrderImage(event) {
+  selectedOrderFile = event.target.files[0] || null;
+  previewImage(event, "orderPreview");
+
+  detectedOrders = [];
+  selectedOrders = [];
+
+  document.getElementById("ordersReviewSection").classList.add("hidden");
+  document.getElementById("detectedOrdersContainer").innerHTML = "";
+  document.getElementById("orderRecognitionWarning").classList.add("hidden");
+
+  var orderPreview = document.getElementById("orderPreview");
+  if (orderPreview) orderPreview.classList.remove("recognition-source-collapsed");
+
+  var orderRaw = document.getElementById("orderOcrTextBox");
+  if (orderRaw) orderRaw.classList.remove("recognition-source-collapsed");
+
+  var orderToggle = document.getElementById("orderSourceToggle");
+  if (orderToggle) orderToggle.classList.add("hidden");
+
+  if (!selectedOrderFile) return;
+
+  var status = document.getElementById("orderOcrStatus");
+  if (status) {
+    status.classList.remove("hidden");
+    status.innerHTML = "מזהה את ההוראות אוטומטית...";
+    status.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  await recognizeOrder();
+}
+
+
+async function openOrderCamera() {
+  var modal = document.getElementById("orderCameraModal");
+  var video = document.getElementById("orderCameraVideo");
+
+  try {
+    orderCameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: false
+    });
+
+    video.srcObject = orderCameraStream;
+    modal.classList.remove("hidden");
+  } catch (error) {
+    console.error(error);
+    alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+  }
+}
+
+function closeOrderCamera() {
+  var modal = document.getElementById("orderCameraModal");
+  var video = document.getElementById("orderCameraVideo");
+
+  if (orderCameraStream) {
+    orderCameraStream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+    orderCameraStream = null;
+  }
+
+  video.srcObject = null;
+  modal.classList.add("hidden");
+}
+
+
+function mapVisibleOrderBoxToVideo(video, box) {
+  var videoRect = video.getBoundingClientRect();
+  var boxRect = box.getBoundingClientRect();
+
+  var vw = video.videoWidth;
+  var vh = video.videoHeight;
+  var ew = videoRect.width;
+  var eh = videoRect.height;
+
+  var nativeRatio = vw / vh;
+  var elementRatio = ew / eh;
+
+  var sourceX = 0;
+  var sourceY = 0;
+  var sourceW = vw;
+  var sourceH = vh;
+
+  if (nativeRatio > elementRatio) {
+    sourceW = vh * elementRatio;
+    sourceX = (vw - sourceW) / 2;
+  } else {
+    sourceH = vw / elementRatio;
+    sourceY = (vh - sourceH) / 2;
+  }
+
+  return {
+    sx: Math.max(0, Math.round(sourceX + ((boxRect.left - videoRect.left) / ew) * sourceW)),
+    sy: Math.max(0, Math.round(sourceY + ((boxRect.top - videoRect.top) / eh) * sourceH)),
+    sw: Math.max(1, Math.round((boxRect.width / ew) * sourceW)),
+    sh: Math.max(1, Math.round((boxRect.height / eh) * sourceH))
+  };
+}
+
+async function captureOrderLine() {
+  var video = document.getElementById("orderCameraVideo");
+  var box = document.querySelector("#orderCameraModal .scan-box");
+
+  if (!video.videoWidth || !video.videoHeight) {
+    alert("המצלמה עדיין נטענת");
+    return;
+  }
+
+  var crop = mapVisibleOrderBoxToVideo(video, box);
+
+  var canvas = document.createElement("canvas");
+  canvas.width = crop.sw;
+  canvas.height = crop.sh;
+
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(
+    video,
+    crop.sx, crop.sy, crop.sw, crop.sh,
+    0, 0, crop.sw, crop.sh
+  );
+
+  var blob = await new Promise(function(resolve) {
+    canvas.toBlob(resolve, "image/jpeg", 0.94);
+  });
+
+  if (!blob) {
+    alert("לא ניתן היה לשמור את התמונה");
+    return;
+  }
+
+  selectedOrderFile = blob;
+
+  var orderToggle = document.getElementById("orderSourceToggle");
+  if (orderToggle) orderToggle.classList.add("hidden");
+
+  var preview = document.getElementById("orderPreview");
+  preview.src = URL.createObjectURL(blob);
+  preview.style.display = "block";
+
+  closeOrderCamera();
+  recognizeOrder();
+}
+
+async function imageVariant(file, mode) {
+  var bitmap = await createImageBitmap(file);
+
+  var sw = bitmap.width;
+  var sh = bitmap.height;
+
+  var targetWidth = Math.min(2200, Math.max(1600, sw * 2));
+  var scale = targetWidth / sw;
+  var targetHeight = Math.max(260, Math.floor(sh * scale));
+
+  var canvas = document.createElement("canvas");
+  canvas.width = Math.floor(targetWidth);
+  canvas.height = targetHeight;
+
+  var ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bitmap, 0, 0, sw, sh, 0, 0, canvas.width, canvas.height);
+
+  var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  var data = img.data;
+
+  var sum = 0;
+  for (var i = 0; i < data.length; i += 4) {
+    sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+
+  var mean = sum / (data.length / 4);
+  var threshold = Math.max(115, Math.min(205, mean * 0.86));
+
+  for (i = 0; i < data.length; i += 4) {
+    var gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+
+    if (mode === "threshold") {
+      gray = gray > threshold ? 255 : 0;
+    } else {
+      gray = Math.max(0, Math.min(255, (gray - mean) * 1.85 + 150));
+    }
+
+    data[i] = gray;
+    data[i + 1] = gray;
+    data[i + 2] = gray;
+  }
+
+  ctx.putImageData(img, 0, 0);
+
+  return new Promise(function(resolve) {
+    canvas.toBlob(function(blob) { resolve(blob); }, "image/png", 1);
+  });
+}
+
+function normalizeForMatching(s) {
+  return (s || "").toLowerCase().replace(/[^a-z0-9א-ת]/g, "");
+}
+
+function levenshtein(a, b) {
+  a = normalizeForMatching(a);
+  b = normalizeForMatching(b);
+
+  var m = a.length, n = b.length, dp = [];
+
+  for (var i = 0; i <= m; i++) dp[i] = [i];
+  for (var j = 0; j <= n; j++) dp[0][j] = j;
+
+  for (i = 1; i <= m; i++) {
+    for (j = 1; j <= n; j++) {
+      var cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[m][n];
+}
+
+function similarity(a, b) {
+  var aa = normalizeForMatching(a), bb = normalizeForMatching(b);
+  var maxLen = Math.max(aa.length, bb.length);
+  if (!maxLen) return 0;
+  return 1 - (levenshtein(aa, bb) / maxLen);
+}
+
+function findKnownDrug(text) {
+  var normalizedText = normalizeForMatching(text);
+
+  for (var i = 0; i < drugAliases.length; i++) {
+    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
+      var aliasNorm = normalizeForMatching(drugAliases[i].aliases[j]);
+      if (aliasNorm && normalizedText.indexOf(aliasNorm) !== -1) {
+        return drugAliases[i].canonical;
+      }
+    }
+  }
+
+  var words = (text || "").split(/\s+/);
+  var candidates = words.slice();
+
+  for (i = 0; i < words.length - 1; i++) {
+    candidates.push(words[i] + words[i + 1]);
+  }
+
+  var best = { canonical: "", score: 0 };
+
+  for (i = 0; i < drugAliases.length; i++) {
+    for (j = 0; j < drugAliases[i].aliases.length; j++) {
+      for (var w = 0; w < candidates.length; w++) {
+        var score = similarity(candidates[w], drugAliases[i].aliases[j]);
+        if (score > best.score) {
+          best = { canonical: drugAliases[i].canonical, score: score };
+        }
+      }
+    }
+  }
+
+  return best.score >= 0.68 ? best.canonical : "";
+}
+
+function scoreResult(text, confidence) {
+  var score = confidence || 0;
+  if (findKnownDrug(text)) score += 40;
+  if (/(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?|ml)\b/i.test(text)) score += 25;
+  if (/\bPO\b|\bIV\b|\bIM\b|\bSC\b|\bNG\b|פומי|דרך הפה|תוך ורידי/i.test(text)) score += 10;
+  return score;
+}
+
+
+async function prepareImageForUpload(file, maxDimension, quality) {
+  maxDimension = maxDimension || 1600;
+  quality = quality || 0.82;
+
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+
+    img.onload = function() {
+      try {
+        var width = img.naturalWidth || img.width;
+        var height = img.naturalHeight || img.height;
+        var scale = Math.min(1, maxDimension / Math.max(width, height));
+
+        var targetWidth = Math.max(1, Math.round(width * scale));
+        var targetHeight = Math.max(1, Math.round(height * scale));
+
+        var canvas = document.createElement("canvas");
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        var ctx = canvas.getContext("2d", { alpha: false });
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, targetWidth, targetHeight);
+        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+        canvas.toBlob(function(blob) {
+          URL.revokeObjectURL(url);
+
+          if (!blob) {
+            reject(new Error("לא ניתן היה להכין את התמונה לשליחה"));
+            return;
+          }
+
+          resolve(blob);
+        }, "image/jpeg", quality);
+
+      } catch (error) {
+        URL.revokeObjectURL(url);
+        reject(error);
+      }
+    };
+
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      reject(new Error("לא ניתן היה לקרוא את התמונה"));
+    };
+
+    img.src = url;
+  });
+}
+
+
+function rotateImageBlob(blob, degrees, quality) {
+  degrees = ((Number(degrees) || 0) % 360 + 360) % 360;
+  quality = quality || 0.9;
+
+  if (!degrees) return Promise.resolve(blob);
+
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    var url = URL.createObjectURL(blob);
+
+    img.onload = function() {
+      try {
+        var sourceW = img.naturalWidth || img.width;
+        var sourceH = img.naturalHeight || img.height;
+        var swap = degrees === 90 || degrees === 270;
+
+        var canvas = document.createElement("canvas");
+        canvas.width = swap ? sourceH : sourceW;
+        canvas.height = swap ? sourceW : sourceH;
+
+        var ctx = canvas.getContext("2d", { alpha: false });
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(degrees * Math.PI / 180);
+        ctx.drawImage(img, -sourceW / 2, -sourceH / 2, sourceW, sourceH);
+
+        canvas.toBlob(function(out) {
+          URL.revokeObjectURL(url);
+          if (!out) {
+            reject(new Error("לא ניתן היה ליישר את התמונה"));
+            return;
+          }
+          resolve(out);
+        }, "image/jpeg", quality);
+
+      } catch (error) {
+        URL.revokeObjectURL(url);
+        reject(error);
+      }
+    };
+
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      reject(new Error("לא ניתן היה לקרוא את התמונה לצורך יישור"));
+    };
+
+    img.src = url;
+  });
+}
+
+function showBlobInPreview(blob, previewId) {
+  var preview = document.getElementById(previewId);
+  if (!preview || !blob) return;
+  preview.src = URL.createObjectURL(blob);
+  preview.style.display = "block";
+}
+
+async function readJsonResponse(response) {
+  var raw = await response.text();
+
+  if (!raw) {
+    throw new Error(
+      "השרת לא החזיר תשובה. ייתכן שהתמונה הייתה גדולה מדי או שתהליך ה-OCR הופסק."
+    );
+  }
+
+  var data;
+
+  try {
+    data = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(
+      "השרת החזיר תשובה לא תקינה (HTTP " + response.status + ")."
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || ("שגיאת שרת HTTP " + response.status));
+  }
+
+  return data;
+}
+
+async function runOrderOcr(file) {
+  var status = document.getElementById("orderOcrStatus");
+  status.classList.remove("hidden");
+  status.innerHTML = "שולח את אזור ההוראות ל־OCR המקומי בשרת...";
+
+  try {
+    var uploadBlob = await prepareImageForUpload(file, 1800, 0.88);
+
+    var form = new FormData();
+    form.append("image", uploadBlob, "order-line.jpg");
+
+    var response = await fetch("/api/ocr-order", {
+      method: "POST",
+      body: form
+    });
+
+    var data = await readJsonResponse(response);
+
+    var rotation = Number(data.rotation_degrees || 0);
+    var orientedBlob = rotation ? await rotateImageBlob(uploadBlob, rotation, 0.9) : uploadBlob;
+    lastOrderOcrImageBlob = orientedBlob;
+    showBlobInPreview(orientedBlob, "orderPreview");
+
+    var text = data.text || "";
+    var segments = Array.isArray(data.segments) ? data.segments : [];
+    var confidence = Math.round((data.confidence || 0) * 100);
+
+    document.getElementById("orderOcrRawText").innerText =
+      (segments.length ? segments.join("\n") : text) || "לא זוהה טקסט";
+
+    document.getElementById("orderOcrTextBox").classList.remove("hidden");
+
+    status.innerHTML = text
+      ? "✓ OCR הסתיים · confidence משוער: " + confidence + "%" +
+        (rotation ? " · התמונה יושרה אוטומטית (" + rotation + "°)" : "")
+      : "לא זוהה טקסט בתמונה.";
+
+    return {
+      text: text,
+      segments: segments,
+      lines: Array.isArray(data.lines) ? data.lines : [],
+      confidence: confidence,
+      score: scoreResult(text, confidence)
+    };
+
+  } catch (error) {
+    console.error(error);
+    status.innerHTML = "OCR נכשל: " + error.message;
+
+    return {
+      text: "",
+      segments: [],
+      lines: [],
+      confidence: 0,
+      score: -1
+    };
+  }
+}
+
+async function runMedicationOcr(file) {
+  var status = document.getElementById("medOcrStatus");
+  var rawBox = document.getElementById("medOcrTextBox");
+  var rawText = document.getElementById("medOcrRawText");
+
+  status.classList.remove("hidden");
+  status.innerHTML = "מכין את תמונת האריזה לזיהוי...";
+
+  // Clear stale OCR text from a previous image.
+  rawText.innerText = "";
+  rawBox.classList.add("hidden");
+
+  try {
+    // Full phone photos can be very large. Resize before upload to avoid
+    // proxy/server limits and unnecessary OCR memory use.
+    var uploadBlob = await prepareImageForUpload(file, 1600, 0.82);
+    lastMedicationOcrImageBlob = uploadBlob;
+
+    status.innerHTML = "שולח את תמונת התרופה ל־OCR המקומי בשרת...";
+
+    var form = new FormData();
+    form.append("image", uploadBlob, "medication.jpg");
+
+    var response = await fetch("/api/ocr-medication", {
+      method: "POST",
+      body: form
+    });
+
+    var data = await readJsonResponse(response);
+
+    var rotation = Number(data.rotation_degrees || 0);
+    lastMedicationOcrImageBlob = rotation ? await rotateImageBlob(uploadBlob, rotation, 0.9) : uploadBlob;
+    showBlobInPreview(lastMedicationOcrImageBlob, "medicationPreview");
+
+    var text = data.text || "";
+    var confidence = Math.round((data.confidence || 0) * 100);
+
+    rawText.innerText = text || "לא זוהה טקסט";
+    rawBox.classList.remove("hidden");
+
+    status.innerHTML = text
+      ? "✓ OCR הסתיים · confidence משוער: " + confidence + "%" +
+        (rotation ? " · התמונה יושרה אוטומטית (" + rotation + "°)" : "")
+      : "לא זוהה טקסט בתמונה.";
+
+    return {
+      text: text,
+      lines: Array.isArray(data.lines) ? data.lines : [],
+      segments: Array.isArray(data.segments) ? data.segments : [],
+      confidence: confidence
+    };
+
+  } catch (error) {
+    console.error(error);
+    rawText.innerText = "";
+    rawBox.classList.add("hidden");
+    status.innerHTML = "OCR נכשל: " + error.message;
+
+    return {
+      text: "",
+      lines: [],
+      segments: [],
+      confidence: 0
+    };
+  }
+}
+
+
+function loadImageFromBlob(blob) {
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    var url = URL.createObjectURL(blob);
+
+    img.onload = function() {
+      resolve({ img: img, url: url });
+    };
+
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      reject(new Error("לא ניתן לקרוא את תמונת ההוראות"));
+    };
+
+    img.src = url;
+  });
+}
+
+async function makeDoseRecheckCrop(blob, box) {
+  if (!blob || !Array.isArray(box) || box.length < 4) return null;
+
+  var loaded = await loadImageFromBlob(blob);
+  var img = loaded.img;
+
+  try {
+    var left = Number(box[0]);
+    var top = Number(box[1]);
+    var right = Number(box[2]);
+    var bottom = Number(box[3]);
+
+    var w = Math.max(1, right - left);
+    var h = Math.max(1, bottom - top);
+
+    // Keep the dose and its unit together, with modest context.
+    var padX = Math.max(18, w * 0.22);
+    var padY = Math.max(12, h * 0.55);
+
+    var sx = Math.max(0, Math.floor(left - padX));
+    var sy = Math.max(0, Math.floor(top - padY));
+    var ex = Math.min(img.naturalWidth, Math.ceil(right + padX));
+    var ey = Math.min(img.naturalHeight, Math.ceil(bottom + padY));
+
+    var sw = Math.max(1, ex - sx);
+    var sh = Math.max(1, ey - sy);
+
+    // Tiny decimal points are often lost in the full-screen OCR.
+    // Upscale only this dose cell and increase local contrast.
+    var scale = Math.min(6, Math.max(3, 900 / sw));
+
+    var canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(sw * scale));
+    canvas.height = Math.max(1, Math.round(sh * scale));
+
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+
+    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var data = imageData.data;
+
+    var sum = 0;
+    for (var i = 0; i < data.length; i += 4) {
+      sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    }
+
+    var mean = sum / Math.max(1, data.length / 4);
+
+    for (var j = 0; j < data.length; j += 4) {
+      var gray = 0.299 * data[j] + 0.587 * data[j + 1] + 0.114 * data[j + 2];
+      gray = Math.max(0, Math.min(255, (gray - mean) * 2.15 + 158));
+
+      data[j] = gray;
+      data[j + 1] = gray;
+      data[j + 2] = gray;
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    return await new Promise(function(resolve) {
+      canvas.toBlob(function(out) {
+        resolve(out);
+      }, "image/png", 1);
+    });
+
+  } finally {
+    URL.revokeObjectURL(loaded.url);
+  }
+}
+
+async function ocrSmallOrderCrop(blob) {
+  if (!blob) return null;
+
+  var form = new FormData();
+  form.append("image", blob, "dose-recheck.png");
+
+  var response = await fetch("/api/ocr-order", {
+    method: "POST",
+    body: form
+  });
+
+  return await readJsonResponse(response);
+}
+
+function explicitDecimalDose(text) {
+  var clean = String(text || "").replace(/,/g, ".");
+  var match = clean.match(
+    /(\d+\.\d+)\s*(mcg|µg|μg|ug|mg|g|m[lL]|units?|unit|iu|mEq|mmol)\b/i
+  );
+
+  if (!match) return null;
+
+  return {
+    dose: parseFloat(match[1]),
+    numericText: match[1],
+    unit: normalizeUnit(match[2]),
+    raw: match[0]
+  };
+}
+
+function numericDigitsOnly(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .replace(/[^\d]/g, "");
+}
+
+
+function looksLikeHospitalOrderTable(lines) {
+  if (!Array.isArray(lines) || lines.length < 8) return false;
+
+  var joined = lines.map(function(line) {
+    return String((line && line.text) || "");
+  }).join(" ");
+
+  var medicationFormSignals =
+    (joined.match(/\b(?:PULV|SYR|SUSP|TAB|CAP|DROPS?)\.?/gi) || []).length;
+
+  var doseSignals =
+    (joined.match(/\b\d+(?:[.,]\d+)?\s*(?:mg|mcg|g|units?|mL)\b/gi) || []).length;
+
+  return medicationFormSignals >= 2 || doseSignals >= 5;
+}
+
+function promiseWithTimeout(promise, milliseconds) {
+  return Promise.race([
+    promise,
+    new Promise(function(resolve) {
+      setTimeout(function() {
+        resolve(null);
+      }, milliseconds);
+    })
+  ]);
+}
+
+async function refineHospitalDoseLines(lines) {
+  if (!lastOrderOcrImageBlob || !Array.isArray(lines) || !lines.length) {
+    return lines || [];
+  }
+
+  if (!looksLikeHospitalOrderTable(lines)) {
+    return lines;
+  }
+
+  var refined = lines.map(function(line) {
+    return Object.assign({}, line);
+  });
+
+  for (var i = 0; i < refined.length; i++) {
+    var line = refined[i];
+    var parsed = parseDoseValue(line.text);
+
+    if (!parsed) continue;
+
+    var rawNumber = String(parsed.raw || "").match(/\d+(?:[.,]\d+)?/);
+    var rawNumeric = rawNumber ? rawNumber[0].replace(",", ".") : "";
+
+    if (
+      parsed.unit !== "mg" ||
+      rawNumeric.indexOf(".") !== -1 ||
+      !/^\d{2}$/.test(rawNumeric)
+    ) {
+      continue;
+    }
+
+    try {
+      var crop = await makeDoseRecheckCrop(lastOrderOcrImageBlob, line.box);
+
+      var recheck = await promiseWithTimeout(
+        ocrSmallOrderCrop(crop),
+        5000
+      );
+
+      if (!recheck) continue;
+
+      var candidateTexts = [];
+
+      if (Array.isArray(recheck.segments)) {
+        candidateTexts = candidateTexts.concat(recheck.segments);
+      }
+      if (recheck.text) {
+        candidateTexts.push(recheck.text);
+      }
+
+      for (var c = 0; c < candidateTexts.length; c++) {
+        var decimal = explicitDecimalDose(candidateTexts[c]);
+        if (!decimal || decimal.unit !== parsed.unit) continue;
+
+        if (
+          numericDigitsOnly(decimal.numericText) === numericDigitsOnly(rawNumeric)
+        ) {
+          line.text = String(line.text).replace(
+            /(\d{2})\s*mg\b/i,
+            decimal.numericText + " mg"
+          );
+          line.decimalRechecked = true;
+          break;
+        }
+      }
+
+    } catch (error) {
+      console.warn("Dose recheck failed", error);
+    }
+  }
+
+  return refined;
+}
+
+async function recognizeOrder() {
+  if (!selectedOrderFile) {
+    alert("יש לצלם או לבחור תמונה של ההוראות");
+    return;
+  }
+
+  try {
+    var result = await runOrderOcr(selectedOrderFile);
+
+    var status = document.getElementById("orderOcrStatus");
+    var needsDoseRecheck = looksLikeHospitalOrderTable(result.lines);
+
+    if (status && needsDoseRecheck) {
+      status.innerHTML += " · בודק שוב מינונים קטנים";
+    }
+
+    result.lines = await refineHospitalDoseLines(result.lines);
+
+    if (status && result.text) {
+      status.innerHTML =
+        "✓ הזיהוי הושלם · מציג את ההוראות שנקלטו";
+    }
+
+    detectedOrders = parseMultipleOrders(
+      result.text,
+      result.segments,
+      result.lines,
+      result.confidence
+    );
+
+    renderDetectedOrders(result.confidence);
+  } catch (error) {
+    console.error(error);
+
+    var status = document.getElementById("orderOcrStatus");
+    if (status) {
+      status.classList.remove("hidden");
+      status.innerHTML = "עיבוד ההוראות נעצר: " + escapeHtml(error.message || String(error));
+    }
+
+    var warning = document.getElementById("orderRecognitionWarning");
+    if (warning) {
+      warning.innerHTML =
+        "עיבוד ההוראות נכשל. אפשר לצלם מחדש או לבחור תמונה אחרת. שגיאה: " +
+        escapeHtml(error.message || String(error));
+      warning.classList.remove("hidden");
+    }
+  }
+}
+
+function detectRouteValue(text) {
+  var checks = [
+    { value: "PO", regex: /\bPO\b|P\.?O\.?|ORAL|BY MOUTH|פומי|דרך הפה/i },
+    { value: "IV", regex: /\bIV\b|I\.?V\.?|INTRAVENOUS|תוך ורידי/i },
+    { value: "IM", regex: /\bIM\b|I\.?M\.?|INTRAMUSCULAR|תוך שרירי/i },
+    { value: "SC", regex: /\bSC\b|S\.?C\.?|SUBCUTANEOUS|תת עורי/i },
+    { value: "NG", regex: /\bNG\b|NASOGASTRIC|זונדה/i }
+  ];
+
+  for (var i = 0; i < checks.length; i++) {
+    if (checks[i].regex.test(text || "")) return checks[i].value;
+  }
+
+  return "";
+}
+
+function parseDoseValue(text) {
+  var clean = String(text || "").replace(/,/g, ".");
+  var match = clean.match(
+    /(\d+(?:\.\d+)?)\s*(mcg|µg|μg|ug|mg|g|m[lL]|units?|unit|iu|mEq|mmol)\b/i
+  );
+
+  if (!match) return null;
+
+  return {
+    dose: parseFloat(match[1]),
+    unit: normalizeUnit(match[2]),
+    raw: match[0]
+  };
+}
+
+function parseOneOrderCandidate(candidate, confidence) {
+  var clean = (candidate || "").replace(/\s+/g, " ").trim();
+  var drug = findKnownDrug(clean);
+  var doseMatch = parseDoseValue(clean);
+  var route = detectRouteValue(clean);
+
+  if (!drug) return null;
+
+  return {
+    drugName: drug,
+    dose: doseMatch ? doseMatch.dose : "",
+    doseUnit: doseMatch ? doseMatch.unit : "",
+    route: route,
+    confidence: confidence || 0,
+    sourceText: clean,
+    complete: !!(drug && doseMatch)
+  };
+}
+
+function findDrugOccurrencesInText(text) {
+  var lower = (text || "").toLowerCase();
+  var found = [];
+
+  for (var i = 0; i < drugAliases.length; i++) {
+    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
+      var alias = drugAliases[i].aliases[j].toLowerCase();
+      var pos = lower.indexOf(alias);
+
+      if (pos !== -1) {
+        found.push({
+          pos: pos,
+          canonical: drugAliases[i].canonical,
+          alias: alias
+        });
+        break;
+      }
+    }
+  }
+
+  found.sort(function(a, b) { return a.pos - b.pos; });
+  return found;
+}
+
+function normalizeDrugName(value) {
+  var canonical = findKnownDrug(value || "");
+  return canonical || normalizeForMatching(value || "");
+}
+
+function normalizeUnit(value) {
+  var unit = String(value || "")
+    .trim()
+    .replace(/\./g, "")
+    .toLowerCase();
+
+  if (unit === "ug" || unit === "µg" || unit === "μg" || unit === "mcg") {
+    return "mcg";
+  }
+
+  if (unit === "mg") return "mg";
+  if (unit === "g") return "g";
+  if (unit === "ml") return "mL";
+  if (unit === "meq") return "mEq";
+  if (unit === "mmol") return "mmol";
+
+  if (
+    unit === "unit" ||
+    unit === "units" ||
+    unit === "iu"
+  ) {
+    return "units";
+  }
+
+  return value || "";
+}
+
+function formatNumber(value) {
+  var number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return "";
+  }
+
+  if (Math.abs(number - Math.round(number)) < 0.000001) {
+    return String(Math.round(number));
+  }
+
+  return String(
+    Math.round(number * 1000) / 1000
+  );
+}
+
+function orderKey(order) {
+  return [
+    normalizeDrugName(order.drugName),
+    order.dose,
+    order.doseUnit,
+    order.route
+  ].join("|");
+}
+
+function ocrLineCenter(line) {
+  if (!line || !Array.isArray(line.box) || line.box.length < 4) return null;
+
+  return {
+    x: (Number(line.box[0]) + Number(line.box[2])) / 2,
+    y: (Number(line.box[1]) + Number(line.box[3])) / 2,
+    width: Math.max(1, Number(line.box[2]) - Number(line.box[0])),
+    height: Math.max(1, Number(line.box[3]) - Number(line.box[1]))
+  };
+}
+
+function medianNumber(values) {
+  var arr = values.filter(function(v) { return Number.isFinite(v); }).sort(function(a,b) { return a-b; });
+  if (!arr.length) return 0;
+  var mid = Math.floor(arr.length / 2);
+  return arr.length % 2 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
+}
+
+function clusterOrderOcrRows(lines) {
+  var usable = (Array.isArray(lines) ? lines : []).filter(function(line) {
+    return line && line.text && ocrLineCenter(line);
+  }).map(function(line) {
+    return {
+      text: String(line.text).trim(),
+      score: Number(line.score || 0),
+      box: line.box,
+      center: ocrLineCenter(line)
+    };
+  });
+
+  if (!usable.length) return [];
+
+  var medianHeight = medianNumber(usable.map(function(line) { return line.center.height; })) || 16;
+  var yTolerance = Math.max(9, medianHeight * 0.85);
+
+  usable.sort(function(a,b) {
+    if (Math.abs(a.center.y - b.center.y) > yTolerance) return a.center.y - b.center.y;
+    return a.center.x - b.center.x;
+  });
+
+  var rows = [];
+
+  usable.forEach(function(line) {
+    var best = null;
+    var bestDistance = Infinity;
+
+    for (var i = 0; i < rows.length; i++) {
+      var distance = Math.abs(line.center.y - rows[i].centerY);
+      if (distance <= yTolerance && distance < bestDistance) {
+        best = rows[i];
+        bestDistance = distance;
+      }
+    }
+
+    if (!best) {
+      best = { centerY: line.center.y, lines: [] };
+      rows.push(best);
+    }
+
+    best.lines.push(line);
+    best.centerY = best.lines.reduce(function(sum, item) { return sum + item.center.y; }, 0) / best.lines.length;
+  });
+
+  rows.sort(function(a,b) { return a.centerY - b.centerY; });
+  rows.forEach(function(row) {
+    row.lines.sort(function(a,b) { return a.center.x - b.center.x; });
+  });
+
+  return rows;
+}
+
+function hasMedicationFormPrefix(text) {
+  return /(^|\s)(pulv|syr|susp|solution|sol|tab|tabs|tablet|cap|caps|capsule|inj|injection|amp|ampoule|vial|drops?|neb|nebulizer)\s*[\.:\-]?/i.test(String(text || ""));
+}
+
+function stripMedicationFormPrefix(text) {
+  var clean = String(text || "")
+    .replace(/\.{2,}/g, " ")
+    .replace(/(^|\s)(pulv|syr|susp|solution|sol|tab|tabs|tablet|cap|caps|capsule|inj|injection|amp|ampoule|vial)\s*[\.:\-]?\s*/ig, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return clean;
+}
+
+function isAdministrativeOrderText(text) {
+  var clean = String(text || "").toLowerCase();
+
+  return /חלב|הנקה|פורמולה|שינוי תנוחה|תנוחה|מעקב|שתן|צואה|אומדן|כאב|ראש מורם|לחץ אוויר|חתימה|אישור|בריידן|braden|assessment|position|urine|stool|milk|feed|feeding|temperature|monitor|מעקב אחר/i.test(clean);
+}
+
+function isMedicationLikeName(text, doseUnit) {
+  var clean = String(text || "").trim();
+  if (!clean || isAdministrativeOrderText(clean)) return false;
+  if (findKnownDrug(clean)) return true;
+  if (hasMedicationFormPrefix(clean)) return true;
+
+  // A pharmacologic mass/unit dose next to a Latin drug-looking name is a strong signal.
+  var strongUnit = /^(mg|mcg|g|units|mEq|mmol)$/i.test(String(doseUnit || ""));
+  var latinDrugLike = /[A-Za-z]{4,}/.test(clean) && !/^\d/.test(clean);
+
+  if (strongUnit && latinDrugLike) return true;
+
+  // Bare mL is common for feeds/fluids, so do not classify it as a medication
+  // unless the name or dosage-form prefix already provides medication evidence.
+  return false;
+}
+
+function bestMedicationNameFromRow(rowLines, doseLine, doseInfo) {
+  var rowText = rowLines.map(function(line) { return line.text; }).join(" ");
+  var known = findKnownDrug(rowText);
+  if (known) return known;
+
+  var doseCenterX = doseLine && doseLine.center ? doseLine.center.x : Infinity;
+  var candidates = rowLines.filter(function(line) {
+    if (line === doseLine) return false;
+    if (parseDoseValue(line.text)) return false;
+    if (/^\d{1,2}[\/:]\d{2}/.test(line.text)) return false;
+    if (/^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(line.text)) return false;
+    if (isAdministrativeOrderText(line.text)) return false;
+    return /[A-Za-zא-ת]/.test(line.text);
+  });
+
+  // In the MetaVision order table the medication name is immediately left of
+  // the dose column. Prefer that geometry, then fall back to the closest text.
+  var leftCandidates = candidates.filter(function(line) {
+    return line.center && line.center.x < doseCenterX;
+  });
+
+  var pool = leftCandidates.length ? leftCandidates : candidates;
+  pool.sort(function(a,b) {
+    var da = Math.abs((a.center ? a.center.x : 0) - doseCenterX);
+    var db = Math.abs((b.center ? b.center.x : 0) - doseCenterX);
+    return da - db;
+  });
+
+  for (var i = 0; i < pool.length; i++) {
+    var raw = pool[i].text;
+    if (!isMedicationLikeName(raw, doseInfo.unit)) continue;
+
+    var canonical = findKnownDrug(raw);
+    if (canonical) return canonical;
+
+    var cleaned = stripMedicationFormPrefix(raw);
+    if (cleaned && isMedicationLikeName(cleaned, doseInfo.unit)) {
+      return cleaned;
+    }
+  }
+
+  return "";
+}
+
+function parseHospitalMedicationRows(lines, confidence) {
+  var rows = clusterOrderOcrRows(lines);
+  var orders = [];
+
+  for (var r = 0; r < rows.length; r++) {
+    var row = rows[r];
+    var doseLine = null;
+    var doseInfo = null;
+
+    // Prefer pharmacologic units. mL is accepted only when medication identity is independently strong.
+    for (var i = 0; i < row.lines.length; i++) {
+      var parsed = parseDoseValue(row.lines[i].text);
+      if (!parsed) continue;
+
+      var strong = /^(mg|mcg|g|units|mEq|mmol)$/i.test(parsed.unit);
+      if (strong) {
+        doseLine = row.lines[i];
+        doseInfo = parsed;
+        break;
+      }
+
+      if (!doseLine) {
+        doseLine = row.lines[i];
+        doseInfo = parsed;
+      }
+    }
+
+    if (!doseLine || !doseInfo) continue;
+
+    var drugName = bestMedicationNameFromRow(row.lines, doseLine, doseInfo);
+    if (!drugName) continue;
+
+    // Extra guard against feed/fluid rows measured only in mL.
+    if (doseInfo.unit === "mL" && !findKnownDrug(drugName) && !hasMedicationFormPrefix(row.lines.map(function(x){return x.text;}).join(" "))) {
+      continue;
+    }
+
+    var rowText = row.lines.map(function(line) { return line.text; }).join(" | ");
+    var route = detectRouteValue(rowText) || "PO";
+    var rowConfidence = row.lines.reduce(function(sum, line) { return sum + (line.score || 0); }, 0) / Math.max(1, row.lines.length);
+
+    orders.push({
+      drugName: drugName,
+      dose: doseInfo.dose,
+      doseUnit: doseInfo.unit,
+      route: route,
+      confidence: Math.round(((rowConfidence || confidence / 100 || 0) * 100)),
+      sourceText: rowText,
+      complete: !!(drugName && doseInfo)
+    });
+  }
+
+  return orders;
+}
+
+function parseMultipleOrders(text, segments, lines, confidence) {
+  var orders = [];
+  var seen = {};
+
+  function addOrder(order) {
+    if (!order) return;
+
+    var key = orderKey(order);
+    if (!seen[key]) {
+      seen[key] = true;
+      orders.push(order);
+    }
+  }
+
+  // Preferred path for the real hospital screen:
+  // reconstruct each row from OCR coordinates and pair the medication name
+  // with the dose in the adjacent column.
+  var tableOrders = parseHospitalMedicationRows(lines, confidence);
+
+  for (var t = 0; t < tableOrders.length; t++) {
+    addOrder(tableOrders[t]);
+  }
+
+  if (tableOrders.length) {
+    var tableDrugNames = {};
+
+    tableOrders.forEach(function(order) {
+      tableDrugNames[normalizeDrugName(order.drugName)] = true;
+    });
+
+    // Conservative supplement only:
+    // if OCR merged a complete medication+dose into one segment but the row
+    // reconstruction missed it, allow that same segment to rescue the row.
+    // Do NOT borrow the dose from the next segment and do NOT use long-text
+    // slicing here; those were the source of duplicate/wrong Vitamin D rows.
+    var safeParts = Array.isArray(segments) ? segments.filter(Boolean) : [];
+
+    for (var s = 0; s < safeParts.length; s++) {
+      var knownDrug = findKnownDrug(safeParts[s]);
+      var sameSegmentDose = parseDoseValue(safeParts[s]);
+
+      if (!knownDrug || !sameSegmentDose) continue;
+
+      var canonicalKey = normalizeDrugName(knownDrug);
+
+      if (tableDrugNames[canonicalKey]) continue;
+
+      addOrder({
+        drugName: knownDrug,
+        dose: sameSegmentDose.dose,
+        doseUnit: sameSegmentDose.unit,
+        route: detectRouteValue(safeParts[s]) || "PO",
+        confidence: confidence || 0,
+        sourceText: safeParts[s],
+        complete: true
+      });
+
+      tableDrugNames[canonicalKey] = true;
+    }
+
+    return orders;
+  }
+
+  // Generic fallback for non-tabular photos/documents.
+  var parts = Array.isArray(segments) ? segments.filter(Boolean) : [];
+
+  for (var i = 0; i < parts.length; i++) {
+    if (!findKnownDrug(parts[i])) continue;
+
+    var candidate = parts[i];
+
+    if (!parseDoseValue(candidate) && i + 1 < parts.length) {
+      candidate += " " + parts[i + 1];
+    }
+
+    addOrder(parseOneOrderCandidate(candidate, confidence));
+  }
+
+  // Last-resort long-text fallback is used only when no table structure was found.
+  var occurrences = findDrugOccurrencesInText(text);
+
+  for (var j = 0; j < occurrences.length; j++) {
+    var occurrenceStart = occurrences[j].pos;
+    var occurrenceEnd =
+      j + 1 < occurrences.length
+        ? occurrences[j + 1].pos
+        : text.length;
+
+    addOrder(
+      parseOneOrderCandidate(
+        text.slice(occurrenceStart, occurrenceEnd),
+        confidence
+      )
+    );
+  }
+
+  return orders;
+}
+
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function unitOptions(selected) {
+  var units = ["", "mg", "mcg", "g", "mL", "units", "mEq", "mmol"];
+  var labels = ["לא זוהתה יחידה", "mg", "mcg", "g", "mL", "units", "mEq", "mmol"];
+  var html = "";
+
+  for (var i = 0; i < units.length; i++) {
+    html +=
+      '<option value="' + units[i] + '"' +
+      (units[i] === selected ? " selected" : "") +
+      ">" + labels[i] + "</option>";
+  }
+
+  return html;
+}
+
+function routeOptions(selected) {
+  var routes = ["", "PO", "IV", "IM", "SC", "NG"];
+  var labels = ["לא זוהתה דרך מתן", "PO", "IV", "IM", "SC", "NG"];
+  var html = "";
+
+  for (var i = 0; i < routes.length; i++) {
+    html +=
+      '<option value="' + routes[i] + '"' +
+      (routes[i] === selected ? " selected" : "") +
+      ">" + labels[i] + "</option>";
+  }
+
+  return html;
+}
+
+
+function toggleRecognitionSource(kind) {
+  var isOrder = kind === "order";
+  var preview = document.getElementById(isOrder ? "orderPreview" : "medicationPreview");
+  var raw = document.getElementById(isOrder ? "orderOcrTextBox" : "medOcrTextBox");
+  var toggle = document.getElementById(isOrder ? "orderSourceToggle" : "medSourceToggle");
+
+  if (!preview || !toggle) return;
+
+  var currentlyHidden = preview.classList.contains("recognition-source-collapsed");
+
+  preview.classList.toggle("recognition-source-collapsed", !currentlyHidden);
+
+  if (raw) {
+    raw.classList.toggle("recognition-source-collapsed", !currentlyHidden);
+  }
+
+  toggle.textContent = currentlyHidden
+    ? "הסתר צילום מקור ו־OCR"
+    : "הצג צילום מקור ו־OCR";
+}
+
+function collapseOrderRecognitionSource() {
+  var preview = document.getElementById("orderPreview");
+  var raw = document.getElementById("orderOcrTextBox");
+  var toggle = document.getElementById("orderSourceToggle");
+
+  if (preview) preview.classList.add("recognition-source-collapsed");
+  if (raw) raw.classList.add("recognition-source-collapsed");
+
+  if (toggle) {
+    toggle.classList.remove("hidden");
+    toggle.textContent = "הצג צילום מקור ו־OCR";
+  }
+}
+
+function collapseMedicationRecognitionSource() {
+  var preview = document.getElementById("medicationPreview");
+  var raw = document.getElementById("medOcrTextBox");
+  var toggle = document.getElementById("medSourceToggle");
+
+  if (preview) preview.classList.add("recognition-source-collapsed");
+  if (raw) raw.classList.add("recognition-source-collapsed");
+
+  if (toggle) {
+    toggle.classList.remove("hidden");
+    toggle.textContent = "הצג צילום מקור ו־OCR";
+  }
+}
+
+function jumpToRecognitionResults(sectionId) {
+  setTimeout(function() {
+    var section = document.getElementById(sectionId);
+    if (section && !section.classList.contains("hidden")) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, 80);
+}
+
+function renderDetectedOrders(confidence) {
+  var section = document.getElementById("ordersReviewSection");
+  var container = document.getElementById("detectedOrdersContainer");
+  var count = document.getElementById("ordersCount");
+  var warning = document.getElementById("orderRecognitionWarning");
+
+  warning.classList.add("hidden");
+  warning.innerHTML = "";
+
+  if (!detectedOrders.length) {
+    count.innerText = "לא זוהו הוראות תרופתיות באופן מובנה.";
+    container.innerHTML = "";
+    addManualOrder();
+
+    warning.innerHTML =
+      "ה־OCR לא הצליח לבנות הוראה מלאה. אפשר להזין הוראה ידנית ולבדוק את הנתונים לפני המשך.";
+    warning.classList.remove("hidden");
+    section.classList.remove("hidden");
+    collapseOrderRecognitionSource();
+    jumpToRecognitionResults("ordersReviewSection");
+    return;
+  }
+
+  count.innerText =
+    "זוהו " + detectedOrders.length +
+    (detectedOrders.length === 1 ? " הוראה תרופתית" : " הוראות תרופתיות");
+
+  container.innerHTML = "";
+
+  for (var i = 0; i < detectedOrders.length; i++) {
+    container.appendChild(buildOrderCard(detectedOrders[i], i));
+  }
+
+  var incompleteCount = detectedOrders.filter(function(order) {
+    return !order.complete;
+  }).length;
+
+  if (confidence < 55 || incompleteCount > 0) {
+    warning.innerHTML =
+      "חלק מהזיהוי אינו מלא או ברמת ביטחון נמוכה. מינונים קטנים נבדקים גם בקריאה שנייה של תא המינון. יש לבדוק ולתקן את הנתונים לפני סימון ואישור.";
+    warning.classList.remove("hidden");
+  }
+
+  section.classList.remove("hidden");
+  updateOrderSelectionUI();
+  collapseOrderRecognitionSource();
+  jumpToRecognitionResults("ordersReviewSection");
+}
+
+function orderSummaryTextFromValues(drugName, dose, unit, route) {
+  var drug = drugName || "תרופה לא מזוהה";
+  var doseText =
+    dose !== "" && dose !== null && dose !== undefined && !isNaN(Number(dose))
+      ? String(dose)
+      : "?";
+  var unitText = unit || "?";
+  var routeText = route ? " · " + route : "";
+
+  return drug + " · " + doseText + " " + unitText + routeText;
+}
+
+function refreshOrderSummary(index) {
+  var drugEl = document.getElementById("orderDrug_" + index);
+  var doseEl = document.getElementById("orderDose_" + index);
+  var unitEl = document.getElementById("orderUnit_" + index);
+  var routeEl = document.getElementById("orderRoute_" + index);
+  var summary = document.getElementById("orderSummary_" + index);
+  var badge = document.getElementById("orderWarningBadge_" + index);
+
+  if (!drugEl || !doseEl || !unitEl || !routeEl || !summary) return;
+
+  summary.textContent = orderSummaryTextFromValues(
+    drugEl.value.trim(),
+    doseEl.value,
+    unitEl.value,
+    routeEl.value
+  );
+
+  var complete =
+    !!drugEl.value.trim() &&
+    !!doseEl.value &&
+    !!unitEl.value;
+
+  if (badge) {
+    badge.classList.toggle("hidden", complete);
+  }
+
+  var card = summary.closest(".order-item");
+  if (card) {
+    card.classList.toggle("incomplete", !complete);
+  }
+}
+
+function toggleOrderEdit(index, forceOpen) {
+  var panel = document.getElementById("orderEditPanel_" + index);
+  var button = document.getElementById("orderEditBtn_" + index);
+
+  if (!panel) return;
+
+  var shouldOpen =
+    forceOpen === true
+      ? true
+      : forceOpen === false
+      ? false
+      : panel.classList.contains("hidden");
+
+  panel.classList.toggle("hidden", !shouldOpen);
+
+  if (button) {
+    button.textContent = shouldOpen ? "סגור" : "ערוך";
+  }
+}
+
+function buildOrderCard(order, index) {
+  var card = document.createElement("div");
+  card.className =
+    "order-item compact-list-card" +
+    (order.complete ? "" : " incomplete");
+  card.dataset.index = index;
+
+  var source = order.sourceText
+    ? '<div class="compact-source">OCR: ' +
+      escapeHtml(order.sourceText) +
+      "</div>"
+    : "";
+
+  var summaryText = orderSummaryTextFromValues(
+    order.drugName,
+    order.dose,
+    order.doseUnit,
+    order.route
+  );
+
+  card.innerHTML =
+    '<div class="compact-row">' +
+      '<input class="order-check" type="checkbox" id="orderCheck_' + index + '" onchange="updateOrderSelectionUI()">' +
+      '<span id="orderWarningBadge_' + index + '" class="compact-warning-badge' +
+        (order.complete ? " hidden" : "") +
+        '" title="הזיהוי אינו מלא">⚠</span>' +
+      '<div id="orderSummary_' + index + '" class="compact-summary">' +
+        escapeHtml(summaryText) +
+      "</div>" +
+      '<button id="orderEditBtn_' + index + '" class="compact-edit-btn" type="button" onclick="toggleOrderEdit(' + index + ')">ערוך</button>' +
+    "</div>" +
+    '<div id="orderEditPanel_' + index + '" class="compact-edit-panel hidden">' +
+      '<div class="compact-edit-grid-order">' +
+        "<div>" +
+          "<label>שם התרופה</label>" +
+          '<input id="orderDrug_' + index + '" value="' + escapeHtml(order.drugName) + '" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        "<div>" +
+          "<label>מינון</label>" +
+          '<input id="orderDose_' + index + '" type="number" step="any" value="' + escapeHtml(order.dose) + '" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        "<div>" +
+          "<label>יחידה</label>" +
+          '<select id="orderUnit_' + index + '" onchange="refreshOrderSummary(' + index + ')">' +
+            unitOptions(order.doseUnit) +
+          "</select>" +
+        "</div>" +
+        "<div>" +
+          "<label>דרך מתן (אם מופיעה)</label>" +
+          '<select id="orderRoute_' + index + '" onchange="refreshOrderSummary(' + index + ')">' +
+            routeOptions(order.route) +
+          "</select>" +
+        "</div>" +
+      "</div>" +
+      source +
+    "</div>";
+
+  return card;
+}
+
+function addManualOrder() {
+  var index = detectedOrders.length;
+
+  var blank = {
+    drugName: "",
+    dose: "",
+    doseUnit: "",
+    route: "",
+    confidence: 0,
+    sourceText: "",
+    complete: false
+  };
+
+  detectedOrders.push(blank);
+
+  var section = document.getElementById("ordersReviewSection");
+  var container = document.getElementById("detectedOrdersContainer");
+  container.appendChild(buildOrderCard(blank, index));
+
+  document.getElementById("ordersCount").innerText =
+    "ברשימה כעת " + detectedOrders.length + " הוראות";
+
+  section.classList.remove("hidden");
+  updateOrderSelectionUI();
+  toggleOrderEdit(index, true);
+
+  setTimeout(function() {
+    var el = document.getElementById("orderDrug_" + index);
+    if (el) el.focus();
+  }, 50);
+}
+
+function readOrderCard(index) {
+  return {
+    drugName: document.getElementById("orderDrug_" + index).value.trim(),
+    dose: parseFloat(document.getElementById("orderDose_" + index).value),
+    doseUnit: document.getElementById("orderUnit_" + index).value,
+    route: document.getElementById("orderRoute_" + index).value
+  };
+}
+
+
+function updateOrderSelectionUI() {
+  var selected = 0;
+
+  for (var i = 0; i < detectedOrders.length; i++) {
+    var check = document.getElementById("orderCheck_" + i);
+    var card = check ? check.closest(".order-item") : null;
+
+    if (check && check.checked) {
+      selected++;
+      if (card) {
+        card.classList.add("selected");
+        var selectedRow = card.querySelector(".compact-row");
+        if (selectedRow) selectedRow.classList.add("selected");
+      }
+    } else {
+      if (card) {
+        card.classList.remove("selected");
+        var unselectedRow = card.querySelector(".compact-row");
+        if (unselectedRow) unselectedRow.classList.remove("selected");
+      }
+    }
+  }
+
+  var count = document.getElementById("selectedOrdersCount");
+  var error = document.getElementById("orderSelectionError");
+
+  if (count) {
+    count.innerText = selected
+      ? "נבחרו " + selected + " תרופות להכנה"
+      : "לא נבחרו תרופות להכנה";
+  }
+
+  if (selected > 0 && error) {
+    error.classList.add("hidden");
+    error.innerHTML = "";
+  }
+}
+
+function selectAllDetectedOrders() {
+  for (var i = 0; i < detectedOrders.length; i++) {
+    var check = document.getElementById("orderCheck_" + i);
+    if (check) check.checked = true;
+  }
+
+  updateOrderSelectionUI();
+}
+
+function clearAllDetectedOrders() {
+  for (var i = 0; i < detectedOrders.length; i++) {
+    var check = document.getElementById("orderCheck_" + i);
+    if (check) check.checked = false;
+  }
+
+  updateOrderSelectionUI();
+}
+
+
+function ordersSignature(orders) {
+  return JSON.stringify((orders || []).map(function(o) {
+    return {
+      drugName: normalizeDrugName(o.drugName || ""),
+      dose: Number(o.dose),
+      doseUnit: o.doseUnit || "",
+      route: o.route || ""
+    };
+  }));
+}
+
+function preparationPlanSignature() {
+  return JSON.stringify((preparationPlan || []).map(function(item) {
+    return {
+      drug: normalizeDrugName(item.order && item.order.drugName || ""),
+      dose: Number(item.order && item.order.dose),
+      unit: item.order && item.order.doseUnit || "",
+      route: item.order && item.order.route || "",
+      result: item.calc && item.calc.value || "",
+      packageDrug: normalizeDrugName(item.package && item.package.genericDrug || ""),
+      formulation: item.package && item.package.formulation || "",
+      strength: Number(item.package && item.package.strength),
+      concentrationDrug: Number(item.package && item.package.concentrationDrug),
+      concentrationUnit: item.package && item.package.concentrationUnit || "",
+      concentrationVolume: Number(item.package && item.package.concentrationVolume)
+    };
+  }));
+}
+
+function confirmSelectedOrders() {
+  selectedOrders = [];
+
+  for (var i = 0; i < detectedOrders.length; i++) {
+    var check = document.getElementById("orderCheck_" + i);
+
+    if (!check || !check.checked) continue;
+
+    var order = readOrderCard(i);
+
+    if (!order.drugName) {
+      alert("בהוראה " + (i + 1) + " יש לאשר את שם התרופה");
+      return;
+    }
+
+    if (isNaN(order.dose) || order.dose <= 0 || !order.doseUnit) {
+      alert("בהוראה " + (i + 1) + " יש לאשר מינון ויחידה");
+      return;
+    }
+
+    selectedOrders.push(order);
+  }
+
+  if (!selectedOrders.length) {
+    var error = document.getElementById("orderSelectionError");
+
+    if (error) {
+      error.innerHTML =
+        "<strong>לא נבחרה אף תרופה.</strong><br>" +
+        "סמן ✓ ליד התרופות שברצונך להכין, או לחץ על \"בחר את כולן\".";
+      error.classList.remove("hidden");
+      error.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    return;
+  }
+
+  currentOrder = selectedOrders[0];
+
+  var newSignature = ordersSignature(selectedOrders);
+  var preserveExisting =
+    !!lastConfirmedOrdersSignature &&
+    newSignature === lastConfirmedOrdersSignature &&
+    (detectedPackages.length > 0 || !!selectedMedicationFile);
+
+  populateSelectedOrdersForMedicationScreen(preserveExisting);
+  lastConfirmedOrdersSignature = newSignature;
+  showScreen("medicationScreen");
+}
+
+function populateSelectedOrdersForMedicationScreen(preserveExisting) {
+  var info = document.getElementById("orderInfoBox");
+
+  var html =
+    "<strong>הוראות שנבחרו להכנה: " + selectedOrders.length + "</strong><br>";
+
+  for (var i = 0; i < selectedOrders.length; i++) {
+    var o = selectedOrders[i];
+
+    html +=
+      (i + 1) + ". " +
+      escapeHtml(o.drugName) + " — " +
+      o.dose + " " + escapeHtml(o.doseUnit) +
+      (o.route ? " — " + escapeHtml(o.route) : "") + "<br>";
+  }
+
+  info.innerHTML = html;
+
+  // If the user went back and reconfirmed the exact same orders, keep the package work.
+  if (preserveExisting) {
+    if (detectedPackages.length) {
+      renderDetectedPackages();
+      recomputeAutomaticMatches();
+    }
+    return;
+  }
+
+  selectedMedicationFile = null;
+  detectedPackages = [];
+  packageMatches = [];
+  preparationPlan = [];
+  lastVerificationPlanSignature = "";
+  selectedPreparedBatchFile = null;
+  preparedVerificationResults = [];
+
+  var preview = document.getElementById("medicationPreview");
+  if (preview) {
+    preview.removeAttribute("src");
+    preview.style.display = "none";
+  }
+
+  var button = document.getElementById("recognizeMedicationButton");
+  if (button) button.classList.add("hidden");
+
+  var section = document.getElementById("packagesReviewSection");
+  if (section) section.classList.add("hidden");
+
+  var pkgContainer = document.getElementById("detectedPackagesContainer");
+  if (pkgContainer) pkgContainer.innerHTML = "";
+
+  var matches = document.getElementById("matchesContainer");
+  if (matches) matches.innerHTML = "";
+}
+
+async function handleMedicationBatchImage(event) {
+  selectedMedicationFile = event.target.files[0] || null;
+
+  if (!selectedMedicationFile) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById("medicationPreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(selectedMedicationFile);
+
+  resetMedicationBatchRecognition();
+
+  var medPreview = document.getElementById("medicationPreview");
+  if (medPreview) medPreview.classList.remove("recognition-source-collapsed");
+
+  var medRaw = document.getElementById("medOcrTextBox");
+  if (medRaw) medRaw.classList.remove("recognition-source-collapsed");
+
+  var medToggle = document.getElementById("medSourceToggle");
+  if (medToggle) medToggle.classList.add("hidden");
+
+  var status = document.getElementById("medOcrStatus");
+  if (status) {
+    status.classList.remove("hidden");
+    status.innerHTML = "מזהה את כל האריזות אוטומטית...";
+  }
+
+  await recognizeMedicationBatch();
+}
+
+function resetMedicationBatchRecognition() {
+  detectedPackages = [];
+  packageMatches = [];
+  preparationPlan = [];
+  lastVerificationPlanSignature = "";
+  selectedPreparedBatchFile = null;
+  preparedVerificationResults = [];
+
+  document.getElementById("packagesReviewSection").classList.add("hidden");
+  document.getElementById("detectedPackagesContainer").innerHTML = "";
+  document.getElementById("matchesContainer").innerHTML = "";
+  document.getElementById("packageRecognitionWarning").classList.add("hidden");
+  document.getElementById("packageRecognitionWarning").innerHTML = "";
+}
+
+async function openMedicationBatchCamera() {
+  var modal = document.getElementById("medicationBatchCameraModal");
+  var video = document.getElementById("medicationBatchCameraVideo");
+
+  try {
+    medicationBatchCameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: false
+    });
+
+    video.srcObject = medicationBatchCameraStream;
+    modal.classList.remove("hidden");
+
+  } catch (error) {
+    console.error(error);
+    alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+  }
+}
+
+function closeMedicationBatchCamera() {
+  var modal = document.getElementById("medicationBatchCameraModal");
+  var video = document.getElementById("medicationBatchCameraVideo");
+
+  if (medicationBatchCameraStream) {
+    medicationBatchCameraStream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+    medicationBatchCameraStream = null;
+  }
+
+  if (video) video.srcObject = null;
+  if (modal) modal.classList.add("hidden");
+}
+
+function mapVisibleBoxToVideoSource(video, box) {
+  var videoRect = video.getBoundingClientRect();
+  var boxRect = box.getBoundingClientRect();
+
+  var vw = video.videoWidth;
+  var vh = video.videoHeight;
+  var ew = videoRect.width;
+  var eh = videoRect.height;
+
+  var nativeRatio = vw / vh;
+  var elementRatio = ew / eh;
+
+  var sourceX = 0;
+  var sourceY = 0;
+  var sourceW = vw;
+  var sourceH = vh;
+
+  if (nativeRatio > elementRatio) {
+    sourceW = vh * elementRatio;
+    sourceX = (vw - sourceW) / 2;
+  } else {
+    sourceH = vw / elementRatio;
+    sourceY = (vh - sourceH) / 2;
+  }
+
+  return {
+    sx: Math.max(0, Math.round(sourceX + ((boxRect.left - videoRect.left) / ew) * sourceW)),
+    sy: Math.max(0, Math.round(sourceY + ((boxRect.top - videoRect.top) / eh) * sourceH)),
+    sw: Math.max(1, Math.round((boxRect.width / ew) * sourceW)),
+    sh: Math.max(1, Math.round((boxRect.height / eh) * sourceH))
+  };
+}
+
+async function captureMedicationBatch() {
+  var video = document.getElementById("medicationBatchCameraVideo");
+  var box = document.getElementById("medicationBatchScanBox");
+
+  if (!video.videoWidth || !video.videoHeight) {
+    alert("המצלמה עדיין נטענת");
+    return;
+  }
+
+  var crop = mapVisibleBoxToVideoSource(video, box);
+
+  var canvas = document.createElement("canvas");
+  canvas.width = crop.sw;
+  canvas.height = crop.sh;
+
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(
+    video,
+    crop.sx, crop.sy, crop.sw, crop.sh,
+    0, 0, crop.sw, crop.sh
+  );
+
+  var blob = await new Promise(function(resolve) {
+    canvas.toBlob(resolve, "image/jpeg", 0.94);
+  });
+
+  if (!blob) {
+    alert("לא ניתן היה לשמור את התמונה");
+    return;
+  }
+
+  selectedMedicationFile = blob;
+
+  var medToggle = document.getElementById("medSourceToggle");
+  if (medToggle) medToggle.classList.add("hidden");
+
+  var preview = document.getElementById("medicationPreview");
+  preview.src = URL.createObjectURL(blob);
+  preview.style.display = "block";
+
+  resetMedicationBatchRecognition();
+
+  closeMedicationBatchCamera();
+  recognizeMedicationBatch();
+}
+
+async function recognizeMedicationBatch() {
+  if (!selectedMedicationFile) {
+    alert("יש לצלם או לבחור תמונה של האריזות");
+    return;
+  }
+
+  var result = await runMedicationOcr(selectedMedicationFile);
+
+  if (!result.text) {
+    return;
+  }
+
+  detectedPackages = parseMultiplePackages(
+    result.text,
+    result.lines,
+    result.segments,
+    result.confidence
+  );
+
+  await attachPackageThumbnails(detectedPackages, lastMedicationOcrImageBlob);
+
+  renderDetectedPackages();
+  recomputeAutomaticMatches();
+}
+
+function aliasesFoundInText(text) {
+  var lower = (text || "").toLowerCase();
+  var results = [];
+
+  for (var i = 0; i < drugAliases.length; i++) {
+    var bestAlias = "";
+
+    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
+      var alias = drugAliases[i].aliases[j].toLowerCase();
+
+      if (lower.indexOf(alias) !== -1) {
+        if (!bestAlias || alias.length > bestAlias.length) {
+          bestAlias = alias;
+        }
+      }
+    }
+
+    if (bestAlias) {
+      results.push({
+        canonical: drugAliases[i].canonical,
+        alias: bestAlias
+      });
+    }
+  }
+
+  return results;
+}
+
+function lineCenter(line) {
+  if (!line || !Array.isArray(line.box) || line.box.length < 4) return null;
+
+  return {
+    x: (Number(line.box[0]) + Number(line.box[2])) / 2,
+    y: (Number(line.box[1]) + Number(line.box[3])) / 2
+  };
+}
+
+function groupOcrLinesByDrug(lines, fullText) {
+  var usableLines = Array.isArray(lines) ? lines.filter(function(line) {
+    return line && line.text;
+  }) : [];
+
+  var anchors = [];
+
+  for (var i = 0; i < usableLines.length; i++) {
+    var matches = aliasesFoundInText(usableLines[i].text);
+
+    for (var j = 0; j < matches.length; j++) {
+      var center = lineCenter(usableLines[i]);
+
+      anchors.push({
+        canonical: matches[j].canonical,
+        alias: matches[j].alias,
+        center: center,
+        lineIndex: i
+      });
+    }
+  }
+
+  // Deduplicate same drug if brand + generic are both visible on one package.
+  var canonicalAnchors = {};
+
+  anchors.forEach(function(anchor) {
+    if (!canonicalAnchors[anchor.canonical]) {
+      canonicalAnchors[anchor.canonical] = [];
+    }
+    canonicalAnchors[anchor.canonical].push(anchor);
+  });
+
+  var groups = [];
+
+  Object.keys(canonicalAnchors).forEach(function(canonical) {
+    var arr = canonicalAnchors[canonical];
+
+    var centers = arr.map(function(a) { return a.center; }).filter(Boolean);
+    var center = null;
+
+    if (centers.length) {
+      center = {
+        x: centers.reduce(function(sum, p) { return sum + p.x; }, 0) / centers.length,
+        y: centers.reduce(function(sum, p) { return sum + p.y; }, 0) / centers.length
+      };
+    }
+
+    groups.push({
+      canonical: canonical,
+      anchor: center,
+      texts: [],
+      boxes: []
+    });
+  });
+
+  if (!groups.length) return [];
+
+  // If coordinates exist, assign every OCR line to the nearest drug anchor.
+  var groupsWithCoords = groups.filter(function(g) { return g.anchor; });
+
+  if (groupsWithCoords.length) {
+    var allCenters = usableLines.map(lineCenter).filter(Boolean);
+
+    var minX = allCenters.length ? Math.min.apply(null, allCenters.map(function(p) { return p.x; })) : 0;
+    var maxX = allCenters.length ? Math.max.apply(null, allCenters.map(function(p) { return p.x; })) : 1;
+    var minY = allCenters.length ? Math.min.apply(null, allCenters.map(function(p) { return p.y; })) : 0;
+    var maxY = allCenters.length ? Math.max.apply(null, allCenters.map(function(p) { return p.y; })) : 1;
+
+    var rangeX = Math.max(1, maxX - minX);
+    var rangeY = Math.max(1, maxY - minY);
+
+    usableLines.forEach(function(line) {
+      var c = lineCenter(line);
+
+      if (!c) return;
+
+      var bestGroup = null;
+      var bestDistance = Infinity;
+
+      groupsWithCoords.forEach(function(group) {
+        var dx = (c.x - group.anchor.x) / rangeX;
+        var dy = (c.y - group.anchor.y) / rangeY;
+
+        // Stronger horizontal weighting helps when packages are side by side.
+        var distance = Math.sqrt((dx * dx * 1.4) + (dy * dy * 0.8));
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestGroup = group;
+        }
+      });
+
+      if (bestGroup) {
+        bestGroup.texts.push(line.text);
+
+        if (Array.isArray(line.box) && line.box.length >= 4) {
+          bestGroup.boxes.push(line.box);
+        }
+      }
+    });
+  }
+
+  // Fallback: if boxes are unavailable, create local text chunks around each drug occurrence.
+  groups.forEach(function(group) {
+    if (group.texts.length) return;
+
+    var lower = (fullText || "").toLowerCase();
+    var aliases = [];
+
+    for (var i = 0; i < drugAliases.length; i++) {
+      if (drugAliases[i].canonical === group.canonical) {
+        aliases = drugAliases[i].aliases;
+        break;
+      }
+    }
+
+    var pos = -1;
+
+    for (var j = 0; j < aliases.length; j++) {
+      pos = lower.indexOf(aliases[j].toLowerCase());
+      if (pos !== -1) break;
+    }
+
+    if (pos !== -1) {
+      group.texts = [
+        (fullText || "").slice(Math.max(0, pos - 80), Math.min((fullText || "").length, pos + 220))
+      ];
+    }
+  });
+
+  return groups;
+}
+
+function detectPackageFormulation(text) {
+  var clean = text || "";
+
+  if (/\bcaps?\b|\bcapsules?\b|קפסולה|קפסולות/i.test(clean)) return "capsule";
+  if (/\btabs?\b|\btablets?\b|טבליה|טבליות/i.test(clean)) return "tablet";
+
+  // Powder first because many injectable vials are powders for reconstitution.
+  if (/\bpowder\b|reconstitution|reconstitute|אבקה/i.test(clean)) return "powder";
+
+  // Explicit parenteral wording wins over the generic word "solution".
+  if (
+    /\binfusion\b|\bintravenous\b|\bIV\b|\binjection\b|\binj\b|\bvial\b|\bampoule\b|\bampule\b|עירוי|תוך ורידי|להזרקה|אמפולה|בקבוקון/i.test(clean)
+  ) {
+    return "injectable_solution";
+  }
+
+  if (
+    /\bsyrup\b|\bsuspension\b|\boral liquid\b|\boral solution\b|\bfor oral use\b|סירופ|תרחיף|תמיסה פומית|למתן פומי/i.test(clean)
+  ) {
+    return "oral_liquid";
+  }
+
+  // "Solution" alone does not establish route.
+  if (/\bsolution\b|תמיסה/i.test(clean)) return "liquid";
+
+  return "";
+}
+
+function unionOcrBoxes(boxes) {
+  if (!Array.isArray(boxes) || !boxes.length) return null;
+
+  var valid = boxes.filter(function(box) {
+    return Array.isArray(box) &&
+      box.length >= 4 &&
+      box.every(function(v) { return Number.isFinite(Number(v)); });
+  });
+
+  if (!valid.length) return null;
+
+  var left = Math.min.apply(null, valid.map(function(b) { return Number(b[0]); }));
+  var top = Math.min.apply(null, valid.map(function(b) { return Number(b[1]); }));
+  var right = Math.max.apply(null, valid.map(function(b) { return Number(b[2]); }));
+  var bottom = Math.max.apply(null, valid.map(function(b) { return Number(b[3]); }));
+
+  return [left, top, right, bottom];
+}
+
+function loadBlobImage(blob) {
+  return new Promise(function(resolve, reject) {
+    var img = new Image();
+    var url = URL.createObjectURL(blob);
+
+    img.onload = function() {
+      resolve({ img: img, url: url });
+    };
+
+    img.onerror = function() {
+      URL.revokeObjectURL(url);
+      reject(new Error("לא ניתן לקרוא את צילום האריזות"));
+    };
+
+    img.src = url;
+  });
+}
+
+
+function getPackageVisualCenter(pkg) {
+  if (pkg && pkg.anchorCenter && Number.isFinite(Number(pkg.anchorCenter.x)) && Number.isFinite(Number(pkg.anchorCenter.y))) {
+    return { x: Number(pkg.anchorCenter.x), y: Number(pkg.anchorCenter.y) };
+  }
+
+  if (pkg && Array.isArray(pkg.imageBox) && pkg.imageBox.length >= 4) {
+    return {
+      x: (Number(pkg.imageBox[0]) + Number(pkg.imageBox[2])) / 2,
+      y: (Number(pkg.imageBox[1]) + Number(pkg.imageBox[3])) / 2
+    };
+  }
+
+  return null;
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function ensureMinCropSize(left, top, right, bottom, minWidth, minHeight, imgW, imgH, center) {
+  var cx = center ? center.x : (left + right) / 2;
+  var cy = center ? center.y : (top + bottom) / 2;
+  var width = right - left;
+  var height = bottom - top;
+
+  if (width < minWidth) {
+    var halfW = minWidth / 2;
+    left = clamp(cx - halfW, 0, Math.max(0, imgW - minWidth));
+    right = clamp(left + minWidth, 0, imgW);
+  }
+
+  if (height < minHeight) {
+    var halfH = minHeight / 2;
+    top = clamp(cy - halfH, 0, Math.max(0, imgH - minHeight));
+    bottom = clamp(top + minHeight, 0, imgH);
+  }
+
+  return [left, top, right, bottom];
+}
+
+function computeDistinctPackageCropBoxes(packages, imgW, imgH) {
+  var centers = packages.map(getPackageVisualCenter);
+  var validCenters = centers.filter(Boolean);
+
+  if (!validCenters.length) {
+    return packages.map(function() { return null; });
+  }
+
+  var minCX = Math.min.apply(null, validCenters.map(function(p) { return p.x; }));
+  var maxCX = Math.max.apply(null, validCenters.map(function(p) { return p.x; }));
+  var minCY = Math.min.apply(null, validCenters.map(function(p) { return p.y; }));
+  var maxCY = Math.max.apply(null, validCenters.map(function(p) { return p.y; }));
+
+  var spanX = maxCX - minCX;
+  var spanY = maxCY - minCY;
+
+  // Most multi-package photos are arranged either side-by-side or one above another.
+  // Use midpoint partitions so each crop contains one package, not the entire photo.
+  var horizontalLayout = spanX >= spanY;
+
+  var indexed = packages.map(function(pkg, index) {
+    return {
+      index: index,
+      pkg: pkg,
+      center: centers[index]
+    };
+  }).filter(function(item) {
+    return !!item.center;
+  });
+
+  indexed.sort(function(a, b) {
+    return horizontalLayout
+      ? a.center.x - b.center.x
+      : a.center.y - b.center.y;
+  });
+
+  var cropBoxes = packages.map(function() { return null; });
+
+  for (var k = 0; k < indexed.length; k++) {
+    var item = indexed[k];
+    var pkg = item.pkg;
+    var center = item.center;
+
+    if (!Array.isArray(pkg.imageBox) || pkg.imageBox.length < 4) {
+      continue;
+    }
+
+    var labelLeft = Number(pkg.imageBox[0]);
+    var labelTop = Number(pkg.imageBox[1]);
+    var labelRight = Number(pkg.imageBox[2]);
+    var labelBottom = Number(pkg.imageBox[3]);
+
+    var labelW = Math.max(1, labelRight - labelLeft);
+    var labelH = Math.max(1, labelBottom - labelTop);
+
+    var prev = k > 0 ? indexed[k - 1] : null;
+    var next = k + 1 < indexed.length ? indexed[k + 1] : null;
+
+    var left = 0;
+    var top = 0;
+    var right = imgW;
+    var bottom = imgH;
+
+    if (horizontalLayout) {
+      left = prev ? (prev.center.x + center.x) / 2 : 0;
+      right = next ? (center.x + next.center.x) / 2 : imgW;
+
+      // Keep enough vertical context to show the complete bottle/box.
+      // This is deliberately much taller than the OCR label itself.
+      var desiredHeight = Math.max(
+        labelH * 7.0,
+        imgH * 0.62
+      );
+
+      top = clamp(center.y - desiredHeight * 0.48, 0, imgH);
+      bottom = clamp(center.y + desiredHeight * 0.52, 0, imgH);
+
+      // Ensure the recognized label remains fully inside the crop.
+      top = Math.min(top, Math.max(0, labelTop - labelH * 1.4));
+      bottom = Math.max(bottom, Math.min(imgH, labelBottom + labelH * 2.2));
+
+    } else {
+      top = prev ? (prev.center.y + center.y) / 2 : 0;
+      bottom = next ? (center.y + next.center.y) / 2 : imgH;
+
+      var desiredWidth = Math.max(
+        labelW * 4.2,
+        imgW * 0.56
+      );
+
+      left = clamp(center.x - desiredWidth * 0.5, 0, imgW);
+      right = clamp(center.x + desiredWidth * 0.5, 0, imgW);
+
+      left = Math.min(left, Math.max(0, labelLeft - labelW * 1.1));
+      right = Math.max(right, Math.min(imgW, labelRight + labelW * 1.1));
+    }
+
+    // Small safety inset from the neighboring package boundaries.
+    var inset = 4;
+
+    cropBoxes[item.index] = [
+      Math.round(clamp(left + inset, 0, imgW - 1)),
+      Math.round(clamp(top + inset, 0, imgH - 1)),
+      Math.round(clamp(right - inset, 1, imgW)),
+      Math.round(clamp(bottom - inset, 1, imgH))
+    ];
+  }
+
+  return cropBoxes;
+}
+async function makePackageThumbnail(blob, cropBox) {
+  if (!blob || !cropBox) return "";
+
+  var loaded = await loadBlobImage(blob);
+  var img = loaded.img;
+
+  try {
+    var left = clamp(Number(cropBox[0]), 0, img.naturalWidth);
+    var top = clamp(Number(cropBox[1]), 0, img.naturalHeight);
+    var right = clamp(Number(cropBox[2]), 0, img.naturalWidth);
+    var bottom = clamp(Number(cropBox[3]), 0, img.naturalHeight);
+
+    var sw = Math.max(1, right - left);
+    var sh = Math.max(1, bottom - top);
+
+    // Preserve the original physical orientation and proportions.
+    // Never force the package into a square.
+    var maxW = 520;
+    var maxH = 760;
+    var scale = Math.min(1, maxW / sw, maxH / sh);
+
+    var canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(sw * scale));
+    canvas.height = Math.max(1, Math.round(sh * scale));
+
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(
+      img,
+      left, top, sw, sh,
+      0, 0, canvas.width, canvas.height
+    );
+
+    return canvas.toDataURL("image/jpeg", 0.92);
+
+  } finally {
+    URL.revokeObjectURL(loaded.url);
+  }
+}
+
+async function attachPackageThumbnails(packages, blob) {
+  if (!blob || !Array.isArray(packages) || !packages.length) return;
+
+  var loaded = await loadBlobImage(blob);
+  var img = loaded.img;
+
+  try {
+    var cropBoxes = computeDistinctPackageCropBoxes(packages, img.naturalWidth, img.naturalHeight);
+
+    for (var i = 0; i < packages.length; i++) {
+      packages[i].imageCropBox = cropBoxes[i];
+
+      try {
+        packages[i].imageUrl = await makePackageThumbnail(blob, cropBoxes[i]);
+      } catch (error) {
+        console.error("Thumbnail creation failed", error);
+        packages[i].imageUrl = "";
+      }
+    }
+  } finally {
+    URL.revokeObjectURL(loaded.url);
+  }
+}
+
+
+function openPackageImageZoom(url) {
+  if (!url) return;
+
+  var modal = document.getElementById("packageImageZoomModal");
+  var img = document.getElementById("packageImageZoomImg");
+
+  img.src = url;
+  modal.classList.remove("hidden");
+}
+
+function closePackageImageZoom(event) {
+  if (event && event.target && event.currentTarget && event.target !== event.currentTarget) {
+    return;
+  }
+
+  var modal = document.getElementById("packageImageZoomModal");
+  var img = document.getElementById("packageImageZoomImg");
+
+  if (modal) modal.classList.add("hidden");
+  if (img) img.removeAttribute("src");
+}
+
+function parsePackageDetails(group, confidence) {
+  var clean = (group.texts || []).join(" ").replace(/\s+/g, " ").trim();
+  var formulation = detectPackageFormulation(clean);
+
+  var pkg = {
+    genericDrug: group.canonical,
+    formulation: formulation,
+    sourceText: clean,
+    confidence: confidence || 0,
+    strength: "",
+    unit: "",
+    concentrationDrug: "",
+    concentrationUnit: "",
+    concentrationVolume: "",
+    imageBox: unionOcrBoxes(group.boxes || []),
+    anchorCenter: group.anchor || null,
+    imageCropBox: null,
+    imageUrl: ""
+  };
+
+  // e.g. 500 mg / 100 mL, 20 mg/2 mL, 5 mg/mL
+  var ratio = clean.match(
+    /(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?)\s*(?:\/|per)\s*(?:(\d+(?:\.\d+)?)\s*)?m[lL]\b/i
+  );
+
+  if (ratio) {
+    pkg.concentrationDrug = parseFloat(ratio[1]);
+    pkg.concentrationUnit = normalizeUnit(ratio[2]);
+    pkg.concentrationVolume = ratio[3] ? parseFloat(ratio[3]) : 1;
+
+    if (!pkg.formulation) pkg.formulation = "liquid";
+    return pkg;
+  }
+
+  var strength = clean.match(
+    /\b(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g)\b/i
+  );
+
+  if (strength) {
+    pkg.strength = parseFloat(strength[1]);
+    pkg.unit = normalizeUnit(strength[2]);
+  }
+
+  return pkg;
+}
+
+function parseMultiplePackages(text, lines, segments, confidence) {
+  var groups = groupOcrLinesByDrug(lines, text);
+  var packages = [];
+
+  for (var i = 0; i < groups.length; i++) {
+    packages.push(parsePackageDetails(groups[i], confidence));
+  }
+
+  // If server did not return boxes/lines, still recognize drugs from full OCR text.
+  if (!packages.length) {
+    var matches = aliasesFoundInText(text);
+
+    for (var j = 0; j < matches.length; j++) {
+      packages.push(
+        parsePackageDetails(
+          {
+            canonical: matches[j].canonical,
+            texts: [text]
+          },
+          confidence
+        )
+      );
+    }
+  }
+
+  return packages;
+}
+
+function packageFormulationOptions(selected) {
+  var values = ["", "oral_liquid", "injectable_solution", "liquid", "tablet", "capsule", "powder"];
+  var labels = [
+    "לא זוהתה צורת תרופה",
+    "תמיסה / תרחיף פומי",
+    "תמיסה להזרקה / עירוי",
+    "תמיסה – דרך מתן לא ברורה",
+    "טבליה",
+    "קפסולה",
+    "אבקה להכנה"
+  ];
+
+  // Backward compatibility with older saved/package values.
+  if (selected === "ampoule") selected = "injectable_solution";
+
+  var html = "";
+
+  for (var i = 0; i < values.length; i++) {
+    html +=
+      '<option value="' + values[i] + '"' +
+      (values[i] === selected ? " selected" : "") +
+      ">" + labels[i] + "</option>";
+  }
+
+  return html;
+}
+function packageUnitOptions(selected) {
+  var values = ["", "mg", "mcg", "g", "units"];
+  var labels = ["לא זוהתה יחידה", "mg", "mcg", "g", "units"];
+  var html = "";
+
+  for (var i = 0; i < values.length; i++) {
+    html +=
+      '<option value="' + values[i] + '"' +
+      (values[i] === selected ? " selected" : "") +
+      ">" + labels[i] + "</option>";
+  }
+
+  return html;
+}
+
+function renderDetectedPackages() {
+  var section = document.getElementById("packagesReviewSection");
+  var container = document.getElementById("detectedPackagesContainer");
+  var count = document.getElementById("packagesCount");
+  var warning = document.getElementById("packageRecognitionWarning");
+
+  container.innerHTML = "";
+  warning.classList.add("hidden");
+  warning.innerHTML = "";
+
+  if (!detectedPackages.length) {
+    count.innerText = "לא זוהו אריזות באופן מובנה.";
+    warning.innerHTML =
+      "לא זוהה שם תרופה מוכר. אפשר להוסיף אריזה ידנית או לצלם שוב.";
+    warning.classList.remove("hidden");
+    addManualPackage();
+    section.classList.remove("hidden");
+    collapseMedicationRecognitionSource();
+    jumpToRecognitionResults("packagesReviewSection");
+    return;
+  }
+
+  count.innerText =
+    "זוהו " + detectedPackages.length +
+    (detectedPackages.length === 1 ? " אריזה" : " אריזות");
+
+  for (var i = 0; i < detectedPackages.length; i++) {
+    container.appendChild(buildPackageCard(detectedPackages[i], i));
+  }
+
+  section.classList.remove("hidden");
+  collapseMedicationRecognitionSource();
+  jumpToRecognitionResults("packagesReviewSection");
+}
+
+function formulationLabel(value) {
+  if (value === "ampoule") value = "injectable_solution";
+
+  return value === "capsule" ? "קפסולה" :
+         value === "tablet" ? "טבליה" :
+         value === "oral_liquid" ? "תמיסה/תרחיף פומי" :
+         value === "injectable_solution" ? "תמיסה להזרקה/עירוי" :
+         value === "liquid" ? "תמיסה – דרך לא ברורה" :
+         value === "powder" ? "אבקה להכנה" :
+         "?";
+}
+function packageSummaryTextFromValues(index) {
+  var drugEl = document.getElementById("pkgDrug_" + index);
+  var formEl = document.getElementById("pkgForm_" + index);
+
+  if (!drugEl || !formEl) return "אריזה " + (index + 1);
+
+  var drug = drugEl.value.trim() || "תרופה לא מזוהה";
+  var form = formulationLabel(formEl.value);
+  var details = "?";
+
+  if (formEl.value === "tablet" || formEl.value === "capsule") {
+    var strengthEl = document.getElementById("pkgStrength_" + index);
+    var unitEl = document.getElementById("pkgUnit_" + index);
+
+    if (strengthEl && strengthEl.value && unitEl && unitEl.value) {
+      details = strengthEl.value + " " + unitEl.value;
+    }
+  } else {
+    var drugAmountEl = document.getElementById("pkgConcDrug_" + index);
+    var concUnitEl = document.getElementById("pkgConcUnit_" + index);
+    var volEl = document.getElementById("pkgConcVol_" + index);
+
+    if (
+      drugAmountEl && drugAmountEl.value &&
+      concUnitEl && concUnitEl.value &&
+      volEl && volEl.value
+    ) {
+      details =
+        drugAmountEl.value + " " + concUnitEl.value +
+        "/" + volEl.value + " mL";
+    }
+  }
+
+  return drug + " · " + form + " · " + details;
+}
+
+function refreshPackageSummary(index) {
+  var summary = document.getElementById("pkgSummary_" + index);
+  if (summary) {
+    summary.textContent = packageSummaryTextFromValues(index);
+  }
+
+  var pkg = null;
+  try {
+    pkg = readPackageCard(index);
+  } catch (e) {}
+
+  var badge = document.getElementById("pkgWarningBadge_" + index);
+
+  if (badge && pkg) {
+    badge.classList.toggle("hidden", packageMissingFields(pkg).length === 0);
+  }
+}
+
+function togglePackageEdit(index, forceOpen) {
+  var panel = document.getElementById("pkgEditPanel_" + index);
+  var button = document.getElementById("pkgEditBtn_" + index);
+
+  if (!panel) return;
+
+  var shouldOpen =
+    forceOpen === true
+      ? true
+      : forceOpen === false
+      ? false
+      : panel.classList.contains("hidden");
+
+  panel.classList.toggle("hidden", !shouldOpen);
+
+  if (button) {
+    button.textContent = shouldOpen ? "סגור" : "ערוך";
+  }
+}
+
+function buildPackageCard(pkg, index) {
+  var card = document.createElement("div");
+  card.className = "package-card compact-list-card";
+  card.dataset.index = index;
+
+  var source = pkg.sourceText
+    ? '<div class="compact-source">OCR: ' +
+      escapeHtml(pkg.sourceText) +
+      "</div>"
+    : "";
+
+  var staticSummary =
+    (pkg.genericDrug || "תרופה לא מזוהה") +
+    " · " + formulationLabel(pkg.formulation) +
+    " · " +
+    (
+      (pkg.formulation === "tablet" || pkg.formulation === "capsule")
+        ? ((pkg.strength || "?") + " " + (pkg.unit || "?"))
+        : (
+            pkg.concentrationDrug && pkg.concentrationUnit && pkg.concentrationVolume
+              ? (pkg.concentrationDrug + " " + pkg.concentrationUnit + "/" + pkg.concentrationVolume + " mL")
+              : "?"
+          )
+    );
+
+  var initiallyComplete =
+    !!pkg.genericDrug &&
+    !!pkg.formulation &&
+    (
+      (pkg.formulation === "tablet" || pkg.formulation === "capsule")
+        ? !!pkg.strength && !!pkg.unit
+        : !!pkg.concentrationDrug && !!pkg.concentrationUnit && !!pkg.concentrationVolume
+    );
+
+  card.innerHTML =
+    '<div class="compact-row' + (initiallyComplete ? "" : " compact-row-warning") + '">' +
+      '<span id="pkgWarningBadge_' + index + '" class="compact-warning-badge' +
+        (initiallyComplete ? " hidden" : "") +
+        '" title="נתוני האריזה אינם מלאים">⚠</span>' +
+      '<div id="pkgSummary_' + index + '" class="compact-summary">' +
+        escapeHtml(staticSummary) +
+      "</div>" +
+      '<button id="pkgEditBtn_' + index + '" class="compact-edit-btn" type="button" onclick="togglePackageEdit(' + index + ')">ערוך</button>' +
+    "</div>" +
+    '<div id="pkgEditPanel_' + index + '" class="compact-edit-panel hidden">' +
+      '<div class="compact-edit-grid-package">' +
+        "<div>" +
+          "<label>חומר פעיל</label>" +
+          '<input id="pkgDrug_' + index + '" value="' + escapeHtml(pkg.genericDrug || "") + '" ' +
+          'oninput="refreshPackageSummary(' + index + '); recomputeAutomaticMatches()">' +
+        "</div>" +
+        "<div>" +
+          "<label>צורת התרופה</label>" +
+          '<select id="pkgForm_' + index + '" onchange="togglePackageFields(' + index + '); refreshPackageSummary(' + index + '); recomputeAutomaticMatches();">' +
+            packageFormulationOptions(pkg.formulation) +
+          "</select>" +
+        "</div>" +
+      "</div>" +
+
+      '<div id="pkgSolidFields_' + index + '" class="compact-edit-grid-values">' +
+        "<div>" +
+          "<label>חוזק</label>" +
+          '<input id="pkgStrength_' + index + '" type="number" step="any" value="' + escapeHtml(pkg.strength) + '" oninput="refreshPackageSummary(' + index + '); recomputeAutomaticMatches()">' +
+        "</div>" +
+        "<div>" +
+          "<label>יחידה</label>" +
+          '<select id="pkgUnit_' + index + '" onchange="refreshPackageSummary(' + index + '); recomputeAutomaticMatches()">' +
+            packageUnitOptions(pkg.unit) +
+          "</select>" +
+        "</div>" +
+      "</div>" +
+
+      '<div id="pkgLiquidFields_' + index + '" class="compact-edit-grid-values">' +
+        "<div>" +
+          "<label>כמות תרופה</label>" +
+          '<input id="pkgConcDrug_' + index + '" type="number" step="any" value="' + escapeHtml(pkg.concentrationDrug) + '" oninput="refreshPackageSummary(' + index + '); recomputeAutomaticMatches()">' +
+        "</div>" +
+        "<div>" +
+          "<label>יחידה</label>" +
+          '<select id="pkgConcUnit_' + index + '" onchange="refreshPackageSummary(' + index + '); recomputeAutomaticMatches()">' +
+            packageUnitOptions(pkg.concentrationUnit) +
+          "</select>" +
+        "</div>" +
+        "<div>" +
+          "<label>בנפח mL</label>" +
+          '<input id="pkgConcVol_' + index + '" type="number" step="any" value="' + escapeHtml(pkg.concentrationVolume) + '" oninput="refreshPackageSummary(' + index + '); recomputeAutomaticMatches()">' +
+        "</div>" +
+      "</div>" +
+      source +
+    "</div>" +
+    '<div id="pkgWarning_' + index + '" class="warning compact-package-warning hidden"></div>';
+
+  setTimeout(function() {
+    togglePackageFields(index);
+    refreshPackageSummary(index);
+  }, 0);
+
+  return card;
+}
+
+function togglePackageFields(index) {
+  var formEl = document.getElementById("pkgForm_" + index);
+  var solid = document.getElementById("pkgSolidFields_" + index);
+  var liquid = document.getElementById("pkgLiquidFields_" + index);
+
+  if (!formEl || !solid || !liquid) return;
+
+  var form = formEl.value;
+
+  if (form === "tablet" || form === "capsule") {
+    solid.classList.remove("hidden");
+    liquid.classList.add("hidden");
+  } else {
+    solid.classList.add("hidden");
+    liquid.classList.remove("hidden");
+  }
+
+  refreshPackageSummary(index);
+}
+
+function addManualPackage() {
+  var index = detectedPackages.length;
+
+  detectedPackages.push({
+    genericDrug: "",
+    formulation: "",
+    sourceText: "",
+    confidence: 0,
+    strength: "",
+    unit: "",
+    concentrationDrug: "",
+    concentrationUnit: "",
+    concentrationVolume: "",
+    imageBox: null,
+    anchorCenter: null,
+    imageCropBox: null,
+    imageUrl: ""
+  });
+
+  var container = document.getElementById("detectedPackagesContainer");
+  container.appendChild(buildPackageCard(detectedPackages[index], index));
+
+  document.getElementById("packagesCount").innerText =
+    "ברשימה כעת " + detectedPackages.length + " אריזות";
+
+  document.getElementById("packagesReviewSection").classList.remove("hidden");
+  togglePackageEdit(index, true);
+  recomputeAutomaticMatches();
+}
+
+function readPackageCard(index) {
+  var form = document.getElementById("pkgForm_" + index).value;
+
+  var pkg = {
+    genericDrug: document.getElementById("pkgDrug_" + index).value.trim(),
+    formulation: form,
+    sourceText: detectedPackages[index] ? detectedPackages[index].sourceText : "",
+    strength: "",
+    unit: "",
+    concentrationDrug: "",
+    concentrationUnit: "",
+    concentrationVolume: "",
+    imageBox: detectedPackages[index] ? detectedPackages[index].imageBox : null,
+    anchorCenter: detectedPackages[index] ? (detectedPackages[index].anchorCenter || null) : null,
+    imageCropBox: detectedPackages[index] ? (detectedPackages[index].imageCropBox || null) : null,
+    imageUrl: detectedPackages[index] ? (detectedPackages[index].imageUrl || "") : ""
+  };
+
+  if (form === "tablet" || form === "capsule") {
+    pkg.strength = parseFloat(document.getElementById("pkgStrength_" + index).value);
+    pkg.unit = document.getElementById("pkgUnit_" + index).value;
+  } else {
+    pkg.concentrationDrug = parseFloat(document.getElementById("pkgConcDrug_" + index).value);
+    pkg.concentrationUnit = document.getElementById("pkgConcUnit_" + index).value;
+    pkg.concentrationVolume = parseFloat(document.getElementById("pkgConcVol_" + index).value);
+  }
+
+  return pkg;
+}
+
+function currentPackagesFromCards() {
+  var result = [];
+
+  for (var i = 0; i < detectedPackages.length; i++) {
+    var drugEl = document.getElementById("pkgDrug_" + i);
+
+    if (drugEl) {
+      result.push(readPackageCard(i));
+    }
+  }
+
+  return result;
+}
+
+function computeMatches(orders, packages) {
+  var matches = [];
+
+  for (var i = 0; i < orders.length; i++) {
+    var order = orders[i];
+    var orderName = normalizeDrugName(order.drugName);
+
+    var candidates = [];
+
+    for (var j = 0; j < packages.length; j++) {
+      if (normalizeDrugName(packages[j].genericDrug) === orderName) {
+        candidates.push({
+          packageIndex: j,
+          package: packages[j]
+        });
+      }
+    }
+
+    matches.push({
+      orderIndex: i,
+      order: order,
+      candidates: candidates,
+      status:
+        candidates.length === 1 ? "matched" :
+        candidates.length === 0 ? "missing" :
+        "ambiguous"
+    });
+  }
+
+  return matches;
+}
+
+function recomputeAutomaticMatches() {
+  if (!selectedOrders.length) return;
+
+  var packages = currentPackagesFromCards();
+  packageMatches = computeMatches(selectedOrders, packages);
+
+  var container = document.getElementById("matchesContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  for (var i = 0; i < packageMatches.length; i++) {
+    var match = packageMatches[i];
+    var card = document.createElement("div");
+
+    var orderText =
+      escapeHtml(match.order.drugName) + " — " +
+      match.order.dose + " " +
+      escapeHtml(match.order.doseUnit) +
+      (match.order.route ? " — " + escapeHtml(match.order.route) : "");
+
+    if (match.status === "matched") {
+      var matchedPackage = match.candidates[0].package;
+      var missingFields = packageMissingFields(matchedPackage);
+      var routeCheck = routeCompatibility(match.order, matchedPackage);
+
+      if (routeCheck.status === "incompatible") {
+        card.className = "match-card match-stop";
+        card.innerHTML =
+          "<h3>" + orderText + "</h3>" +
+          "<div><strong>התרופה הותאמה לאריזה:</strong> " +
+          escapeHtml(matchedPackage.genericDrug) +
+          " · אריזה " + (match.candidates[0].packageIndex + 1) +
+          "</div>" +
+          '<div class="match-status">STOP — ' +
+          escapeHtml(routeCheck.message) +
+          "</div>";
+      } else if (missingFields.length === 0 && routeCheck.status === "compatible") {
+        card.className = "match-card match-ok";
+        card.innerHTML =
+          "<h3>" + orderText + "</h3>" +
+          "<div><strong>הותאמה אוטומטית:</strong> " +
+          escapeHtml(matchedPackage.genericDrug) +
+          " · אריזה " + (match.candidates[0].packageIndex + 1) +
+          "</div>" +
+          '<div class="match-status">✓ זהות התרופה, נתוני האריזה ודרך המתן תואמים</div>';
+      } else {
+        card.className = "match-card match-warn";
+        var reasons = [];
+
+        if (missingFields.length) {
+          reasons.push("חסרים: " + missingFields.join(", "));
+        }
+
+        if (routeCheck.status === "unknown") {
+          reasons.push(routeCheck.message);
+        }
+
+        card.innerHTML =
+          "<h3>" + orderText + "</h3>" +
+          "<div><strong>זהות התרופה הותאמה:</strong> " +
+          escapeHtml(matchedPackage.genericDrug) +
+          " · אריזה " + (match.candidates[0].packageIndex + 1) +
+          "</div>" +
+          '<div class="match-status">⚠ ' +
+          escapeHtml(reasons.join(" · ")) +
+          ". במסך ההכנה יוצג STOP עד להשלמת האימות.</div>";
+      }
+    } else if (match.status === "missing") {
+      card.className = "match-card match-stop";
+      card.innerHTML =
+        "<h3>" + orderText + "</h3>" +
+        '<div class="match-status">STOP — לא זוהתה אריזה מתאימה להוראה זו.</div>';
+
+    } else {
+      card.className = "match-card match-warn";
+      card.innerHTML =
+        "<h3>" + orderText + "</h3>" +
+        '<div class="match-status">נמצאו כמה אריזות אפשריות לאותה תרופה. נדרש אימות ידני.</div>';
+    }
+
+    container.appendChild(card);
+  }
+
+  // Warn about recognized packages that are not linked to any selected order.
+  var used = {};
+
+  packageMatches.forEach(function(match) {
+    if (match.status === "matched") {
+      used[match.candidates[0].packageIndex] = true;
+    }
+  });
+
+  var extra = [];
+
+  for (var p = 0; p < packages.length; p++) {
+    if (!used[p] && packages[p].genericDrug) {
+      extra.push(packages[p].genericDrug + " (אריזה " + (p + 1) + ")");
+    }
+  }
+
+  for (var w = 0; w < packages.length; w++) {
+    var pkgWarning = document.getElementById("pkgWarning_" + w);
+
+    if (!pkgWarning) continue;
+
+    var packageMissing = packageMissingFields(packages[w]);
+
+    if (packageMissing.length) {
+      pkgWarning.innerHTML =
+        "<strong>נדרש אימות:</strong> חסרים " +
+        escapeHtml(packageMissing.join(", ")) +
+        ". אפשר לתקן ידנית או לצלם מחדש.";
+      pkgWarning.classList.remove("hidden");
+    } else {
+      pkgWarning.innerHTML = "";
+      pkgWarning.classList.add("hidden");
+    }
+
+    refreshPackageSummary(w);
+  }
+
+  var warning = document.getElementById("packageRecognitionWarning");
+
+  if (extra.length) {
+    warning.innerHTML =
+      "<strong>שימו לב:</strong> זוהו גם אריזות שלא הותאמו להוראות שסומנו:<br>" +
+      escapeHtml(extra.join(", "));
+    warning.classList.remove("hidden");
+  } else {
+    warning.classList.add("hidden");
+    warning.innerHTML = "";
+  }
+}
+
+
+function routeCompatibility(order, pkg) {
+  var route = String((order && order.route) || "").toUpperCase();
+  var form = String((pkg && pkg.formulation) || "");
+
+  if (form === "ampoule") form = "injectable_solution";
+
+  if (!route || !form) {
+    return {
+      status: "unknown",
+      message: "לא ניתן לוודא התאמה בין דרך המתן לצורת התכשיר."
+    };
+  }
+
+  var enteral = route === "PO" || route === "NG";
+  var parenteral = route === "IV" || route === "IM" || route === "SC";
+
+  if (form === "tablet" || form === "capsule" || form === "oral_liquid") {
+    if (parenteral) {
+      return {
+        status: "incompatible",
+        message: "ההוראה היא " + route + " אך התכשיר שזוהה מיועד למתן פומי/אנטרלי."
+      };
+    }
+    if (enteral) return { status: "compatible", message: "" };
+  }
+
+  if (form === "injectable_solution" || form === "powder") {
+    if (enteral) {
+      return {
+        status: "incompatible",
+        message: "ההוראה היא " + route + " אך התכשיר שזוהה הוא תכשיר להזרקה/עירוי."
+      };
+    }
+    if (parenteral) return { status: "compatible", message: "" };
+  }
+
+  if (form === "liquid") {
+    return {
+      status: "unknown",
+      message: "זוהתה תמיסה, אך מהאריזה לא נקבע אם היא פומית או להזרקה/עירוי. יש לאשר ידנית את צורת התכשיר."
+    };
+  }
+
+  return {
+    status: "unknown",
+    message: "לא ניתן לוודא התאמה בין דרך המתן לצורת התכשיר."
+  };
+}
+
+function packageMissingFields(pkg) {
+  var missing = [];
+
+  if (!pkg.genericDrug) {
+    missing.push("חומר פעיל");
+  }
+
+  if (!pkg.formulation) {
+    missing.push("צורת התרופה");
+    return missing;
+  }
+
+  if (pkg.formulation === "tablet" || pkg.formulation === "capsule") {
+    if (!Number.isFinite(pkg.strength) || pkg.strength <= 0) {
+      missing.push("חוזק");
+    }
+
+    if (!pkg.unit) {
+      missing.push("יחידת חוזק");
+    }
+
+    return missing;
+  }
+
+  if (!Number.isFinite(pkg.concentrationDrug) || pkg.concentrationDrug <= 0) {
+    missing.push("כמות התרופה בריכוז");
+  }
+
+  if (!pkg.concentrationUnit) {
+    missing.push("יחידת הריכוז");
+  }
+
+  if (!Number.isFinite(pkg.concentrationVolume) || pkg.concentrationVolume <= 0) {
+    missing.push("נפח הריכוז ב-mL");
+  }
+
+  return missing;
+}
+
+function packageIsComplete(pkg) {
+  return packageMissingFields(pkg).length === 0;
+}
+
+function confirmBatchMatchesAndPrepare() {
+  try {
+    var packages = currentPackagesFromCards();
+    packageMatches = computeMatches(selectedOrders, packages);
+
+    for (var i = 0; i < packageMatches.length; i++) {
+      var match = packageMatches[i];
+
+      if (match.status === "missing") {
+        alert("אין אריזה מתאימה לכל אחת מההוראות שסומנו. יש לסרוק שוב או להוסיף אריזה.");
+        return;
+      }
+
+      if (match.status === "ambiguous") {
+        alert("קיימת יותר מאריזה אפשרית לאותה תרופה. בשלב זה יש להשאיר אריזה אחת מתאימה לכל הוראה.");
+        return;
+      }
+    }
+
+    renderBatchPreparations(packageMatches);
+    showScreen("prepareScreen");
+
+  } catch (error) {
+    console.error(error);
+
+    var warning = document.getElementById("packageRecognitionWarning");
+
+    if (warning) {
+      warning.innerHTML =
+        "<strong>שגיאה בחישוב ההכנה:</strong><br>" +
+        escapeHtml(error.message || String(error));
+      warning.classList.remove("hidden");
+      warning.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      alert("שגיאה בחישוב ההכנה: " + (error.message || String(error)));
+    }
+  }
+}
+
+function calculateBatchPreparation(order, pkg) {
+  var missing = packageMissingFields(pkg);
+
+  if (missing.length) {
+    return {
+      ok: false,
+      value: "STOP",
+      explanation:
+        "זהות התרופה הותאמה, אך אין מספיק מידע בטוח על האריזה לחישוב ההכנה. חסרים: " +
+        missing.join(", ") +
+        ". יש להשלים את הנתונים מהאריזה או לצלם מחדש."
+    };
+  }
+
+  var routeCheck = routeCompatibility(order, pkg);
+
+  if (routeCheck.status === "incompatible") {
+    return {
+      ok: false,
+      value: "STOP",
+      explanation: routeCheck.message
+    };
+  }
+
+  if (routeCheck.status === "unknown") {
+    return {
+      ok: false,
+      value: "STOP",
+      explanation:
+        routeCheck.message +
+        " לא יבוצע חישוב הכנה עד לאישור צורת התכשיר."
+    };
+  }
+
+  if (pkg.formulation === "tablet" || pkg.formulation === "capsule") {
+    if (order.doseUnit !== pkg.unit) {
+      return {
+        ok: false,
+        value: "STOP",
+        explanation:
+          "יחידת המינון בהוראה (" + order.doseUnit +
+          ") אינה תואמת ליחידת החוזק שעל האריזה (" + pkg.unit + ")."
+      };
+    }
+
+    var count = order.dose / pkg.strength;
+    var label = pkg.formulation === "capsule" ? "קפסולות" : "טבליות";
+
+    if (!Number.isInteger(count)) {
+      return {
+        ok: false,
+        value: "STOP",
+        explanation:
+          "החישוב האריתמטי הוא " + formatNumber(count) + " " + label +
+          ". האפליקציה אינה מניחה שמותר לחצות טבליה, לפתוח קפסולה או לחלק את תכולתה ללא מקור תרופתי מוסמך."
+      };
+    }
+
+    return {
+      ok: true,
+      value: formatNumber(count) + " " + label,
+      explanation:
+        order.dose + " " + order.doseUnit +
+        " ÷ " + pkg.strength + " " + pkg.unit +
+        " = " + formatNumber(count)
+    };
+  }
+
+  if (order.doseUnit !== pkg.concentrationUnit) {
+    return {
+      ok: false,
+      value: "STOP",
+      explanation:
+        "יחידת המינון בהוראה (" + order.doseUnit +
+        ") אינה תואמת ליחידת הריכוז שעל האריזה (" + pkg.concentrationUnit + ")."
+    };
+  }
+
+  var volume =
+    (order.dose / pkg.concentrationDrug) *
+    pkg.concentrationVolume;
+
+  return {
+    ok: true,
+    value: formatNumber(volume) + " mL",
+    explanation:
+      "(" + order.dose + " " + order.doseUnit +
+      " ÷ " + pkg.concentrationDrug + " " + pkg.concentrationUnit +
+      ") × " + pkg.concentrationVolume + " mL = " +
+      formatNumber(volume) + " mL"
+  };
+}
+
+function renderBatchPreparations(matches) {
+  var container = document.getElementById("batchPreparationsContainer");
+  container.innerHTML = "";
+  preparationPlan = [];
+
+  for (var i = 0; i < matches.length; i++) {
+    var match = matches[i];
+    var pkg = match.candidates[0].package;
+    var calc = calculateBatchPreparation(match.order, pkg);
+
+    preparationPlan.push({
+      order: match.order,
+      package: pkg,
+      calc: calc
+    });
+
+    var card = document.createElement("div");
+    card.className = "prep-card" + (calc.ok ? "" : " prep-stop");
+
+    var imageHtml = pkg.imageUrl
+      ? '<div><img class="prep-package-thumb" src="' + pkg.imageUrl + '" alt="אריזת ' +
+        escapeHtml(pkg.genericDrug) +
+        '" onclick="openPackageImageZoom(this.src)"><div class="prep-image-caption">האריזה שזוהתה</div></div>'
+      : '<div class="prep-thumb-placeholder">לא ניתן היה לחתוך תמונת אריזה מדויקת</div>';
+
+    var formulationLabelText = formulationLabel(pkg.formulation);
+
+    card.innerHTML =
+      '<div class="prep-card-layout">' +
+        '<div class="prep-thumb-wrap">' +
+          imageHtml +
+        "</div>" +
+        '<div class="prep-card-text">' +
+          "<h3>" +
+            escapeHtml(match.order.drugName) + " — " +
+            match.order.dose + " " + escapeHtml(match.order.doseUnit) +
+            (match.order.route ? " — " + escapeHtml(match.order.route) : "") +
+          "</h3>" +
+          "<div><strong>אריזה:</strong> " + escapeHtml(pkg.genericDrug) + "</div>" +
+          "<div><strong>צורת תרופה:</strong> " + escapeHtml(formulationLabelText) + "</div>" +
+          '<div class="prep-value">' + escapeHtml(calc.value) + "</div>" +
+          '<div dir="ltr" style="text-align:left; unicode-bidi:isolate;">' +
+            escapeHtml(calc.explanation) +
+          "</div>" +
+        "</div>" +
+      "</div>";
+
+    container.appendChild(card);
+  }
+}
+
+function openPreparedVerificationStep() {
+  var verifyScreen = document.getElementById("verifyScreen");
+
+  if (!verifyScreen) {
+    alert("מסך האימות לא נטען. יש לרענן את האפליקציה ולנסות שוב.");
+    return;
+  }
+
+  var currentPlanSignature = preparationPlanSignature();
+  var preserveExisting =
+    !!lastVerificationPlanSignature &&
+    currentPlanSignature === lastVerificationPlanSignature &&
+    (!!selectedPreparedBatchFile || preparedVerificationResults.length > 0);
+
+  if (!preserveExisting) {
+    selectedPreparedBatchFile = null;
+    preparedVerificationResults = [];
+
+    var preview = document.getElementById("preparedBatchPreview");
+    if (preview) {
+      preview.removeAttribute("src");
+      preview.style.display = "none";
+    }
+
+    var button = document.getElementById("recognizePreparedBatchButton");
+    if (button) button.classList.add("hidden");
+
+    var results = document.getElementById("preparedVerificationResults");
+    if (results) results.innerHTML = "";
+
+    var finish = document.getElementById("finishVerificationButton");
+    if (finish) finish.classList.add("hidden");
+  } else if (preparedVerificationResults.length) {
+    renderPreparedVerificationResults();
+  }
+
+  lastVerificationPlanSignature = currentPlanSignature;
+  showScreen("verifyScreen");
+}
+async function openPreparedBatchCamera() {
+  var modal = document.getElementById("preparedBatchCameraModal");
+  var video = document.getElementById("preparedBatchCameraVideo");
+
+  try {
+    preparedBatchCameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: false
+    });
+
+    video.srcObject = preparedBatchCameraStream;
+    modal.classList.remove("hidden");
+
+  } catch (error) {
+    console.error(error);
+    alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+  }
+}
+
+function closePreparedBatchCamera() {
+  var modal = document.getElementById("preparedBatchCameraModal");
+  var video = document.getElementById("preparedBatchCameraVideo");
+
+  if (preparedBatchCameraStream) {
+    preparedBatchCameraStream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+    preparedBatchCameraStream = null;
+  }
+
+  if (video) video.srcObject = null;
+  if (modal) modal.classList.add("hidden");
+}
+
+function handlePreparedBatchImage(event) {
+  selectedPreparedBatchFile = event.target.files[0] || null;
+
+  if (!selectedPreparedBatchFile) return;
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById("preparedBatchPreview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+  };
+  reader.readAsDataURL(selectedPreparedBatchFile);
+
+  document.getElementById("recognizePreparedBatchButton").classList.remove("hidden");
+  document.getElementById("preparedVerificationResults").innerHTML = "";
+  document.getElementById("finishVerificationButton").classList.add("hidden");
+}
+
+async function capturePreparedBatch() {
+  var video = document.getElementById("preparedBatchCameraVideo");
+  var box = document.getElementById("preparedBatchScanBox");
+
+  if (!video.videoWidth || !video.videoHeight) {
+    alert("המצלמה עדיין נטענת");
+    return;
+  }
+
+  var crop = mapVisibleBoxToVideoSource(video, box);
+
+  var canvas = document.createElement("canvas");
+  canvas.width = crop.sw;
+  canvas.height = crop.sh;
+
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(
+    video,
+    crop.sx, crop.sy, crop.sw, crop.sh,
+    0, 0, crop.sw, crop.sh
+  );
+
+  var blob = await new Promise(function(resolve) {
+    canvas.toBlob(resolve, "image/jpeg", 0.94);
+  });
+
+  if (!blob) {
+    alert("לא ניתן היה לשמור את התמונה");
+    return;
+  }
+
+  selectedPreparedBatchFile = blob;
+
+  var preview = document.getElementById("preparedBatchPreview");
+  preview.src = URL.createObjectURL(blob);
+  preview.style.display = "block";
+
+  document.getElementById("recognizePreparedBatchButton").classList.remove("hidden");
+
+  closePreparedBatchCamera();
+  recognizePreparedBatch();
+}
+
+async function runPreparedOcr(file) {
+  var status = document.getElementById("preparedOcrStatus");
+  var rawBox = document.getElementById("preparedOcrTextBox");
+  var rawText = document.getElementById("preparedOcrRawText");
+
+  status.classList.remove("hidden");
+  status.innerHTML = "מזהה את התרופות והמזרקים שהוכנו...";
+
+  rawText.innerText = "";
+  rawBox.classList.add("hidden");
+
+  try {
+    var uploadBlob = await prepareImageForUpload(file, 1800, 0.86);
+
+    var form = new FormData();
+    form.append("image", uploadBlob, "prepared-medications.jpg");
+
+    var response = await fetch("/api/ocr-medication", {
+      method: "POST",
+      body: form
+    });
+
+    var data = await readJsonResponse(response);
+    var rotation = Number(data.rotation_degrees || 0);
+    var orientedBlob = rotation ? await rotateImageBlob(uploadBlob, rotation, 0.9) : uploadBlob;
+    showBlobInPreview(orientedBlob, "preparedBatchPreview");
+
+    var text = data.text || "";
+    var confidence = Math.round((data.confidence || 0) * 100);
+
+    rawText.innerText =
+      (Array.isArray(data.segments) && data.segments.length)
+        ? data.segments.join("\n")
+        : (text || "לא זוהה טקסט");
+
+    rawBox.classList.remove("hidden");
+    status.innerHTML =
+      "✓ הזיהוי הסתיים · confidence משוער: " + confidence + "%" +
+      (rotation ? " · התמונה יושרה אוטומטית (" + rotation + "°)" : "");
+
+    return {
+      text: text,
+      lines: Array.isArray(data.lines) ? data.lines : [],
+      segments: Array.isArray(data.segments) ? data.segments : [],
+      confidence: confidence
+    };
+
+  } catch (error) {
+    console.error(error);
+    status.innerHTML = "זיהוי ההכנות נכשל: " + error.message;
+
+    return {
+      text: "",
+      lines: [],
+      segments: [],
+      confidence: 0
+    };
+  }
+}
+
+function expectedPreparedValue(planItem) {
+  if (!planItem || !planItem.calc || !planItem.calc.ok) {
+    return { amount: null, unit: "", text: "STOP" };
+  }
+
+  var value = String(planItem.calc.value || "");
+
+  var ml = value.match(/(-?\d+(?:\.\d+)?)\s*mL\b/i);
+  if (ml) {
+    return {
+      amount: parseFloat(ml[1]),
+      unit: "mL",
+      text: value
+    };
+  }
+
+  var count = value.match(/(-?\d+(?:\.\d+)?)\s*(טבליות|קפסולות|tablets?|capsules?)/i);
+  if (count) {
+    return {
+      amount: parseFloat(count[1]),
+      unit: /קפסולות|caps/i.test(count[2]) ? "קפסולות" : "טבליות",
+      text: value
+    };
+  }
+
+  return {
+    amount: null,
+    unit: "",
+    text: value
+  };
+}
+
+function lineContainsDrug(lineText, drugName) {
+  return normalizeDrugName(lineText || "") === normalizeDrugName(drugName || "") ||
+    normalizeForMatching(lineText || "").indexOf(normalizeForMatching(drugName || "")) !== -1 ||
+    findKnownDrug(lineText || "") === normalizeDrugName(drugName || "");
+}
+
+function extractPreparedAmountFromSameLine(text, expectedUnit) {
+  var clean = String(text || "");
+
+  if (expectedUnit === "mL") {
+    // Do not accept concentration strings such as "500 mg / 100 mL".
+    if (/\b(?:mcg|µg|ug|mg|g|units?)\b[\s\S]{0,12}\/?\s*\d+(?:\.\d+)?\s*mL\b/i.test(clean)) {
+      return null;
+    }
+
+    var ml = clean.match(/(\d+(?:\.\d+)?)\s*mL\b/i);
+    return ml ? parseFloat(ml[1]) : null;
+  }
+
+  if (expectedUnit === "טבליות" || expectedUnit === "קפסולות") {
+    var count = clean.match(
+      /(\d+(?:\.\d+)?)\s*(tablet|tablets|tab|tabs|capsule|capsules|cap|caps|טבליה|טבליות|קפסולה|קפסולות)\b/i
+    );
+    return count ? parseFloat(count[1]) : null;
+  }
+
+  return null;
+}
+
+function parsePreparedVerification(ocrResult) {
+  var lines = Array.isArray(ocrResult.lines) ? ocrResult.lines : [];
+  var segments = Array.isArray(ocrResult.segments) ? ocrResult.segments : [];
+  var allLineTexts = lines.map(function(line) { return line.text || ""; });
+
+  if (!allLineTexts.length) {
+    allLineTexts = segments;
+  }
+
+  var results = [];
+
+  for (var i = 0; i < preparationPlan.length; i++) {
+    var planItem = preparationPlan[i];
+    var expected = expectedPreparedValue(planItem);
+    var drug = planItem.order.drugName;
+
+    var matchingLines = allLineTexts.filter(function(lineText) {
+      return findKnownDrug(lineText || "") === normalizeDrugName(drug) ||
+        normalizeForMatching(lineText || "").indexOf(normalizeForMatching(drug)) !== -1;
+    });
+
+    var identitySeen = matchingLines.length > 0;
+    var detectedAmount = null;
+
+    for (var j = 0; j < matchingLines.length; j++) {
+      var candidate = extractPreparedAmountFromSameLine(
+        matchingLines[j],
+        expected.unit
+      );
+
+      if (candidate !== null) {
+        detectedAmount = candidate;
+        break;
+      }
+    }
+
+    var status = "review";
+    var message = "";
+
+    if (!planItem.calc.ok) {
+      if (identitySeen) {
+        status = "stop";
+        message =
+          "התרופה מופיעה בצילום למרות שבשלב ההכנה התקבל STOP.";
+      } else {
+        status = "stop";
+        message =
+          "לא אמורה להיות הכנה לתרופה זו עד לפתרון ה-STOP.";
+      }
+    } else if (!identitySeen) {
+      status = "review";
+      message =
+        "שם התרופה לא זוהה בבירור בתמונה.";
+    } else if (detectedAmount === null) {
+      status = "review";
+      message =
+        "זהות התרופה זוהתה, אך הכמות שהוכנה לא נקראה בביטחון.";
+    } else {
+      var tolerance = expected.unit === "mL" ? 0.05 : 0.001;
+
+      if (Math.abs(detectedAmount - expected.amount) <= tolerance) {
+        status = "match";
+        message = "הזהות והכמות הנראות בתמונה תואמות לחישוב.";
+      } else {
+        status = "stop";
+        message =
+          "הכמות שנקראה (" + formatNumber(detectedAmount) + " " + expected.unit +
+          ") אינה תואמת לכמות הצפויה (" +
+          formatNumber(expected.amount) + " " + expected.unit + ").";
+      }
+    }
+
+    results.push({
+      planIndex: i,
+      drug: drug,
+      expected: expected,
+      identitySeen: identitySeen,
+      detectedAmount: detectedAmount,
+      status: status,
+      message: message
+    });
+  }
+
+  return results;
+}
+
+function verificationStatusLabel(status) {
+  if (status === "match") return "✓ MATCH";
+  if (status === "stop") return "STOP";
+  return "נדרש אימות";
+}
+
+function renderPreparedVerificationResults() {
+  var container = document.getElementById("preparedVerificationResults");
+  container.innerHTML = "";
+
+  for (var i = 0; i < preparedVerificationResults.length; i++) {
+    var result = preparedVerificationResults[i];
+    var item = document.createElement("div");
+    item.className = "verify-item " + result.status;
+
+    var expectedText = result.expected.text || "STOP";
+    var actualText =
+      result.detectedAmount !== null
+        ? formatNumber(result.detectedAmount) + " " + result.expected.unit
+        : "לא נקראה אוטומטית";
+
+    var manualHtml = "";
+
+    if (
+      result.status === "review" &&
+      result.expected.amount !== null
+    ) {
+      manualHtml =
+        '<div class="verify-manual">' +
+          "<div>" +
+            "<label>כמות שהוכנה בפועל (" + escapeHtml(result.expected.unit) + ")</label>" +
+            '<input id="manualPrepared_' + i + '" type="number" step="any" placeholder="' +
+              escapeHtml(String(result.expected.amount)) + '">' +
+          "</div>" +
+          '<button class="secondary" type="button" onclick="applyManualPreparedAmount(' + i + ')">אמת כמות</button>' +
+        "</div>";
+    }
+
+    item.innerHTML =
+      '<div class="verify-line">' +
+        '<div class="verify-name">' + escapeHtml(result.drug) + "</div>" +
+        '<div class="verify-status">' + escapeHtml(verificationStatusLabel(result.status)) + "</div>" +
+      "</div>" +
+      '<div class="verify-expected"><strong>צפוי:</strong> ' + escapeHtml(expectedText) + "</div>" +
+      '<div class="verify-expected"><strong>נקרא מהצילום:</strong> ' + escapeHtml(actualText) + "</div>" +
+      '<div class="verify-expected">' + escapeHtml(result.message) + "</div>" +
+      manualHtml;
+
+    container.appendChild(item);
+  }
+
+  document.getElementById("finishVerificationButton").classList.remove("hidden");
+}
+
+function applyManualPreparedAmount(resultIndex) {
+  var result = preparedVerificationResults[resultIndex];
+  var input = document.getElementById("manualPrepared_" + resultIndex);
+
+  if (!result || !input) return;
+
+  var actual = parseFloat(input.value);
+
+  if (!Number.isFinite(actual)) {
+    alert("יש להזין כמות שהוכנה בפועל");
+    return;
+  }
+
+  result.detectedAmount = actual;
+
+  var tolerance = result.expected.unit === "mL" ? 0.05 : 0.001;
+
+  if (Math.abs(actual - result.expected.amount) <= tolerance) {
+    result.status = "match";
+    result.message =
+      "הכמות שהוזנה ידנית תואמת לכמות שחושבה. זהות התרופה עדיין מבוססת על המידע הגלוי בצילום.";
+  } else {
+    result.status = "stop";
+    result.message =
+      "הכמות שהוזנה (" + formatNumber(actual) + " " + result.expected.unit +
+      ") אינה תואמת לכמות הצפויה (" +
+      formatNumber(result.expected.amount) + " " + result.expected.unit + ").";
+  }
+
+  renderPreparedVerificationResults();
+}
+
+async function recognizePreparedBatch() {
+  if (!selectedPreparedBatchFile) {
+    alert("יש לצלם או לבחור תמונה של התרופות שהוכנו");
+    return;
+  }
+
+  var result = await runPreparedOcr(selectedPreparedBatchFile);
+  preparedVerificationResults = parsePreparedVerification(result);
+  renderPreparedVerificationResults();
+}
+
+function finishPreparedVerification() {
+  var matched = preparedVerificationResults.filter(function(r) {
+    return r.status === "match";
+  }).length;
+
+  var stops = preparedVerificationResults.filter(function(r) {
+    return r.status === "stop";
+  }).length;
+
+  var reviews = preparedVerificationResults.filter(function(r) {
+    return r.status === "review";
+  }).length;
+
+  var status = document.getElementById("finalStatus");
+  var summary = document.getElementById("finalSummary");
+
+  status.className = (stops || reviews) ? "warning" : "success";
+
+  if (!stops && !reviews) {
+    status.innerHTML =
+      "<strong>כל ההכנות שניתנות לאימות תואמות.</strong>";
+  } else {
+    status.innerHTML =
+      "<strong>האימות עדיין אינו מלא.</strong> יש פריטים הדורשים STOP או בדיקה נוספת.";
+  }
+
+  var html =
+    "<div><strong>MATCH:</strong> " + matched + "</div>" +
+    "<div><strong>STOP:</strong> " + stops + "</div>" +
+    "<div><strong>נדרש אימות:</strong> " + reviews + "</div><hr>";
+
+  for (var i = 0; i < preparedVerificationResults.length; i++) {
+    var r = preparedVerificationResults[i];
+
+    html +=
+      "<div style='margin-bottom:10px;'>" +
+        "<strong>" + escapeHtml(r.drug) + "</strong> — " +
+        escapeHtml(verificationStatusLabel(r.status)) +
+        "<br>" + escapeHtml(r.message) +
+      "</div>";
+  }
+
+  summary.innerHTML = html;
+  showScreen("finalScreen");
+}
+
+
+function resetApp() {
+  location.reload();
+}
+</script>
+</body>
+</html>
