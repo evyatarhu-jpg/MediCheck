@@ -17,9 +17,12 @@ from flask import (
     url_for,
 )
 
-# PaddleOCR can use Hugging Face by default. If that source is unavailable,
-# uncomment the next line to use Paddle's BOS model source instead:
-# os.environ["PADDLE_PDX_MODEL_SOURCE"] = "BOS"
+# Keep the OCR runtime lightweight and deterministic on hosted CPU services.
+os.environ.setdefault("PADDLE_PDX_MODEL_SOURCE", "BOS")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
 
 from paddleocr import PaddleOCR
 
@@ -44,6 +47,8 @@ app.config.update(
 
 _ocr = None
 _ocr_lock = threading.Lock()
+_ocr_loading = False
+_ocr_error = None
 
 
 LOGIN_HTML = """
@@ -165,23 +170,36 @@ CONFIG_HTML = """
 
 
 def get_ocr():
-    global _ocr
+    global _ocr, _ocr_loading, _ocr_error
 
-    if _ocr is None:
-        with _ocr_lock:
-            if _ocr is None:
-                print("Loading PaddleOCR models for the first time...")
-                _ocr = PaddleOCR(
-                    text_detection_model_name="PP-OCRv5_mobile_det",
-                    text_recognition_model_name="PP-OCRv5_mobile_rec",
-                    use_doc_orientation_classify=False,
-                    use_doc_unwarping=False,
-                    use_textline_orientation=False,
-                    engine="onnxruntime",
-                )
-                print("PaddleOCR ready.")
+    if _ocr is not None:
+        return _ocr
 
-    return _ocr
+    with _ocr_lock:
+        if _ocr is not None:
+            return _ocr
+
+        _ocr_loading = True
+        _ocr_error = None
+
+        try:
+            print("Loading PaddleOCR mobile models...", flush=True)
+            _ocr = PaddleOCR(
+                text_detection_model_name="PP-OCRv5_mobile_det",
+                text_recognition_model_name="PP-OCRv5_mobile_rec",
+                use_doc_orientation_classify=False,
+                use_doc_unwarping=False,
+                use_textline_orientation=False,
+                engine="onnxruntime",
+            )
+            print("PaddleOCR ready.", flush=True)
+            return _ocr
+        except Exception as exc:
+            _ocr_error = f"{type(exc).__name__}: {exc}"
+            print(f"PaddleOCR failed to load: {_ocr_error}", flush=True)
+            raise
+        finally:
+            _ocr_loading = False
 
 
 def save_upload_to_temp(upload):
@@ -396,7 +414,23 @@ def health():
     return jsonify({
         "ok": True,
         "ocr_loaded": _ocr is not None,
+        "ocr_loading": _ocr_loading,
+        "ocr_error": _ocr_error,
     })
+
+
+@app.post("/api/ocr-warmup")
+def ocr_warmup():
+    try:
+        get_ocr()
+        return jsonify({"ok": True, "ocr_loaded": True})
+    except Exception as exc:
+        app.logger.exception("OCR warmup failed")
+        return jsonify({
+            "ok": False,
+            "error": str(exc),
+            "ocr_error": _ocr_error,
+        }), 500
 
 
 @app.post("/api/ocr-order")
