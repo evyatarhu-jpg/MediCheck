@@ -1694,7 +1694,7 @@
     }
 
 
-    /* v6.20 – jump directly to recognized results */
+    /* v6.21 – jump directly to recognized results */
     .app-version {
       display:inline-block;
       margin-right:6px;
@@ -1746,7 +1746,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.20</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.21</span></div>
       <div id="stepBadge" class="step">מסך פתיחה</div>
     </div>
     <div class="progress"><div id="progressBar"></div></div>
@@ -1913,7 +1913,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.20 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.21 · שלב 3</div>
 
     <div class="info">
       לכל הוראה מוצגת האריזה שהותאמה והחישוב לפי הנתונים שעל האריזה.
@@ -2191,7 +2191,15 @@ function goBackOneScreen() {
   showScreen("homeScreen");
 }
 
-function startOrderScan() { showScreen("orderScreen"); }
+function startOrderScan() {
+  showScreen("orderScreen");
+
+  setTimeout(function() {
+    if (!selectedOrderFile && !orderCameraStream) {
+      openOrderCamera(true);
+    }
+  }, 120);
+}
 function goHome() { closeOrderCamera(); closeMedicationBatchCamera(); showScreen("homeScreen"); }
 function backToOrder() { showScreen("orderScreen"); }
 function backToMedication() { showScreen("medicationScreen"); }
@@ -2243,11 +2251,20 @@ async function handleOrderImage(event) {
 }
 
 
-async function openOrderCamera() {
+async function openOrderCamera(automatic) {
   var modal = document.getElementById("orderCameraModal");
   var video = document.getElementById("orderCameraVideo");
 
+  if (orderCameraStream) {
+    if (modal) modal.classList.remove("hidden");
+    return;
+  }
+
   try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error("camera_not_supported");
+    }
+
     orderCameraStream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: { ideal: "environment" },
@@ -2261,7 +2278,16 @@ async function openOrderCamera() {
     modal.classList.remove("hidden");
   } catch (error) {
     console.error(error);
-    alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+
+    if (!automatic) {
+      alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+    } else {
+      var status = document.getElementById("orderOcrStatus");
+      if (status) {
+        status.classList.remove("hidden");
+        status.innerHTML = "המצלמה לא נפתחה אוטומטית. אפשר ללחוץ על כפתור המצלמה או לבחור תמונה קיימת.";
+      }
+    }
   }
 }
 
@@ -3910,6 +3936,14 @@ function confirmSelectedOrders() {
   populateSelectedOrdersForMedicationScreen(preserveExisting);
   lastConfirmedOrdersSignature = newSignature;
   showScreen("medicationScreen");
+
+  if (!preserveExisting) {
+    setTimeout(function() {
+      if (!selectedMedicationFile && !medicationBatchCameraStream) {
+        openMedicationBatchCamera(true);
+      }
+    }, 120);
+  }
 }
 
 function populateSelectedOrdersForMedicationScreen(preserveExisting) {
@@ -4014,11 +4048,20 @@ function resetMedicationBatchRecognition() {
   document.getElementById("packageRecognitionWarning").innerHTML = "";
 }
 
-async function openMedicationBatchCamera() {
+async function openMedicationBatchCamera(automatic) {
   var modal = document.getElementById("medicationBatchCameraModal");
   var video = document.getElementById("medicationBatchCameraVideo");
 
+  if (medicationBatchCameraStream) {
+    if (modal) modal.classList.remove("hidden");
+    return;
+  }
+
   try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error("camera_not_supported");
+    }
+
     medicationBatchCameraStream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: { ideal: "environment" },
@@ -4033,7 +4076,16 @@ async function openMedicationBatchCamera() {
 
   } catch (error) {
     console.error(error);
-    alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+
+    if (!automatic) {
+      alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+    } else {
+      var status = document.getElementById("medOcrStatus");
+      if (status) {
+        status.classList.remove("hidden");
+        status.innerHTML = "המצלמה לא נפתחה אוטומטית. אפשר ללחוץ על כפתור המצלמה או לבחור תמונה קיימת.";
+      }
+    }
   }
 }
 
