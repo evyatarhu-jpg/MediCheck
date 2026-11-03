@@ -1,9 +1,21 @@
+import hmac
 import os
+import secrets
 import tempfile
 import threading
+from datetime import timedelta
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import (
+    Flask,
+    jsonify,
+    redirect,
+    render_template_string,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 
 # PaddleOCR can use Hugging Face by default. If that source is unavailable,
 # uncomment the next line to use Paddle's BOS model source instead:
@@ -13,11 +25,143 @@ from paddleocr import PaddleOCR
 
 
 BASE_DIR = Path(__file__).resolve().parent
-app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
+
+# Do not expose the repository directory as a Flask static folder.
+# MediCheck currently serves a single self-contained index.html.
+app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
+
+# Authentication secrets must come from the deployment environment, never GitHub.
+APP_PASSWORD = os.environ.get("MEDICHECK_PASSWORD", "")
+app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=True,
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=12),
+)
 
 _ocr = None
 _ocr_lock = threading.Lock()
+
+
+LOGIN_HTML = """
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MediCheck – כניסה</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f4f7fb;
+      color: #123a63;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 20px;
+    }
+    .login-card {
+      width: min(430px, 100%);
+      background: #fff;
+      border: 1px solid #d8e1ea;
+      border-radius: 20px;
+      box-shadow: 0 14px 40px rgba(21, 45, 74, .10);
+      padding: 28px;
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .subtitle { color: #667085; margin-bottom: 24px; line-height: 1.5; }
+    label { display: block; font-weight: 800; margin-bottom: 8px; }
+    input {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid #b9c7d6;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 19px;
+      direction: ltr;
+    }
+    button {
+      width: 100%;
+      min-height: 56px;
+      margin-top: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #0d6efd;
+      color: #fff;
+      font-size: 19px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .error {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff1f1;
+      color: #a42323;
+      border: 1px solid #efc2c2;
+    }
+    .prototype {
+      margin-top: 18px;
+      color: #7a5b12;
+      background: #fff8df;
+      border: 1px solid #ead79c;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <main class="login-card">
+    <h1>MediCheck</h1>
+    <div class="subtitle">גישה למערכת מוגנת בסיסמה.</div>
+
+    <form method="post" autocomplete="off">
+      <label for="password">סיסמה</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        required
+        autofocus
+        autocomplete="current-password"
+      >
+      <button type="submit">כניסה</button>
+    </form>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <div class="prototype">
+      Prototype בלבד. אין להשתמש במערכת לצורך החלטה קלינית או מתן תרופה ללא אימות אנושי מלא.
+    </div>
+  </main>
+</body>
+</html>
+"""
+
+
+CONFIG_HTML = """
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MediCheck – הגדרה נדרשת</title>
+</head>
+<body style="font-family:Arial,sans-serif;max-width:760px;margin:50px auto;padding:20px;direction:rtl">
+  <h1>MediCheck אינו מוגדר עדיין</h1>
+  <p>יש להגדיר את <code>MEDICHECK_PASSWORD</code> ב־Environment Variables של השרת.</p>
+</body>
+</html>
+"""
 
 
 def get_ocr():
@@ -177,15 +321,74 @@ def run_ocr(upload):
         }
 
     finally:
+        # Uploaded images exist only as temporary files during OCR.
         try:
             os.unlink(temp_path)
         except OSError:
             pass
 
 
+@app.before_request
+def require_authentication():
+    # Keep only the login route and a non-sensitive health endpoint public.
+    if request.endpoint in {"login", "health"}:
+        return None
+
+    if not APP_PASSWORD:
+        return CONFIG_HTML, 503
+
+    if session.get("authenticated") is True:
+        return None
+
+    if request.path.startswith("/api/"):
+        return jsonify({"error": "authentication_required"}), 401
+
+    return redirect(url_for("login"))
+
+
+@app.after_request
+def add_security_headers(response):
+    # Prevent sensitive OCR/API results from being cached by browsers/proxies.
+    response.headers["Cache-Control"] = "no-store, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "camera=(self), microphone=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if not APP_PASSWORD:
+        return CONFIG_HTML, 503
+
+    error = None
+
+    if request.method == "POST":
+        candidate = request.form.get("password", "")
+
+        if hmac.compare_digest(candidate, APP_PASSWORD):
+            session.clear()
+            session["authenticated"] = True
+            session.permanent = True
+            return redirect(url_for("home"))
+
+        error = "סיסמה שגויה."
+
+    return render_template_string(LOGIN_HTML, error=error)
+
+
+@app.get("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
 @app.get("/")
 def home():
-    return send_from_directory(BASE_DIR, "index.html")
+    return send_file(BASE_DIR / "index.html")
 
 
 @app.get("/api/health")
