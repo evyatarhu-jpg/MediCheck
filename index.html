@@ -1438,6 +1438,178 @@
       align-items: end;
     }
 
+    .order-flags,
+    .order-notes {
+      grid-column: 1 / -1;
+    }
+
+    .order-flags {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .order-flags label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    .order-flags input[type="checkbox"] {
+      width: auto;
+    }
+
+    .weight-box {
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 14px;
+      background: #eef6ff;
+      border: 2px solid #9cc3ec;
+    }
+
+    .weight-box input[type="number"] {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .weight-unknown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-weight: 400;
+    }
+
+    .weight-unknown input {
+      width: auto;
+    }
+
+    .calc-info {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #344054;
+    }
+
+    .calc-ok {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #1a7f37;
+    }
+
+    .high-alert-badge {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #fde8e8;
+      border: 2px solid #d92d20;
+      color: #912018;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .lasa-alert {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f4ebff;
+      border: 1px solid #9e77ed;
+      color: #53389e;
+      font-size: 14px;
+    }
+
+    .second-checker {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #fde8e8;
+      border: 1px solid #f04438;
+    }
+
+    .summary-meta {
+      font-size: 14px;
+      color: #475467;
+      margin-bottom: 12px;
+    }
+
+    .summary-item {
+      border: 1px solid #d0d5dd;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+      page-break-inside: avoid;
+    }
+
+    .summary-item h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .summary-status-match { border-right: 6px solid #12b76a; }
+    .summary-status-stop { border-right: 6px solid #f04438; }
+    .summary-status-review { border-right: 6px solid #f79009; }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #finalScreen, #finalScreen * { visibility: visible !important; }
+      #finalScreen { position: absolute; top: 0; right: 0; left: 0; display: block !important; }
+      .no-print { display: none !important; }
+      .camera-modal { display: none !important; }
+    }
+
+    .calc-alert {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #fff4d6;
+      border: 1px solid #f0c24b;
+      color: #6b4a00;
+      font-size: 14px;
+    }
+
+    .dilution-box {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      background: #f2f7fc;
+      border: 1px solid #c9dcef;
+    }
+
+    .dilution-box.suggested {
+      border-color: #f0c24b;
+      background: #fffaf0;
+    }
+
+    .dilution-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: end;
+      margin-top: 8px;
+    }
+
+    .dilution-grid > div:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .dilution-steps {
+      margin-top: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .dilution-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .dilution-actions button {
+      flex: 1;
+    }
+
     .compact-edit-grid-package {
       display: grid;
       grid-template-columns: 1.35fr 1fr;
@@ -1746,7 +1918,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.23</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.26</span></div>
       <div id="stepBadge" class="step">מסך פתיחה</div>
     </div>
     <div class="progress"><div id="progressBar"></div></div>
@@ -1812,6 +1984,17 @@
 
       <div id="ordersReviewSection" class="hidden recognition-result-anchor">
         <div id="ordersCount" class="batch-count"></div>
+
+        <div class="weight-box">
+          <label for="patientWeightInput">משקל המטופל (ק"ג)</label>
+          <input id="patientWeightInput" type="number" step="any" min="0" inputmode="decimal"
+                 placeholder="חובה לפני המשך" oninput="onWeightInput()">
+          <div id="patientWeightSource" class="tip hidden"></div>
+          <label class="weight-unknown">
+            <input id="weightUnknownCheck" type="checkbox" onchange="onWeightInput()">
+            המשקל אינו ידוע (בדיקות mg/kg לא יבוצעו)
+          </label>
+        </div>
         <div class="tip">
           סמן ✓ רק ליד התרופות שבכוונתך להכין כעת. ניתן לתקן כל שדה לפני האישור.
         </div>
@@ -1842,6 +2025,20 @@
       
     </div>
   </section>
+
+  <datalist id="frequencyOptions">
+    <option value="x1/day"></option>
+    <option value="x2/day (BID)"></option>
+    <option value="x3/day (TID)"></option>
+    <option value="x4/day (QID)"></option>
+    <option value="q4h"></option>
+    <option value="q6h"></option>
+    <option value="q8h"></option>
+    <option value="q12h"></option>
+    <option value="q24h"></option>
+    <option value="every other day (QOD)"></option>
+    <option value="STAT / חד-פעמי"></option>
+  </datalist>
 
   <section id="medicationScreen" class="hidden">
     <h2>זיהוי האריזות והתאמה להוראות</h2><div style="font-size:13px;color:#667085;margin-top:-8px;margin-bottom:10px;">זיהוי והתאמה אוטומטיים לאחר צילום</div>
@@ -1913,7 +2110,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.23 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.26 · שלב 3</div>
 
     <div class="info">
       לכל הוראה מוצגת האריזה שהותאמה והחישוב לפי הנתונים שעל האריזה.
@@ -1988,12 +2185,13 @@
   </section>
 
   <section id="finalScreen" class="hidden">
-    <h2>סיכום אימות</h2>
+    <h2>סיכום הכנה ואימות</h2>
     <div id="finalStatus" class="info"></div>
     <div id="finalSummary" class="card"></div>
 
-    <button class="secondary" type="button" onclick="backToPreparation()">חזרה להוראות ההכנה</button>
-    <button class="primary" type="button" onclick="resetApp()">הכנה חדשה</button>
+    <button class="primary no-print" type="button" onclick="window.print()">הדפסה / שמירה כ-PDF</button>
+    <button class="secondary no-print" type="button" onclick="backToPreparation()">חזרה להוראות ההכנה</button>
+    <button class="primary no-print" type="button" onclick="resetApp()">הכנה חדשה</button>
   </section>
 
   
@@ -2099,32 +2297,206 @@ var lastConfirmedOrdersSignature = "";
 var lastVerificationPlanSignature = "";
 
 var drugAliases = [
-  { canonical: "Aspirin", aliases: ["aspirin","pulv.aspirin","acetylsalicylic","אספירין"] },
-  { canonical: "Captopril", aliases: ["captopril","captorpil","susp. captopril","קפטופריל"] },
-  { canonical: "Phenobarbital", aliases: ["phenobarbital","phenobarbit","phenobarb","פנוברביטל"] },
+  // Analgesia / antipyretics
+  { canonical: "Aspirin", aliases: ["aspirin","pulv.aspirin","acetylsalicylic","micropirin","אספירין","מיקרופירין"] },
+  { canonical: "Paracetamol", aliases: ["paracetamol","acetaminophen","perfalgan","acamol","אקמול","פרצטמול","פרפלגן"] },
+  { canonical: "Ibuprofen", aliases: ["ibuprofen","nurofen","advil","איבופרופן","נורופן"] },
+  { canonical: "Dipyrone", aliases: ["dipyrone","metamizole","metamizol","optalgin","אופטלגין","דיפירון"] },
+  { canonical: "Ketorolac", aliases: ["ketorolac","toradol","קטורולק"] },
+
+  // Opioids / sedation / anaesthesia
+  { canonical: "Remifentanil", aliases: ["remifentanil","ultiva","רמיפנטניל"] },
+  { canonical: "Sufentanil", aliases: ["sufentanil","סופנטניל"] },
+  { canonical: "Fentanyl", aliases: ["fentanyl","fentanil","פנטניל"] },
+  { canonical: "Morphine", aliases: ["morphine","מורפין"] },
+  { canonical: "Methadone", aliases: ["methadone","מתדון"] },
+  { canonical: "Oxycodone", aliases: ["oxycodone","oxycod","oxycontin","אוקסיקודון"] },
+  { canonical: "Tramadol", aliases: ["tramadol","tramal","טרמדול"] },
+  { canonical: "Midazolam", aliases: ["midazolam","dormicum","דורמיקום","מידזולם"] },
+  { canonical: "Lorazepam", aliases: ["lorazepam","lorivan","ativan","לוריבן","לורזפאם"] },
+  { canonical: "Diazepam", aliases: ["diazepam","assival","valium","אסיבל","דיאזפאם"] },
+  { canonical: "Clonazepam", aliases: ["clonazepam","clonex","rivotril","קלונקס","קלונזפאם"] },
+  { canonical: "Propofol", aliases: ["propofol","diprivan","פרופופול"] },
+  { canonical: "Ketamine", aliases: ["ketamine","ketalar","קטמין"] },
+  { canonical: "Dexmedetomidine", aliases: ["dexmedetomidine","precedex","dexdor","דקסמדטומידין"] },
+  { canonical: "Clonidine", aliases: ["clonidine","קלונידין"] },
+  { canonical: "Chloral Hydrate", aliases: ["chloral hydrate","chloral","כלורל הידרט","כלורל"] },
+  { canonical: "Melatonin", aliases: ["melatonin","circadin","מלטונין"] },
+  { canonical: "Haloperidol", aliases: ["haloperidol","haldol","הלופרידול"] },
+  { canonical: "Quetiapine", aliases: ["quetiapine","seroquel","קווטיאפין"] },
+  { canonical: "Risperidone", aliases: ["risperidone","risperdal","ריספרידון"] },
+
+  // Neuromuscular blockade and reversal
+  { canonical: "Rocuronium", aliases: ["rocuronium","esmeron","רוקורוניום"] },
+  { canonical: "Vecuronium", aliases: ["vecuronium","norcuron","וקורוניום"] },
+  { canonical: "Cisatracurium", aliases: ["cisatracurium","nimbex","ציסאטרקוריום"] },
+  { canonical: "Succinylcholine", aliases: ["succinylcholine","suxamethonium","scoline","סוקסינילכולין"] },
+  { canonical: "Neostigmine", aliases: ["neostigmine","prostigmine","נאוסטיגמין"] },
+  { canonical: "Sugammadex", aliases: ["sugammadex","bridion","סוגמדקס"] },
+  { canonical: "Naloxone", aliases: ["naloxone","narcan","נלוקסון"] },
+  { canonical: "Flumazenil", aliases: ["flumazenil","anexate","פלומזניל"] },
+  { canonical: "Atropine", aliases: ["atropine","אטרופין"] },
+  { canonical: "Glycopyrrolate", aliases: ["glycopyrrolate","glycopyrronium","robinul","גליקופירולט"] },
+
+  // Anticonvulsants
+  { canonical: "Phenobarbital", aliases: ["phenobarbital","phenobarbit","phenobarb","luminal","פנוברביטל"] },
   { canonical: "Levetiracetam", aliases: ["levetiracetam","levetirac","keppra","קפרה","לבטירצטם"] },
-  { canonical: "Vitamin D3", aliases: ["vitamin d3","vit d3","cholecalciferol","colecalciferol","ויטמין d3","ויטמין די 3"] },
+  { canonical: "Fosphenytoin", aliases: ["fosphenytoin","pro-epanutin","פוספניטואין"] },
+  { canonical: "Phenytoin", aliases: ["phenytoin","epanutin","פניטואין","אפנוטין"] },
+  { canonical: "Valproate", aliases: ["valproate","valproic","depalept","depakine","ולפרואט","דפלפט"] },
+  { canonical: "Lacosamide", aliases: ["lacosamide","vimpat","לקוזמיד"] },
+  { canonical: "Topiramate", aliases: ["topiramate","topamax","טופירמט"] },
+
+  // Vasoactives / inotropes
+  { canonical: "Norepinephrine", aliases: ["norepinephrine","noradrenaline","nor-adrenaline","levophed","נוראדרנלין","נוראפינפרין"] },
+  { canonical: "Epinephrine", aliases: ["epinephrine","adrenaline","adrenalin","אדרנלין","אפינפרין"] },
+  { canonical: "Dopamine", aliases: ["dopamine","דופמין"] },
+  { canonical: "Dobutamine", aliases: ["dobutamine","dobutrex","דובוטמין"] },
+  { canonical: "Milrinone", aliases: ["milrinone","primacor","corotrope","מילרינון"] },
+  { canonical: "Levosimendan", aliases: ["levosimendan","simdax","לבוסימנדן"] },
+  { canonical: "Vasopressin", aliases: ["vasopressin","pitressin","ואזופרסין","וזופרסין"] },
+  { canonical: "Phenylephrine", aliases: ["phenylephrine","פנילאפרין"] },
+  { canonical: "Isoproterenol", aliases: ["isoproterenol","isoprenaline","isuprel","איזופרוטרנול"] },
+
+  // Vasodilators / antihypertensives / pulmonary vasodilators
+  { canonical: "Sodium Nitroprusside", aliases: ["nitroprusside","nipride","ניטרופרוסיד"] },
+  { canonical: "Nitroglycerin", aliases: ["nitroglycerin","glyceryl trinitrate","nitroglycerine","ניטרוגליצרין"] },
+  { canonical: "Hydralazine", aliases: ["hydralazine","apresoline","הידרלזין"] },
+  { canonical: "Amlodipine", aliases: ["amlodipine","norvasc","amlow","אמלודיפין"] },
+  { canonical: "Nifedipine", aliases: ["nifedipine","adalat","ניפדיפין"] },
+  { canonical: "Nicardipine", aliases: ["nicardipine","cardene","ניקרדיפין"] },
+  { canonical: "Labetalol", aliases: ["labetalol","trandate","לבטלול"] },
+  { canonical: "Esmolol", aliases: ["esmolol","brevibloc","אסמולול"] },
+  { canonical: "Metoprolol", aliases: ["metoprolol","lopresor","מטופרולול"] },
+  { canonical: "Propranolol", aliases: ["propranolol","deralin","דרלין","פרופרנולול"] },
+  { canonical: "Carvedilol", aliases: ["carvedilol","dimitone","קרבדילול"] },
+  { canonical: "Captopril", aliases: ["captopril","captorpil","susp. captopril","קפטופריל"] },
+  { canonical: "Enalapril", aliases: ["enalapril","enaladex","אנלפריל"] },
+  { canonical: "Sildenafil", aliases: ["sildenafil","revatio","viagra","סילדנפיל"] },
+  { canonical: "Bosentan", aliases: ["bosentan","tracleer","בוסנטן"] },
+  { canonical: "Iloprost", aliases: ["iloprost","ventavis","אילופרוסט"] },
+  { canonical: "Epoprostenol", aliases: ["epoprostenol","flolan","אפופרוסטנול"] },
+  { canonical: "Alprostadil", aliases: ["alprostadil","prostin vr","prostaglandin e1","pge1","אלפרוסטדיל","פרוסטין"] },
+
+  // Antiarrhythmics
+  { canonical: "Amiodarone", aliases: ["amiodarone","procor","cordarone","אמיודרון","פרוקור"] },
+  { canonical: "Adenosine", aliases: ["adenosine","adenocor","אדנוזין"] },
+  { canonical: "Digoxin", aliases: ["digoxin","lanoxin","דיגוקסין"] },
+  { canonical: "Lidocaine", aliases: ["lidocaine","lignocaine","xylocaine","לידוקאין"] },
+  { canonical: "Procainamide", aliases: ["procainamide","פרוקאינאמיד"] },
+  { canonical: "Flecainide", aliases: ["flecainide","tambocor","פלקאיניד"] },
+  { canonical: "Sotalol", aliases: ["sotalol","sotacor","סוטלול"] },
+
+  // Diuretics
+  { canonical: "Furosemide", aliases: ["furosemide","frusemide","lasix","fusid","פוסיד","פורוסמיד"] },
+  { canonical: "Bumetanide", aliases: ["bumetanide","burinex","בומטניד"] },
+  { canonical: "Hydrochlorothiazide", aliases: ["hydrochlorothiazide","disothiazide","הידרוכלורותיאזיד"] },
+  { canonical: "Chlorothiazide", aliases: ["chlorothiazide","diuril","כלורותיאזיד"] },
+  { canonical: "Metolazone", aliases: ["metolazone","zaroxolyn","מטולזון"] },
+  { canonical: "Spironolactone", aliases: ["spironolactone","aldactone","ספירונולקטון"] },
+  { canonical: "Acetazolamide", aliases: ["acetazolamide","diamox","אצטזולאמיד"] },
+  { canonical: "Mannitol", aliases: ["mannitol","osmitrol","מניטול"] },
+
+  // Anticoagulation / haemostasis
+  { canonical: "Enoxaparin", aliases: ["enoxaparin","clexane","אנוקספרין","קלקסן"] },
+  { canonical: "Heparin", aliases: ["heparin","הפרין"] },
+  { canonical: "Bivalirudin", aliases: ["bivalirudin","angiomax","ביואלירודין"] },
+  { canonical: "Warfarin", aliases: ["warfarin","coumadin","ורפרין","קומדין"] },
+  { canonical: "Clopidogrel", aliases: ["clopidogrel","plavix","קלופידוגרל"] },
+  { canonical: "Alteplase", aliases: ["alteplase","actilyse","אלטפלאז"] },
+  { canonical: "Protamine", aliases: ["protamine","פרוטמין"] },
+  { canonical: "Tranexamic Acid", aliases: ["tranexamic","hexakapron","cyklokapron","טרנקסמית","הקסקפרון"] },
+  { canonical: "Vitamin K", aliases: ["phytomenadione","phytonadione","konakion","vitamin k","ויטמין k","קונקיון"] },
+
+  // Antibiotics
+  { canonical: "Amoxicillin-Clavulanate", aliases: ["amoxicillin-clavulanate","amoxicillin clavulanate","amoxicillin/clav","augmentin","amoxiclav","clavulanic","אוגמנטין"] },
   { canonical: "Amoxicillin", aliases: ["amoxicillin","amoxycillin","moxypen","moxipen","moxypan","מוקסיפן","מוקספן","מוקספין"] },
-  { canonical: "Metronidazole", aliases: ["metronidazole","flagyl","מטרונידזול","פלגיל"] },
-  { canonical: "Azithromycin", aliases: ["azithromycin","zithromax","azithro","אזיתרומיצין"] },
+  { canonical: "Piperacillin-Tazobactam", aliases: ["piperacillin","tazobactam","tazocin","pip-tazo","pip/tazo","טזוצין"] },
+  { canonical: "Ampicillin", aliases: ["ampicillin","penibrin","אמפיצילין","פניברין"] },
+  { canonical: "Flucloxacillin", aliases: ["flucloxacillin","floxapen","פלוקלוקסצילין"] },
+  { canonical: "Cloxacillin", aliases: ["cloxacillin","קלוקסצילין"] },
+  { canonical: "Penicillin G", aliases: ["penicillin g","benzylpenicillin","פניצילין"] },
+  { canonical: "Cefazolin", aliases: ["cefazolin","cephazolin","צפזולין"] },
   { canonical: "Cephalexin", aliases: ["cephalexin","cefalexin","keflex","צפלקסין"] },
   { canonical: "Cefuroxime", aliases: ["cefuroxime","zinnat","צפורוקסים"] },
   { canonical: "Ceftriaxone", aliases: ["ceftriaxone","rocephin","צפטריאקסון"] },
+  { canonical: "Cefotaxime", aliases: ["cefotaxime","claforan","צפוטקסים"] },
+  { canonical: "Ceftazidime", aliases: ["ceftazidime","fortum","צפטזידים"] },
+  { canonical: "Cefepime", aliases: ["cefepime","maxipime","צפפים"] },
+  { canonical: "Meropenem", aliases: ["meropenem","meronem","מרופנם"] },
   { canonical: "Vancomycin", aliases: ["vancomycin","ונקומיצין"] },
+  { canonical: "Teicoplanin", aliases: ["teicoplanin","targocid","טייקופלנין"] },
+  { canonical: "Linezolid", aliases: ["linezolid","zyvoxid","zyvox","לינזוליד"] },
+  { canonical: "Daptomycin", aliases: ["daptomycin","cubicin","דפטומיצין"] },
   { canonical: "Gentamicin", aliases: ["gentamicin","גנטמיצין"] },
-  { canonical: "Paracetamol", aliases: ["paracetamol","acetaminophen","אקמול"] },
-  { canonical: "Ibuprofen", aliases: ["ibuprofen","nurofen","איבופרופן","נורופן"] },
-  { canonical: "Furosemide", aliases: ["furosemide","lasix","פוסיד","פורוסמיד"] },
-  { canonical: "Spironolactone", aliases: ["spironolactone","aldactone","ספירונולקטון"] },
-  { canonical: "Enalapril", aliases: ["enalapril","אנלפריל"] },
-  { canonical: "Carvedilol", aliases: ["carvedilol","קרבדילול"] },
-  { canonical: "Propranolol", aliases: ["propranolol","דרלין"] },
-  { canonical: "Clonidine", aliases: ["clonidine","קלונידין"] },
-  { canonical: "Midazolam", aliases: ["midazolam","דורמיקום"] },
-  { canonical: "Morphine", aliases: ["morphine","מורפין"] },
-  { canonical: "Fentanyl", aliases: ["fentanyl","פנטניל"] },
-  { canonical: "Ketamine", aliases: ["ketamine","קטמין"] },
-  { canonical: "Dexmedetomidine", aliases: ["dexmedetomidine","precedex","דקסמדטומידין"] }
+  { canonical: "Amikacin", aliases: ["amikacin","amikin","אמיקצין"] },
+  { canonical: "Clindamycin", aliases: ["clindamycin","dalacin","קלינדמיצין"] },
+  { canonical: "Metronidazole", aliases: ["metronidazole","flagyl","מטרונידזול","פלגיל"] },
+  { canonical: "Azithromycin", aliases: ["azithromycin","zithromax","azithro","אזיתרומיצין"] },
+  { canonical: "Erythromycin", aliases: ["erythromycin","אריתרומיצין"] },
+  { canonical: "Ciprofloxacin", aliases: ["ciprofloxacin","ciproxin","ציפרופלוקסצין"] },
+  { canonical: "Trimethoprim-Sulfamethoxazole", aliases: ["trimethoprim","sulfamethoxazole","cotrimoxazole","co-trimoxazole","resprim","septrin","רספרים","ספטרין"] },
+  { canonical: "Colistin", aliases: ["colistin","colistimethate","colomycin","קוליסטין"] },
+  { canonical: "Rifampicin", aliases: ["rifampicin","rifampin","rifadin","ריפמפיצין"] },
+
+  // Antifungals / antivirals
+  { canonical: "Fluconazole", aliases: ["fluconazole","diflucan","פלוקונזול"] },
+  { canonical: "Voriconazole", aliases: ["voriconazole","vfend","וריקונזול"] },
+  { canonical: "Micafungin", aliases: ["micafungin","mycamine","מיקפונגין"] },
+  { canonical: "Caspofungin", aliases: ["caspofungin","cancidas","קספופונגין"] },
+  { canonical: "Amphotericin B Liposomal", aliases: ["ambisome","liposomal amphotericin","amphotericin b liposomal","אמביזום"] },
+  { canonical: "Amphotericin B (conventional)", aliases: ["amphotericin","fungizone","amfotericin","אמפוטריצין"] },
+  { canonical: "Nystatin", aliases: ["nystatin","mycostatin","ניסטטין"] },
+  { canonical: "Valganciclovir", aliases: ["valganciclovir","valcyte","ולגנציקלוביר"] },
+  { canonical: "Ganciclovir", aliases: ["ganciclovir","cymevene","גנציקלוביר"] },
+  { canonical: "Acyclovir", aliases: ["acyclovir","aciclovir","zovirax","אציקלוביר"] },
+  { canonical: "Oseltamivir", aliases: ["oseltamivir","tamiflu","אוסלטמיביר"] },
+
+  // Steroids / endocrine
+  { canonical: "Methylprednisolone", aliases: ["methylprednisolone","solu-medrol","solumedrol","medrol","מתילפרדניזולון","סולומדרול"] },
+  { canonical: "Prednisone", aliases: ["prednisone","פרדניזון"] },
+  { canonical: "Prednisolone", aliases: ["prednisolone","פרדניזולון"] },
+  { canonical: "Hydrocortisone", aliases: ["hydrocortisone","solu-cortef","solucortef","הידרוקורטיזון","סולוקורטף"] },
+  { canonical: "Dexamethasone", aliases: ["dexamethasone","dexacort","דקסמתזון","דקסקורט"] },
+  { canonical: "Insulin", aliases: ["insulin regular","regular insulin","actrapid","humulin r","אקטרפיד"] },
+  { canonical: "Levothyroxine", aliases: ["levothyroxine","eltroxin","euthyrox","לבותירוקסין","אלטרוקסין"] },
+  { canonical: "Desmopressin", aliases: ["desmopressin","minirin","ddavp","דסמופרסין","מינירין"] },
+  { canonical: "Octreotide", aliases: ["octreotide","sandostatin","אוקטראוטיד"] },
+
+  // GI
+  { canonical: "Esomeprazole", aliases: ["esomeprazole","nexium","אסומפרזול","נקסיום"] },
+  { canonical: "Omeprazole", aliases: ["omeprazole","losec","omepradex","אומפרזול","לוסק","אומפרדקס"] },
+  { canonical: "Pantoprazole", aliases: ["pantoprazole","controloc","פנטופרזול"] },
+  { canonical: "Famotidine", aliases: ["famotidine","פמוטידין"] },
+  { canonical: "Ondansetron", aliases: ["ondansetron","zofran","אונדנסטרון","זופרן"] },
+  { canonical: "Metoclopramide", aliases: ["metoclopramide","pramin","פרמין","מטוקלופרמיד"] },
+  { canonical: "Lactulose", aliases: ["lactulose","lactulosum","duphalac","לקטולוז"] },
+  { canonical: "Polyethylene Glycol", aliases: ["polyethylene glycol","macrogol","peg 3350","miralax","מקרוגול"] },
+  { canonical: "Ursodeoxycholic Acid", aliases: ["ursodeoxycholic","ursodiol","ursolit","אורסוליט"] },
+
+  // Electrolytes / metabolic
+  { canonical: "Potassium Chloride", aliases: ["potassium chloride","kcl","אשלגן כלורי","אשלגן"] },
+  { canonical: "Potassium Phosphate", aliases: ["potassium phosphate","k-phos","kphos","אשלגן זרחתי"] },
+  { canonical: "Sodium Glycerophosphate", aliases: ["glycerophosphate","glycophos","גליקופוס"] },
+  { canonical: "Calcium Gluconate", aliases: ["calcium gluconate","ca gluconate","סידן גלוקונט"] },
+  { canonical: "Calcium Chloride", aliases: ["calcium chloride","cacl2","סידן כלורי"] },
+  { canonical: "Magnesium Sulfate", aliases: ["magnesium sulfate","magnesium sulphate","mgso4","מגנזיום"] },
+  { canonical: "Sodium Bicarbonate", aliases: ["sodium bicarbonate","bicarbonate","nahco3","ביקרבונט"] },
+  { canonical: "Thiamine", aliases: ["thiamine","vitamin b1","תיאמין"] },
+  { canonical: "Vitamin D3", aliases: ["vitamin d3","vit d3","cholecalciferol","colecalciferol","ויטמין d3","ויטמין די 3"] },
+  { canonical: "Folic Acid", aliases: ["folic acid","folate","חומצה פולית"] },
+  { canonical: "Caffeine Citrate", aliases: ["caffeine citrate","caffeine","peyona","קפאין"] },
+
+  // Respiratory
+  { canonical: "Salbutamol", aliases: ["salbutamol","albuterol","ventolin","סלבוטמול","ונטולין"] },
+  { canonical: "Ipratropium", aliases: ["ipratropium","aerovent","atrovent","איפרטרופיום"] },
+  { canonical: "Aminophylline", aliases: ["aminophylline","אמינופילין"] },
+  { canonical: "Budesonide", aliases: ["budesonide","pulmicort","בודזוניד"] },
+
+  // Other
+  { canonical: "Indomethacin", aliases: ["indomethacin","indometacin","אינדומתצין"] },
+  { canonical: "Immunoglobulin", aliases: ["immunoglobulin","ivig","intratect","octagam","privigen","אימונוגלובולין"] },
+  { canonical: "Albumin", aliases: ["albumin","אלבומין"] }
 ];
 
 function setStep(label, percent) {
@@ -2488,14 +2860,20 @@ function similarity(a, b) {
 function findKnownDrug(text) {
   var normalizedText = normalizeForMatching(text);
 
+  // Exact (substring) match: take the LONGEST alias found, so that
+  // "noradrenaline" wins over "adrenaline" and "fosphenytoin" over "phenytoin".
+  var exact = { canonical: "", length: 0 };
+
   for (var i = 0; i < drugAliases.length; i++) {
     for (var j = 0; j < drugAliases[i].aliases.length; j++) {
       var aliasNorm = normalizeForMatching(drugAliases[i].aliases[j]);
-      if (aliasNorm && normalizedText.indexOf(aliasNorm) !== -1) {
-        return drugAliases[i].canonical;
+      if (aliasNorm && aliasNorm.length > exact.length && normalizedText.indexOf(aliasNorm) !== -1) {
+        exact = { canonical: drugAliases[i].canonical, length: aliasNorm.length };
       }
     }
   }
+
+  if (exact.canonical) return exact.canonical;
 
   var words = (text || "").split(/\s+/);
   var candidates = words.slice();
@@ -2508,7 +2886,11 @@ function findKnownDrug(text) {
 
   for (i = 0; i < drugAliases.length; i++) {
     for (j = 0; j < drugAliases[i].aliases.length; j++) {
+      // Fuzzy matching only for longer aliases; short names are too easy to confuse.
+      if (normalizeForMatching(drugAliases[i].aliases[j]).length < 6) continue;
+
       for (var w = 0; w < candidates.length; w++) {
+        if (normalizeForMatching(candidates[w]).length < 5) continue;
         var score = similarity(candidates[w], drugAliases[i].aliases[j]);
         if (score > best.score) {
           best = { canonical: drugAliases[i].canonical, score: score };
@@ -2518,6 +2900,25 @@ function findKnownDrug(text) {
   }
 
   return best.score >= 0.68 ? best.canonical : "";
+}
+
+// Remove hits whose matched text lies inside a longer hit
+// (e.g. "adrenaline" inside "noradrenaline").
+function removeNestedAliasHits(hits) {
+  return hits.filter(function(hit) {
+    for (var k = 0; k < hits.length; k++) {
+      var other = hits[k];
+      if (other === hit || other.canonical === hit.canonical) continue;
+      if (
+        other.alias.length > hit.alias.length &&
+        other.pos <= hit.pos &&
+        other.pos + other.alias.length >= hit.pos + hit.alias.length
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
 }
 
 function scoreResult(text, confidence) {
@@ -3084,6 +3485,17 @@ async function recognizeOrder() {
     );
 
     renderDetectedOrders(result.confidence);
+
+    var ocrWeight = extractWeightFromText(result.text);
+    var weightInput = document.getElementById("patientWeightInput");
+    if (ocrWeight && weightInput && !weightInput.value) {
+      weightInput.value = ocrWeight;
+      var weightSource = document.getElementById("patientWeightSource");
+      if (weightSource) {
+        weightSource.textContent = "המשקל נקרא מהצילום. יש לוודא שהוא נכון.";
+        weightSource.classList.remove("hidden");
+      }
+    }
   } catch (error) {
     console.error(error);
 
@@ -3121,17 +3533,118 @@ function detectRouteValue(text) {
 
 function parseDoseValue(text) {
   var clean = String(text || "").replace(/,/g, ".");
-  var match = clean.match(
-    /(\d+(?:\.\d+)?)\s*(mcg|µg|μg|ug|mg|g|m[lL]|units?|unit|iu|mEq|mmol)\b/i
-  );
+  var regex = /(\d+(?:\.\d+)?)\s*(mcg|µg|μg|ug|mg|g|m[lL]|units?|unit|iu|mEq|mmol)\b/gi;
+  var match;
 
-  if (!match) return null;
+  while ((match = regex.exec(clean)) !== null) {
+    var after = clean.slice(match.index + match[0].length);
 
-  return {
-    dose: parseFloat(match[1]),
-    unit: normalizeUnit(match[2]),
-    raw: match[0]
+    // "5 mg/kg", "10 mcg/kg/min", "2 mg/h", "5 mg/mL" are not an absolute dose.
+    if (/^\s*\/\s*(kg|ק"?ג|m2|h|hr|hour|min|d|day|dose|m[lL]|שעה|דקה|יום)/i.test(after)) {
+      continue;
+    }
+
+    return {
+      dose: parseFloat(match[1]),
+      unit: normalizeUnit(match[2]),
+      raw: match[0]
+    };
+  }
+
+  return null;
+}
+
+// Extract the non-dose fields of a medication order from its OCR text.
+function extractOrderDetails(text) {
+  var t = String(text || "").replace(/,/g, ".").replace(/\s+/g, " ");
+  var details = {
+    frequency: "",
+    prn: false,
+    adminTimes: "",
+    adminDuration: "",
+    courseDuration: "",
+    weightDose: "",
+    infusion: false
   };
+
+  var m;
+
+  if ((m = t.match(/\bq\s?(\d{1,2})\s?(?:h|hr|hrs|hours?)\b/i)) ||
+      (m = t.match(/every\s*(\d{1,2})\s*(?:h|hr|hrs|hours?)\b/i)) ||
+      (m = t.match(/כל\s*(\d{1,2})\s*שע/))) {
+    details.frequency = "q" + m[1] + "h";
+  } else if ((m = t.match(/(?:x|×)\s?(\d)\s?(?:\/\s?(?:d|day|24h)|ביום|ליום|daily|\/יום)/i)) ||
+             (m = t.match(/(\d)\s?(?:times|פעמים)\s?(?:a day|daily|per day|ביום|ליום)/i))) {
+    details.frequency = "x" + m[1] + "/day";
+  } else if (/\bQID\b|ארבע פעמים ביום/i.test(t)) {
+    details.frequency = "x4/day (QID)";
+  } else if (/\bTID\b|שלוש פעמים ביום/i.test(t)) {
+    details.frequency = "x3/day (TID)";
+  } else if (/\bBID\b|\bBD\b|פעמיים ביום/i.test(t)) {
+    details.frequency = "x2/day (BID)";
+  } else if (/\bQOD\b|every other day|יום כן יום לא/i.test(t)) {
+    details.frequency = "every other day (QOD)";
+  } else if (/\bQD\b|\bOD\b|once daily|once a day|\bdaily\b|פעם ביום/i.test(t)) {
+    details.frequency = "x1/day";
+  } else if (/\bweekly\b|פעם בשבוע/i.test(t)) {
+    details.frequency = "weekly";
+  } else if (/\bSTAT\b|\bonce\b|single dose|חד[- ]?פעמי|מיידי/i.test(t)) {
+    details.frequency = "STAT / חד-פעמי";
+  }
+
+  if (/\bPRN\b|\bSOS\b|as needed|לפי הצורך|לפי צורך|בעת הצורך/i.test(t)) {
+    details.prn = true;
+  }
+
+  var times = [];
+  var timeRegex = /\b(24:00|([01]?\d|2[0-3]):([0-5]\d))\b/g;
+  while ((m = timeRegex.exec(t)) !== null) {
+    var hhmm = m[1] === "24:00" ? "24:00" : (m[2].length === 1 ? "0" + m[2] : m[2]) + ":" + m[3];
+    if (times.indexOf(hhmm) === -1) times.push(hhmm);
+    if (times.length >= 6) break;
+  }
+  details.adminTimes = times.join(", ");
+
+  if ((m = t.match(/over\s*(\d+(?:\.\d+)?)\s*(min|minutes|mins|h|hr|hrs|hours?)\b/i)) ||
+      (m = t.match(/במשך\s*(\d+(?:\.\d+)?)\s*(דק|דקות|שעה|שעות)/))) {
+    details.adminDuration = m[1] + " " + m[2];
+  }
+
+  if ((m = t.match(/(?:for|x|×|למשך|ל-?)\s*(\d{1,3})\s*(days?\b|ימים|יום)/i))) {
+    details.courseDuration = m[1] + " " + m[2];
+  }
+
+  if ((m = t.match(/(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?|iu|mEq|mmol)\s*\/\s*kg(?:\s*\/\s*(min|h|hr|hour|day|d|dose))?/i))) {
+    details.weightDose = m[1] + " " + normalizeUnit(m[2]) + "/kg" + (m[3] ? "/" + m[3].toLowerCase() : "");
+  }
+
+  if (/\/\s*kg\s*\/\s*(min|h|hr|hour)\b/i.test(t) ||
+      /\d\s*(mcg|mg|units?|m[lL])\s*\/\s*(h|hr|hour)\b/i.test(t) ||
+      /continuous|infusion rate|\bdrip\b|עירוי רציף|רציף/i.test(t)) {
+    details.infusion = true;
+  }
+
+  return details;
+}
+
+function orderSummaryText(order) {
+  var o = order || {};
+  var parts = [
+    o.drugName || "תרופה לא מזוהה",
+    (o.dose !== "" && o.dose !== null && o.dose !== undefined && !isNaN(Number(o.dose)) ? String(o.dose) : "?") +
+      " " + (o.doseUnit || "?")
+  ];
+
+  if (o.route) parts.push(o.route);
+  if (o.frequency) parts.push(o.frequency);
+  if (o.prn) parts.push("PRN");
+  if (o.infusion) parts.push("עירוי רציף");
+  if (o.adminTimes) parts.push("שעות: " + o.adminTimes);
+  if (o.adminDuration) parts.push("מתן במשך " + o.adminDuration);
+  if (o.courseDuration) parts.push("טיפול " + o.courseDuration);
+  if (o.weightDose) parts.push("(" + o.weightDose + ")");
+
+  return parts.join(" · ");
 }
 
 function parseOneOrderCandidate(candidate, confidence) {
@@ -3158,21 +3671,25 @@ function findDrugOccurrencesInText(text) {
   var found = [];
 
   for (var i = 0; i < drugAliases.length; i++) {
+    var bestHit = null;
+
     for (var j = 0; j < drugAliases[i].aliases.length; j++) {
       var alias = drugAliases[i].aliases[j].toLowerCase();
       var pos = lower.indexOf(alias);
 
-      if (pos !== -1) {
-        found.push({
+      if (pos !== -1 && (!bestHit || alias.length > bestHit.alias.length)) {
+        bestHit = {
           pos: pos,
           canonical: drugAliases[i].canonical,
           alias: alias
-        });
-        break;
+        };
       }
     }
+
+    if (bestHit) found.push(bestHit);
   }
 
+  found = removeNestedAliasHits(found);
   found.sort(function(a, b) { return a.pos - b.pos; });
   return found;
 }
@@ -3230,7 +3747,9 @@ function orderKey(order) {
     normalizeDrugName(order.drugName),
     order.dose,
     order.doseUnit,
-    order.route
+    order.route,
+    order.frequency || "",
+    order.prn ? "PRN" : ""
   ].join("|");
 }
 
@@ -3447,6 +3966,11 @@ function parseMultipleOrders(text, segments, lines, confidence) {
 
   function addOrder(order) {
     if (!order) return;
+
+    var details = extractOrderDetails(order.sourceText || "");
+    for (var field in details) {
+      if (order[field] === undefined) order[field] = details[field];
+    }
 
     var key = orderKey(order);
     if (!seen[key]) {
@@ -3686,18 +4210,6 @@ function renderDetectedOrders(confidence) {
   jumpToRecognitionResults("ordersReviewSection");
 }
 
-function orderSummaryTextFromValues(drugName, dose, unit, route) {
-  var drug = drugName || "תרופה לא מזוהה";
-  var doseText =
-    dose !== "" && dose !== null && dose !== undefined && !isNaN(Number(dose))
-      ? String(dose)
-      : "?";
-  var unitText = unit || "?";
-  var routeText = route ? " · " + route : "";
-
-  return drug + " · " + doseText + " " + unitText + routeText;
-}
-
 function refreshOrderSummary(index) {
   var drugEl = document.getElementById("orderDrug_" + index);
   var doseEl = document.getElementById("orderDose_" + index);
@@ -3708,12 +4220,7 @@ function refreshOrderSummary(index) {
 
   if (!drugEl || !doseEl || !unitEl || !routeEl || !summary) return;
 
-  summary.textContent = orderSummaryTextFromValues(
-    drugEl.value.trim(),
-    doseEl.value,
-    unitEl.value,
-    routeEl.value
-  );
+  summary.textContent = orderSummaryText(readOrderCard(index));
 
   var complete =
     !!drugEl.value.trim() &&
@@ -3763,12 +4270,7 @@ function buildOrderCard(order, index) {
       "</div>"
     : "";
 
-  var summaryText = orderSummaryTextFromValues(
-    order.drugName,
-    order.dose,
-    order.doseUnit,
-    order.route
-  );
+  var summaryText = orderSummaryText(order);
 
   card.innerHTML =
     '<div class="compact-row">' +
@@ -3802,6 +4304,34 @@ function buildOrderCard(order, index) {
           '<select id="orderRoute_' + index + '" onchange="refreshOrderSummary(' + index + ')">' +
             routeOptions(order.route) +
           "</select>" +
+        "</div>" +
+        "<div>" +
+          "<label>תדירות</label>" +
+          '<input id="orderFreq_' + index + '" list="frequencyOptions" value="' + escapeHtml(order.frequency || "") + '" placeholder="q8h / x2/day / STAT" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        "<div>" +
+          "<label>שעות מתן</label>" +
+          '<input id="orderTimes_' + index + '" value="' + escapeHtml(order.adminTimes || "") + '" placeholder="08:00, 16:00, 24:00" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        "<div>" +
+          "<label>משך מתן</label>" +
+          '<input id="orderAdminDur_' + index + '" value="' + escapeHtml(order.adminDuration || "") + '" placeholder="30 min" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        "<div>" +
+          "<label>משך טיפול</label>" +
+          '<input id="orderCourse_' + index + '" value="' + escapeHtml(order.courseDuration || "") + '" placeholder="7 days" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        "<div>" +
+          "<label>מינון לק\"ג</label>" +
+          '<input id="orderWeightDose_' + index + '" value="' + escapeHtml(order.weightDose || "") + '" placeholder="10 mg/kg/dose" oninput="refreshOrderSummary(' + index + ')">' +
+        "</div>" +
+        '<div class="order-flags">' +
+          '<label><input id="orderPrn_' + index + '" type="checkbox"' + (order.prn ? " checked" : "") + ' onchange="refreshOrderSummary(' + index + ')"> PRN / לפי הצורך</label>' +
+          '<label><input id="orderInfusion_' + index + '" type="checkbox"' + (order.infusion ? " checked" : "") + ' onchange="refreshOrderSummary(' + index + ')"> עירוי רציף</label>' +
+        "</div>" +
+        '<div class="order-notes">' +
+          "<label>הערות</label>" +
+          '<input id="orderNotes_' + index + '" value="' + escapeHtml(order.notes || "") + '" oninput="refreshOrderSummary(' + index + ')">' +
         "</div>" +
       "</div>" +
       source +
@@ -3847,8 +4377,26 @@ function readOrderCard(index) {
     drugName: document.getElementById("orderDrug_" + index).value.trim(),
     dose: parseFloat(document.getElementById("orderDose_" + index).value),
     doseUnit: document.getElementById("orderUnit_" + index).value,
-    route: document.getElementById("orderRoute_" + index).value
+    route: document.getElementById("orderRoute_" + index).value,
+    frequency: fieldValue("orderFreq_" + index),
+    adminTimes: fieldValue("orderTimes_" + index),
+    adminDuration: fieldValue("orderAdminDur_" + index),
+    courseDuration: fieldValue("orderCourse_" + index),
+    weightDose: fieldValue("orderWeightDose_" + index),
+    notes: fieldValue("orderNotes_" + index),
+    prn: fieldChecked("orderPrn_" + index),
+    infusion: fieldChecked("orderInfusion_" + index)
   };
+}
+
+function fieldValue(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+function fieldChecked(id) {
+  var el = document.getElementById(id);
+  return !!(el && el.checked);
 }
 
 
@@ -3915,7 +4463,10 @@ function ordersSignature(orders) {
       drugName: normalizeDrugName(o.drugName || ""),
       dose: Number(o.dose),
       doseUnit: o.doseUnit || "",
-      route: o.route || ""
+      route: o.route || "",
+      frequency: o.frequency || "",
+      prn: !!o.prn,
+      infusion: !!o.infusion
     };
   }));
 }
@@ -3939,6 +4490,31 @@ function preparationPlanSignature() {
 }
 
 function confirmSelectedOrders() {
+  var weightState = readPatientWeight();
+  var errorBox = document.getElementById("orderSelectionError");
+
+  if (!weightState.weight && !weightState.unknown) {
+    if (errorBox) {
+      errorBox.innerHTML =
+        "<strong>יש להזין את משקל המטופל.</strong><br>" +
+        "אם המשקל אינו ידוע, סמן \"המשקל אינו ידוע\".";
+      errorBox.classList.remove("hidden");
+      errorBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    var wInput = document.getElementById("patientWeightInput");
+    if (wInput) wInput.focus();
+    return;
+  }
+
+  if (weightState.weight && (weightState.weight < 0.4 || weightState.weight > 150)) {
+    if (!confirm("המשקל שהוזן (" + weightState.weight + " ק\"ג) חריג. להמשיך עם המשקל הזה?")) {
+      return;
+    }
+  }
+
+  patientWeight = weightState.weight;
+  patientWeightUnknown = weightState.unknown;
+
   selectedOrders = [];
 
   for (var i = 0; i < detectedOrders.length; i++) {
@@ -4000,16 +4576,14 @@ function populateSelectedOrdersForMedicationScreen(preserveExisting) {
   var info = document.getElementById("orderInfoBox");
 
   var html =
-    "<strong>הוראות שנבחרו להכנה: " + selectedOrders.length + "</strong><br>";
+    "<strong>הוראות שנבחרו להכנה: " + selectedOrders.length + "</strong>" +
+    " · משקל: " + (patientWeight ? formatNumber(patientWeight) + " ק\"ג" : "לא ידוע") + "<br>";
 
   for (var i = 0; i < selectedOrders.length; i++) {
     var o = selectedOrders[i];
 
     html +=
-      (i + 1) + ". " +
-      escapeHtml(o.drugName) + " — " +
-      o.dose + " " + escapeHtml(o.doseUnit) +
-      (o.route ? " — " + escapeHtml(o.route) : "") + "<br>";
+      (i + 1) + ". " + escapeHtml(orderSummaryText(o)) + "<br>";
   }
 
   info.innerHTML = html;
@@ -4027,6 +4601,7 @@ function populateSelectedOrdersForMedicationScreen(preserveExisting) {
   detectedPackages = [];
   packageMatches = [];
   preparationPlan = [];
+  preparationDilutions = {};
   lastVerificationPlanSignature = "";
   selectedPreparedBatchFile = null;
   preparedVerificationResults = [];
@@ -4259,31 +4834,9 @@ async function recognizeMedicationBatch() {
 }
 
 function aliasesFoundInText(text) {
-  var lower = (text || "").toLowerCase();
-  var results = [];
-
-  for (var i = 0; i < drugAliases.length; i++) {
-    var bestAlias = "";
-
-    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
-      var alias = drugAliases[i].aliases[j].toLowerCase();
-
-      if (lower.indexOf(alias) !== -1) {
-        if (!bestAlias || alias.length > bestAlias.length) {
-          bestAlias = alias;
-        }
-      }
-    }
-
-    if (bestAlias) {
-      results.push({
-        canonical: drugAliases[i].canonical,
-        alias: bestAlias
-      });
-    }
-  }
-
-  return results;
+  return findDrugOccurrencesInText(text).map(function(hit) {
+    return { canonical: hit.canonical, alias: hit.alias };
+  });
 }
 
 function lineCenter(line) {
@@ -5208,11 +5761,7 @@ function recomputeAutomaticMatches() {
     var match = packageMatches[i];
     var card = document.createElement("div");
 
-    var orderText =
-      escapeHtml(match.order.drugName) + " — " +
-      match.order.dose + " " +
-      escapeHtml(match.order.doseUnit) +
-      (match.order.route ? " — " + escapeHtml(match.order.route) : "");
+    var orderText = escapeHtml(orderSummaryText(match.order));
 
     if (match.status === "matched") {
       var matchedPackage = match.candidates[0].package;
@@ -5231,14 +5780,24 @@ function recomputeAutomaticMatches() {
           escapeHtml(routeCheck.message) +
           "</div>";
       } else if (missingFields.length === 0 && routeCheck.status === "compatible") {
-        card.className = "match-card match-ok";
+        var inlineCalc = calculateBatchPreparation(match.order, matchedPackage);
+        card.className = "match-card " + (inlineCalc.ok ? "match-ok" : "match-stop");
         card.innerHTML =
           "<h3>" + orderText + "</h3>" +
           "<div><strong>הותאמה אוטומטית:</strong> " +
           escapeHtml(matchedPackage.genericDrug) +
           " · אריזה " + (match.candidates[0].packageIndex + 1) +
           "</div>" +
-          '<div class="match-status">✓ זהות התרופה, נתוני האריזה ודרך המתן תואמים</div>';
+          (inlineCalc.ok
+            ? '<div class="match-status">✓ זהות התרופה, נתוני האריזה ודרך המתן תואמים</div>' +
+              '<div class="prep-value">יש לקחת: ' + escapeHtml(inlineCalc.value) + "</div>" +
+              '<div dir="ltr" style="text-align:left; unicode-bidi:isolate; font-size:13px;">' +
+                escapeHtml(inlineCalc.explanation) +
+              "</div>"
+            : '<div class="match-status">STOP — ' + escapeHtml(inlineCalc.explanation) + "</div>") +
+          calcAlertsHtml(inlineCalc) +
+          safetyBadgesHtml(match.order) +
+          buildDilutionHtml("m", i, inlineCalc);
       } else {
         card.className = "match-card match-warn";
         var reasons = [];
@@ -5440,6 +5999,18 @@ function confirmBatchMatchesAndPrepare() {
       }
     }
 
+    var converted = packageMatches.filter(function(m) {
+      var c = calculateBatchPreparation(m.order, m.candidates[0].package);
+      return c.ok && c.unitConverted;
+    });
+
+    if (converted.length) {
+      var names = converted.map(function(m) { return m.order.drugName; }).join(", ");
+      if (!confirm("בוצעה המרת יחידות בין ההוראה לאריזה עבור: " + names + ".\nיש לבדוק את ההמרה בכרטיס התרופה. להמשיך?")) {
+        return;
+      }
+    }
+
     renderBatchPreparations(packageMatches);
     showScreen("prepareScreen");
 
@@ -5460,13 +6031,331 @@ function confirmBatchMatchesAndPrepare() {
   }
 }
 
+var preparationDilutions = {};
+var patientWeight = null;
+var patientWeightUnknown = false;
+
+// High-alert medications, based on the ISMP list of high-alert medications in acute care.
+// ivOnly: high-alert only when given parenterally.
+var HIGH_ALERT_MEDS = {
+  "Potassium Chloride": { category: "אשלגן מרוכז", ivOnly: true },
+  "Potassium Phosphate": { category: "אשלגן זרחתי", ivOnly: true },
+  "Magnesium Sulfate": { category: "מגנזיום סולפט IV", ivOnly: true },
+  "Insulin": { category: "אינסולין" },
+  "Heparin": { category: "נוגד קרישה" },
+  "Enoxaparin": { category: "נוגד קרישה" },
+  "Bivalirudin": { category: "נוגד קרישה" },
+  "Warfarin": { category: "נוגד קרישה" },
+  "Alteplase": { category: "תרומבוליטי" },
+  "Morphine": { category: "אופיואיד" },
+  "Fentanyl": { category: "אופיואיד" },
+  "Remifentanil": { category: "אופיואיד" },
+  "Sufentanil": { category: "אופיואיד" },
+  "Methadone": { category: "אופיואיד" },
+  "Oxycodone": { category: "אופיואיד" },
+  "Midazolam": { category: "סדציה IV", ivOnly: true },
+  "Lorazepam": { category: "סדציה IV", ivOnly: true },
+  "Diazepam": { category: "סדציה IV", ivOnly: true },
+  "Propofol": { category: "חומר הרדמה" },
+  "Ketamine": { category: "חומר הרדמה" },
+  "Dexmedetomidine": { category: "סדציה IV", ivOnly: true },
+  "Rocuronium": { category: "חוסם עצבי-שרירי" },
+  "Vecuronium": { category: "חוסם עצבי-שרירי" },
+  "Cisatracurium": { category: "חוסם עצבי-שרירי" },
+  "Succinylcholine": { category: "חוסם עצבי-שרירי" },
+  "Epinephrine": { category: "וזואקטיבי / אינוטרופ", ivOnly: true },
+  "Norepinephrine": { category: "וזואקטיבי / אינוטרופ", ivOnly: true },
+  "Dopamine": { category: "וזואקטיבי / אינוטרופ", ivOnly: true },
+  "Dobutamine": { category: "וזואקטיבי / אינוטרופ", ivOnly: true },
+  "Milrinone": { category: "אינוטרופ", ivOnly: true },
+  "Levosimendan": { category: "אינוטרופ", ivOnly: true },
+  "Vasopressin": { category: "וזופרסין" },
+  "Phenylephrine": { category: "וזואקטיבי", ivOnly: true },
+  "Isoproterenol": { category: "וזואקטיבי", ivOnly: true },
+  "Esmolol": { category: "חוסם אדרנרגי IV", ivOnly: true },
+  "Labetalol": { category: "חוסם אדרנרגי IV", ivOnly: true },
+  "Metoprolol": { category: "חוסם אדרנרגי IV", ivOnly: true },
+  "Propranolol": { category: "חוסם אדרנרגי IV", ivOnly: true },
+  "Amiodarone": { category: "אנטי-אריתמי IV", ivOnly: true },
+  "Adenosine": { category: "אנטי-אריתמי IV", ivOnly: true },
+  "Lidocaine": { category: "אנטי-אריתמי IV", ivOnly: true },
+  "Procainamide": { category: "אנטי-אריתמי IV", ivOnly: true },
+  "Digoxin": { category: "דיגוקסין IV", ivOnly: true },
+  "Sodium Nitroprusside": { category: "ניטרופרוסיד" },
+  "Amphotericin B Liposomal": { category: "תכשיר ליפוזומלי" },
+  "Amphotericin B (conventional)": { category: "אמפוטריצין (מינון שונה מהליפוזומלי)" }
+};
+
+// Look-alike / sound-alike groups, based on ISMP confused-drug-name pairs and common ICU confusions.
+var LASA_GROUPS = [
+  ["Dopamine", "Dobutamine"],
+  ["Epinephrine", "Norepinephrine"],
+  ["Fentanyl", "Sufentanil", "Remifentanil"],
+  ["Phenytoin", "Fosphenytoin"],
+  ["Ganciclovir", "Valganciclovir"],
+  ["Prednisone", "Prednisolone", "Methylprednisolone"],
+  ["Omeprazole", "Esomeprazole"],
+  ["Cloxacillin", "Flucloxacillin"],
+  ["Cefazolin", "Cefuroxime", "Ceftriaxone", "Cefotaxime", "Ceftazidime", "Cefepime"],
+  ["Amiodarone", "Amlodipine"],
+  ["Metoprolol", "Metoclopramide"],
+  ["Nicardipine", "Nifedipine"],
+  ["Clonidine", "Clonazepam"],
+  ["Vasopressin", "Desmopressin"],
+  ["Rocuronium", "Vecuronium"],
+  ["Calcium Gluconate", "Calcium Chloride"],
+  ["Potassium Chloride", "Potassium Phosphate"],
+  ["Amphotericin B Liposomal", "Amphotericin B (conventional)"],
+  ["Hydralazine", "Hydrochlorothiazide"],
+  ["Heparin", "Enoxaparin"]
+];
+
+function highAlertInfo(drugName, route) {
+  var canonical = findKnownDrug(drugName || "") || drugName;
+  var info = HIGH_ALERT_MEDS[canonical];
+  if (!info) return null;
+
+  var r = String(route || "").toUpperCase();
+  if (info.ivOnly && r && r !== "IV" && r !== "IM" && r !== "SC") return null;
+
+  return info;
+}
+
+function lasaPartners(drugName) {
+  var canonical = findKnownDrug(drugName || "") || drugName;
+  var partners = [];
+
+  LASA_GROUPS.forEach(function(group) {
+    if (group.indexOf(canonical) !== -1) {
+      group.forEach(function(name) {
+        if (name !== canonical && partners.indexOf(name) === -1) partners.push(name);
+      });
+    }
+  });
+
+  return partners;
+}
+
+function safetyBadgesHtml(order) {
+  var html = "";
+  var ha = highAlertInfo(order.drugName, order.route);
+
+  if (ha) {
+    html +=
+      '<div class="high-alert-badge">⚠ תרופה בסיכון גבוה (' + escapeHtml(ha.category) +
+      ") · נדרש אימות כפול בשלב האימות</div>";
+  }
+
+  var partners = lasaPartners(order.drugName);
+
+  if (partners.length) {
+    html +=
+      '<div class="lasa-alert">שם דומה לתרופה אחרת: ' + escapeHtml(partners.join(", ")) +
+      ". ודא שהאריזה היא " + escapeHtml(findKnownDrug(order.drugName) || order.drugName) +
+      ".</div>";
+  }
+
+  return html;
+}
+
+// ----- Patient weight -----
+
+function extractWeightFromText(text) {
+  var t = String(text || "").replace(/,/g, ".");
+  var m =
+    t.match(/(?:משקל|weight|wt)\s*[:=]?\s*(\d+(?:\.\d+)?)\s*(?:kg|ק"?ג|קג|קילו)?/i) ||
+    t.match(/(\d+(?:\.\d+)?)\s*(?:kg|ק"ג)\b(?!\s*\/)/i);
+
+  if (!m) return null;
+
+  var w = parseFloat(m[1]);
+  return w > 0 && w < 200 ? w : null;
+}
+
+function onWeightInput() {
+  var input = document.getElementById("patientWeightInput");
+  var unknown = document.getElementById("weightUnknownCheck");
+  var source = document.getElementById("patientWeightSource");
+
+  if (unknown && unknown.checked && input) input.value = "";
+  if (input && input.value && unknown) unknown.checked = false;
+  if (source) source.classList.add("hidden");
+}
+
+function readPatientWeight() {
+  var input = document.getElementById("patientWeightInput");
+  var unknown = document.getElementById("weightUnknownCheck");
+  var w = input ? parseFloat(input.value) : NaN;
+
+  return {
+    weight: Number.isFinite(w) && w > 0 ? w : null,
+    unknown: !!(unknown && unknown.checked)
+  };
+}
+
+function timesPerDay(frequency) {
+  var f = String(frequency || "");
+  var m;
+
+  if ((m = f.match(/q\s*(\d+)\s*h/i))) return 24 / parseFloat(m[1]);
+  if ((m = f.match(/x\s*(\d+)\s*\/\s*day/i))) return parseFloat(m[1]);
+  if (/QOD|every other day/i.test(f)) return 0.5;
+
+  return null;
+}
+
+// Compare the absolute order dose with the weight-based dose and the patient weight.
+function weightCheck(order) {
+  var out = { info: "", warnings: [], stop: false, stopMessage: "", ok: false };
+  var dose = Number(order.dose);
+  var unit = order.doseUnit;
+
+  if (!patientWeight) {
+    if (order.weightDose) {
+      out.warnings.push("משקל המטופל לא הוזן, ולכן לא נבדקה ההתאמה למינון " + order.weightDose + ".");
+    }
+    return out;
+  }
+
+  if (Number.isFinite(dose) && dose > 0 && unit && unit !== "mL") {
+    out.info =
+      "מינון לפי משקל " + formatNumber(patientWeight) + " ק\"ג: " +
+      formatNumber(dose / patientWeight) + " " + unit + "/kg למנה";
+  }
+
+  if (!order.weightDose) return out;
+
+  var m = String(order.weightDose).match(/(\d+(?:\.\d+)?)\s*([a-zA-Zµ]+)\s*\/\s*kg(?:\s*\/\s*([a-z]+))?/i);
+  if (!m) return out;
+
+  var perKg = parseFloat(m[1]);
+  var perKgUnit = normalizeUnit(m[2]);
+  var per = (m[3] || "dose").toLowerCase();
+
+  if (/^(min|h|hr|hour)$/.test(per)) return out; // continuous infusion rate
+
+  var conv = convertDoseUnit(perKg, perKgUnit, unit);
+  if (!conv.ok) {
+    out.warnings.push("יחידת המינון לק\"ג (" + perKgUnit + ") שונה מיחידת ההוראה (" + unit + "). לא בוצעה בדיקה.");
+    return out;
+  }
+
+  var expected = conv.value * patientWeight;
+  var basis = "למנה";
+
+  if (per === "day" || per === "d") {
+    var n = timesPerDay(order.frequency);
+    if (!n) {
+      out.warnings.push("המינון בהוראה הוא ליום (" + order.weightDose + ") אך התדירות לא ידועה. לא ניתן לבדוק את המינון למנה.");
+      return out;
+    }
+    expected = expected / n;
+    basis = "למנה (" + order.weightDose + " ÷ " + formatNumber(n) + " מנות ביום)";
+  }
+
+  var ratio = dose / expected;
+  var deviation = Math.abs(ratio - 1);
+  var compareText =
+    "המינון בהוראה " + formatNumber(dose) + " " + unit +
+    "; לפי " + order.weightDose + " × " + formatNumber(patientWeight) + " ק\"ג הצפוי " +
+    formatNumber(expected) + " " + unit + " " + basis;
+
+  if (deviation > 0.25) {
+    out.stop = true;
+    out.stopMessage =
+      "אי-התאמה בין המינון למשקל: " + compareText +
+      (ratio >= 5 || ratio <= 0.2 ? ". הפער מתאים לטעות בנקודה העשרונית." : ".") +
+      " יש לברר מול הרופא לפני הכנה.";
+  } else if (deviation > 0.1) {
+    out.warnings.push("סטייה של " + Math.round(deviation * 100) + "% מהמינון לפי משקל. " + compareText + ".");
+  } else {
+    out.ok = true;
+    out.info = "✓ המינון תואם למשקל. " + compareText + ".";
+  }
+
+  return out;
+}
+
+var MASS_UNIT_IN_MCG = { g: 1000000, mg: 1000, mcg: 1 };
+
+// Convert an amount between units. Only mass units (g/mg/mcg) are convertible.
+// units, mEq and mmol are never converted.
+function convertDoseUnit(amount, fromUnit, toUnit) {
+  if (fromUnit === toUnit) {
+    return { ok: true, value: amount, converted: false };
+  }
+
+  if (MASS_UNIT_IN_MCG[fromUnit] && MASS_UNIT_IN_MCG[toUnit]) {
+    return {
+      ok: true,
+      value: amount * MASS_UNIT_IN_MCG[fromUnit] / MASS_UNIT_IN_MCG[toUnit],
+      converted: true
+    };
+  }
+
+  return { ok: false, value: null, converted: false };
+}
+
+function dilutionKey(order, pkg) {
+  return orderKey(order) + "|" + [
+    normalizeDrugName(pkg.genericDrug || ""),
+    pkg.concentrationDrug,
+    pkg.concentrationUnit,
+    pkg.concentrationVolume
+  ].join("|");
+}
+
+function suggestedDilution(undilutedVolume) {
+  var factors = [5, 10, 20, 50, 100];
+
+  for (var i = 0; i < factors.length; i++) {
+    if (undilutedVolume * factors[i] >= 0.5) {
+      return { stockVolume: 1, finalVolume: factors[i], diluent: "NaCl 0.9%" };
+    }
+  }
+
+  return { stockVolume: 1, finalVolume: 100, diluent: "NaCl 0.9%" };
+}
+
 function calculateBatchPreparation(order, pkg) {
+  var calc = calculateBatchPreparationCore(order, pkg);
+  var wc = weightCheck(order);
+
+  calc.warnings = wc.warnings.concat(calc.warnings || []);
+  calc.weightInfo = wc.info;
+  calc.weightOk = wc.ok;
+
+  if (wc.stop && calc.ok) {
+    return {
+      ok: false,
+      value: "STOP",
+      warnings: calc.warnings,
+      weightInfo: "",
+      explanation: wc.stopMessage
+    };
+  }
+
+  return calc;
+}
+
+function calculateBatchPreparationCore(order, pkg) {
+  if (order.infusion) {
+    return {
+      ok: false,
+      value: "STOP",
+      warnings: [],
+      explanation:
+        "ההוראה סומנה כעירוי רציף (קצב מתן). האפליקציה עדיין אינה מחשבת הכנת מזרק לעירוי רציף. יש להכין לפי פרוטוקול המחלקה ובאימות כפול."
+    };
+  }
+
   var missing = packageMissingFields(pkg);
 
   if (missing.length) {
     return {
       ok: false,
       value: "STOP",
+      warnings: [],
       explanation:
         "זהות התרופה הותאמה, אך אין מספיק מידע בטוח על האריזה לחישוב ההכנה. חסרים: " +
         missing.join(", ") +
@@ -5477,41 +6366,60 @@ function calculateBatchPreparation(order, pkg) {
   var routeCheck = routeCompatibility(order, pkg);
 
   if (routeCheck.status === "incompatible") {
-    return {
-      ok: false,
-      value: "STOP",
-      explanation: routeCheck.message
-    };
+    return { ok: false, value: "STOP", warnings: [], explanation: routeCheck.message };
   }
 
   if (routeCheck.status === "unknown") {
     return {
       ok: false,
       value: "STOP",
-      explanation:
-        routeCheck.message +
-        " לא יבוצע חישוב הכנה עד לאישור צורת התכשיר."
+      warnings: [],
+      explanation: routeCheck.message + " לא יבוצע חישוב הכנה עד לאישור צורת התכשיר."
     };
   }
 
-  if (pkg.formulation === "tablet" || pkg.formulation === "capsule") {
-    if (order.doseUnit !== pkg.unit) {
-      return {
-        ok: false,
-        value: "STOP",
-        explanation:
-          "יחידת המינון בהוראה (" + order.doseUnit +
-          ") אינה תואמת ליחידת החוזק שעל האריזה (" + pkg.unit + ")."
-      };
-    }
+  var warnings = [];
+  var packageUnit =
+    (pkg.formulation === "tablet" || pkg.formulation === "capsule")
+      ? pkg.unit
+      : pkg.concentrationUnit;
 
-    var count = order.dose / pkg.strength;
+  var conversion = convertDoseUnit(order.dose, order.doseUnit, packageUnit);
+
+  if (!conversion.ok) {
+    return {
+      ok: false,
+      value: "STOP",
+      warnings: [],
+      explanation:
+        "יחידת המינון בהוראה (" + order.doseUnit +
+        ") אינה ניתנת להמרה ליחידה שעל האריזה (" + packageUnit + ")."
+    };
+  }
+
+  var dose = conversion.value;
+
+  if (conversion.converted) {
+    warnings.push(
+      "המרת יחידות: ההוראה ב-" + order.doseUnit + " והאריזה ב-" + packageUnit + ". " +
+      formatNumber(order.dose) + " " + order.doseUnit + " = " +
+      formatNumber(dose) + " " + packageUnit + ". יש לוודא את ההמרה לפני ההכנה."
+    );
+  }
+
+  var conversionText = conversion.converted
+    ? order.dose + " " + order.doseUnit + " = " + formatNumber(dose) + " " + packageUnit + "; "
+    : "";
+
+  if (pkg.formulation === "tablet" || pkg.formulation === "capsule") {
+    var count = dose / pkg.strength;
     var label = pkg.formulation === "capsule" ? "קפסולות" : "טבליות";
 
-    if (!Number.isInteger(count)) {
+    if (Math.abs(count - Math.round(count)) > 0.000001) {
       return {
         ok: false,
         value: "STOP",
+        warnings: warnings,
         explanation:
           "החישוב האריתמטי הוא " + formatNumber(count) + " " + label +
           ". האפליקציה אינה מניחה שמותר לחצות טבליה, לפתוח קפסולה או לחלק את תכולתה ללא מקור תרופתי מוסמך."
@@ -5521,36 +6429,231 @@ function calculateBatchPreparation(order, pkg) {
     return {
       ok: true,
       value: formatNumber(count) + " " + label,
+      warnings: warnings,
+      unitConverted: conversion.converted,
       explanation:
-        order.dose + " " + order.doseUnit +
+        conversionText +
+        formatNumber(dose) + " " + packageUnit +
         " ÷ " + pkg.strength + " " + pkg.unit +
         " = " + formatNumber(count)
     };
   }
 
-  if (order.doseUnit !== pkg.concentrationUnit) {
+  var stockConcentration = pkg.concentrationDrug / pkg.concentrationVolume;
+  var undilutedVolume = dose / stockConcentration;
+  var key = dilutionKey(order, pkg);
+  var dilution = preparationDilutions[key] || null;
+  var smallVolume = undilutedVolume < 0.1;
+
+  var result = {
+    ok: true,
+    warnings: warnings,
+    unitConverted: conversion.converted,
+    dilutable: true,
+    dilutionKey: key,
+    undilutedVolume: undilutedVolume,
+    stockConcentration: stockConcentration,
+    concentrationUnit: packageUnit,
+    dilution: null,
+    dilutionSuggested: !dilution && (conversion.converted || smallVolume),
+    suggestion: suggestedDilution(undilutedVolume)
+  };
+
+  if (!dilution) {
+    if (smallVolume) {
+      warnings.push(
+        "הנפח לשאיבה (" + formatNumber(undilutedVolume) +
+        " mL) קטן מ-0.1 mL וקשה למדוד אותו במדויק. מומלץ למהול."
+      );
+    }
+
+    result.value = formatNumber(undilutedVolume) + " mL";
+    result.explanation =
+      conversionText +
+      "(" + formatNumber(dose) + " " + packageUnit +
+      " ÷ " + pkg.concentrationDrug + " " + pkg.concentrationUnit +
+      ") × " + pkg.concentrationVolume + " mL = " +
+      formatNumber(undilutedVolume) + " mL";
+    return result;
+  }
+
+  var dilutedConcentration =
+    stockConcentration * dilution.stockVolume / dilution.finalVolume;
+  var drawVolume = dose / dilutedConcentration;
+
+  result.dilution = {
+    stockVolume: dilution.stockVolume,
+    finalVolume: dilution.finalVolume,
+    diluent: dilution.diluent,
+    concentration: dilutedConcentration,
+    drawVolume: drawVolume
+  };
+
+  if (drawVolume > dilution.finalVolume + 0.000001) {
     return {
       ok: false,
       value: "STOP",
+      warnings: warnings,
+      dilutable: true,
+      dilutionKey: key,
+      dilution: result.dilution,
+      suggestion: result.suggestion,
       explanation:
-        "יחידת המינון בהוראה (" + order.doseUnit +
-        ") אינה תואמת ליחידת הריכוז שעל האריזה (" + pkg.concentrationUnit + ")."
+        "לאחר המהילה נדרשים " + formatNumber(drawVolume) +
+        " mL, יותר מהנפח הכולל של התמיסה המהולה (" +
+        formatNumber(dilution.finalVolume) + " mL). יש לשנות את יחס המהילה."
     };
   }
 
-  var volume =
-    (order.dose / pkg.concentrationDrug) *
-    pkg.concentrationVolume;
+  if (drawVolume < 0.1) {
+    warnings.push(
+      "גם אחרי המהילה הנפח לשאיבה (" + formatNumber(drawVolume) +
+      " mL) קטן מ-0.1 mL. מומלץ מהילה גדולה יותר."
+    );
+  }
 
-  return {
-    ok: true,
-    value: formatNumber(volume) + " mL",
-    explanation:
-      "(" + order.dose + " " + order.doseUnit +
-      " ÷ " + pkg.concentrationDrug + " " + pkg.concentrationUnit +
-      ") × " + pkg.concentrationVolume + " mL = " +
-      formatNumber(volume) + " mL"
+  result.value = formatNumber(drawVolume) + " mL מהתמיסה המהולה";
+  result.explanation =
+    conversionText +
+    "diluted: " + formatNumber(stockConcentration) + " " + packageUnit + "/mL × " +
+    formatNumber(dilution.stockVolume) + " mL ÷ " + formatNumber(dilution.finalVolume) +
+    " mL = " + formatNumber(dilutedConcentration) + " " + packageUnit + "/mL; " +
+    formatNumber(dose) + " " + packageUnit + " ÷ " +
+    formatNumber(dilutedConcentration) + " " + packageUnit + "/mL = " +
+    formatNumber(drawVolume) + " mL";
+
+  return result;
+}
+
+function calcAlertsHtml(calc) {
+  if (!calc) return "";
+
+  var html = "";
+
+  if (calc.weightInfo) {
+    html += '<div class="' + (calc.weightOk ? "calc-ok" : "calc-info") + '">' + escapeHtml(calc.weightInfo) + "</div>";
+  }
+
+  (calc.warnings || []).forEach(function(w) {
+    html += '<div class="calc-alert">⚠ ' + escapeHtml(w) + "</div>";
+  });
+
+  return html;
+}
+
+function diluentOptions(selected) {
+  var values = ["NaCl 0.9%", "D5W", "מים להזרקה", "אחר"];
+  return values.map(function(v) {
+    return '<option value="' + escapeHtml(v) + '"' + (v === selected ? " selected" : "") + ">" + escapeHtml(v) + "</option>";
+  }).join("");
+}
+
+// ctx: "m" for the package-match card, "p" for the preparation card.
+function buildDilutionHtml(ctx, index, calc) {
+  if (!calc || !calc.dilutable) return "";
+
+  var id = ctx + "_" + index;
+
+  if (calc.dilution) {
+    var d = calc.dilution;
+    var unit = calc.concentrationUnit || "";
+    return (
+      '<div class="dilution-box">' +
+        "<strong>מהילה</strong>" +
+        '<div class="dilution-steps">' +
+          "1. שאב " + formatNumber(d.stockVolume) + " mL מהתכשיר (" +
+            formatNumber(calc.stockConcentration) + " " + escapeHtml(unit) + "/mL).<br>" +
+          "2. השלם עם " + escapeHtml(d.diluent) + " לנפח כולל של " + formatNumber(d.finalVolume) + " mL וערבב.<br>" +
+          "3. ריכוז התמיסה המהולה: " + formatNumber(d.concentration) + " " + escapeHtml(unit) + "/mL.<br>" +
+          "4. שאב <strong>" + formatNumber(d.drawVolume) + " mL</strong> מהתמיסה המהולה.<br>" +
+          "סמן את המזרק בשם התרופה, בריכוז לאחר המהילה ובנפח." +
+        "</div>" +
+        '<div class="dilution-actions">' +
+          '<button class="secondary" type="button" onclick="clearDilution(\'' + ctx + "', " + index + ')">בטל מהילה</button>' +
+        "</div>" +
+      "</div>"
+    );
+  }
+
+  var sug = calc.suggestion || { stockVolume: 1, finalVolume: 10, diluent: "NaCl 0.9%" };
+  var open = !!calc.dilutionSuggested;
+
+  return (
+    '<div class="dilution-box' + (open ? " suggested" : "") + '">' +
+      '<button class="secondary" type="button" onclick="toggleDilutionForm(\'' + id + '\')">' +
+        (open ? "מומלץ: מהילה כדי להתאים להוראה" : "מהילה לריכוז אחר") +
+      "</button>" +
+      '<div id="dilForm_' + id + '" class="' + (open ? "" : "hidden") + '">' +
+        '<div class="dilution-grid">' +
+          "<div><label>כמות מהתכשיר (mL)</label>" +
+            '<input id="dilStock_' + id + '" type="number" step="any" min="0" value="' + sug.stockVolume + '"></div>' +
+          "<div><label>נפח כולל לאחר מהילה (mL)</label>" +
+            '<input id="dilFinal_' + id + '" type="number" step="any" min="0" value="' + sug.finalVolume + '"></div>' +
+          "<div><label>נוזל מהילה</label>" +
+            '<select id="dilDiluent_' + id + '">' + diluentOptions(sug.diluent) + "</select></div>" +
+        "</div>" +
+        '<div class="dilution-actions">' +
+          '<button class="primary" type="button" onclick="applyDilution(\'' + ctx + "', " + index + ')">החל מהילה וחשב מחדש</button>' +
+        "</div>" +
+        '<div class="tip">יש לוודא שנוזל המהילה תואם לתרופה ולמידע התרופתי של המחלקה.</div>' +
+      "</div>" +
+    "</div>"
+  );
+}
+
+function toggleDilutionForm(id) {
+  var form = document.getElementById("dilForm_" + id);
+  if (form) form.classList.toggle("hidden");
+}
+
+function matchPackageForIndex(index) {
+  var match = packageMatches[index];
+  if (!match || match.status !== "matched") return null;
+  return { order: match.order, pkg: match.candidates[0].package };
+}
+
+function rerenderAfterDilutionChange() {
+  recomputeAutomaticMatches();
+
+  if (currentScreenId === "prepareScreen") {
+    renderBatchPreparations(packageMatches);
+  }
+}
+
+function applyDilution(ctx, index) {
+  var item = matchPackageForIndex(index);
+  if (!item) return;
+
+  var id = ctx + "_" + index;
+  var stock = parseFloat(document.getElementById("dilStock_" + id).value);
+  var finalVol = parseFloat(document.getElementById("dilFinal_" + id).value);
+  var diluent = document.getElementById("dilDiluent_" + id).value;
+
+  if (!Number.isFinite(stock) || stock <= 0 || !Number.isFinite(finalVol) || finalVol <= 0) {
+    alert("יש להזין כמות מהתכשיר ונפח כולל גדולים מאפס.");
+    return;
+  }
+
+  if (finalVol <= stock) {
+    alert("הנפח הכולל לאחר המהילה חייב להיות גדול מהכמות שנלקחה מהתכשיר.");
+    return;
+  }
+
+  preparationDilutions[dilutionKey(item.order, item.pkg)] = {
+    stockVolume: stock,
+    finalVolume: finalVol,
+    diluent: diluent
   };
+
+  rerenderAfterDilutionChange();
+}
+
+function clearDilution(ctx, index) {
+  var item = matchPackageForIndex(index);
+  if (!item) return;
+
+  delete preparationDilutions[dilutionKey(item.order, item.pkg)];
+  rerenderAfterDilutionChange();
 }
 
 function renderBatchPreparations(matches) {
@@ -5586,17 +6689,16 @@ function renderBatchPreparations(matches) {
           imageHtml +
         "</div>" +
         '<div class="prep-card-text">' +
-          "<h3>" +
-            escapeHtml(match.order.drugName) + " — " +
-            match.order.dose + " " + escapeHtml(match.order.doseUnit) +
-            (match.order.route ? " — " + escapeHtml(match.order.route) : "") +
-          "</h3>" +
+          "<h3>" + escapeHtml(orderSummaryText(match.order)) + "</h3>" +
           "<div><strong>אריזה:</strong> " + escapeHtml(pkg.genericDrug) + "</div>" +
           "<div><strong>צורת תרופה:</strong> " + escapeHtml(formulationLabelText) + "</div>" +
           '<div class="prep-value">' + escapeHtml(calc.value) + "</div>" +
           '<div dir="ltr" style="text-align:left; unicode-bidi:isolate;">' +
             escapeHtml(calc.explanation) +
           "</div>" +
+          calcAlertsHtml(calc) +
+          safetyBadgesHtml(match.order) +
+          buildDilutionHtml("p", i, calc) +
         "</div>" +
       "</div>";
 
@@ -5642,8 +6744,16 @@ function openPreparedVerificationStep() {
 
   lastVerificationPlanSignature = currentPlanSignature;
   showScreen("verifyScreen");
+
+  if (!preserveExisting) {
+    setTimeout(function() {
+      if (!selectedPreparedBatchFile && !preparedBatchCameraStream) {
+        openPreparedBatchCamera(true);
+      }
+    }, 120);
+  }
 }
-async function openPreparedBatchCamera() {
+async function openPreparedBatchCamera(automatic) {
   var modal = document.getElementById("preparedBatchCameraModal");
   var video = document.getElementById("preparedBatchCameraVideo");
 
@@ -5662,7 +6772,9 @@ async function openPreparedBatchCamera() {
 
   } catch (error) {
     console.error(error);
-    alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+    if (!automatic) {
+      alert("לא ניתן לפתוח את המצלמה. אפשר לבחור תמונה קיימת במקום.");
+    }
   }
 }
 
@@ -5987,6 +7099,19 @@ function renderPreparedVerificationResults() {
         "</div>";
     }
 
+    var planOrder = preparationPlan[result.planIndex] ? preparationPlan[result.planIndex].order : null;
+    var haInfo = planOrder ? highAlertInfo(planOrder.drugName, planOrder.route) : null;
+    var checkerHtml = "";
+
+    if (haInfo && result.status !== "stop") {
+      checkerHtml =
+        '<div class="second-checker">' +
+          "<label>אימות כפול (" + escapeHtml(haInfo.category) + "): שם המאמת השני</label>" +
+          '<input id="secondChecker_' + i + '" value="' + escapeHtml(result.secondChecker || "") +
+            '" oninput="preparedVerificationResults[' + i + '].secondChecker = this.value.trim()">' +
+        "</div>";
+    }
+
     item.innerHTML =
       '<div class="verify-line">' +
         '<div class="verify-name">' + escapeHtml(result.drug) + "</div>" +
@@ -5995,7 +7120,8 @@ function renderPreparedVerificationResults() {
       '<div class="verify-expected"><strong>צפוי:</strong> ' + escapeHtml(expectedText) + "</div>" +
       '<div class="verify-expected"><strong>נקרא מהצילום:</strong> ' + escapeHtml(actualText) + "</div>" +
       '<div class="verify-expected">' + escapeHtml(result.message) + "</div>" +
-      manualHtml;
+      manualHtml +
+      checkerHtml;
 
     container.appendChild(item);
   }
@@ -6047,51 +7173,87 @@ async function recognizePreparedBatch() {
 }
 
 function finishPreparedVerification() {
-  var matched = preparedVerificationResults.filter(function(r) {
-    return r.status === "match";
-  }).length;
+  var missingChecker = preparedVerificationResults.filter(function(r) {
+    var planItem = preparationPlan[r.planIndex];
+    return planItem &&
+      r.status !== "stop" &&
+      highAlertInfo(planItem.order.drugName, planItem.order.route) &&
+      !r.secondChecker;
+  });
 
-  var stops = preparedVerificationResults.filter(function(r) {
-    return r.status === "stop";
-  }).length;
+  if (missingChecker.length) {
+    alert(
+      "נדרש אימות כפול לתרופות בסיכון גבוה: " +
+      missingChecker.map(function(r) { return r.drug; }).join(", ") +
+      ". יש להזין את שם המאמת השני."
+    );
+    return;
+  }
 
-  var reviews = preparedVerificationResults.filter(function(r) {
-    return r.status === "review";
-  }).length;
+  var matched = preparedVerificationResults.filter(function(r) { return r.status === "match"; }).length;
+  var stops = preparedVerificationResults.filter(function(r) { return r.status === "stop"; }).length;
+  var reviews = preparedVerificationResults.filter(function(r) { return r.status === "review"; }).length;
 
   var status = document.getElementById("finalStatus");
   var summary = document.getElementById("finalSummary");
 
   status.className = (stops || reviews) ? "warning" : "success";
+  status.innerHTML = (!stops && !reviews)
+    ? "<strong>כל ההכנות שניתנות לאימות תואמות.</strong>"
+    : "<strong>האימות עדיין אינו מלא.</strong> יש פריטים הדורשים STOP או בדיקה נוספת.";
 
-  if (!stops && !reviews) {
-    status.innerHTML =
-      "<strong>כל ההכנות שניתנות לאימות תואמות.</strong>";
-  } else {
-    status.innerHTML =
-      "<strong>האימות עדיין אינו מלא.</strong> יש פריטים הדורשים STOP או בדיקה נוספת.";
-  }
-
+  var now = new Date();
   var html =
-    "<div><strong>MATCH:</strong> " + matched + "</div>" +
-    "<div><strong>STOP:</strong> " + stops + "</div>" +
-    "<div><strong>נדרש אימות:</strong> " + reviews + "</div><hr>";
+    '<div class="summary-meta">' +
+      "תאריך ושעה: " + escapeHtml(now.toLocaleString("he-IL")) + "<br>" +
+      "משקל המטופל: " + (patientWeight ? formatNumber(patientWeight) + " ק\"ג" : "לא ידוע") + "<br>" +
+      "MATCH: " + matched + " · STOP: " + stops + " · נדרש אימות: " + reviews +
+    "</div>";
 
   for (var i = 0; i < preparedVerificationResults.length; i++) {
     var r = preparedVerificationResults[i];
+    var planItem = preparationPlan[r.planIndex] || {};
+    var order = planItem.order || {};
+    var pkg = planItem.package || {};
+    var calc = planItem.calc || {};
+    var pkgText = pkg.formulation === "tablet" || pkg.formulation === "capsule"
+      ? formatNumber(pkg.strength) + " " + (pkg.unit || "")
+      : formatNumber(pkg.concentrationDrug) + " " + (pkg.concentrationUnit || "") + " / " +
+        formatNumber(pkg.concentrationVolume) + " mL";
+
+    var ha = highAlertInfo(order.drugName, order.route);
+    var d = calc.dilution;
 
     html +=
-      "<div style='margin-bottom:10px;'>" +
-        "<strong>" + escapeHtml(r.drug) + "</strong> — " +
-        escapeHtml(verificationStatusLabel(r.status)) +
-        "<br>" + escapeHtml(r.message) +
+      '<div class="summary-item summary-status-' + r.status + '">' +
+        "<h3>" + escapeHtml(order.drugName || r.drug) + " — " + escapeHtml(verificationStatusLabel(r.status)) + "</h3>" +
+        "<div><strong>הוראה:</strong> " + escapeHtml(orderSummaryText(order)) + "</div>" +
+        (order.notes ? "<div><strong>הערות:</strong> " + escapeHtml(order.notes) + "</div>" : "") +
+        "<div><strong>אריזה:</strong> " + escapeHtml(pkg.genericDrug || "") + " · " +
+          escapeHtml(formulationLabel(pkg.formulation)) + " · " + escapeHtml(pkgText) + "</div>" +
+        "<div><strong>חישוב:</strong> " + escapeHtml(calc.value || "") + "</div>" +
+        '<div dir="ltr" style="text-align:left; unicode-bidi:isolate;">' + escapeHtml(calc.explanation || "") + "</div>" +
+        (d ? "<div><strong>מהילה:</strong> " + formatNumber(d.stockVolume) + " mL תכשיר + " +
+              escapeHtml(d.diluent) + " עד " + formatNumber(d.finalVolume) + " mL (" +
+              formatNumber(d.concentration) + " " + escapeHtml(calc.concentrationUnit || "") + "/mL)</div>" : "") +
+        (calc.weightInfo ? "<div>" + escapeHtml(calc.weightInfo) + "</div>" : "") +
+        (calc.warnings || []).map(function(w) { return "<div>⚠ " + escapeHtml(w) + "</div>"; }).join("") +
+        "<div><strong>אימות:</strong> " + escapeHtml(r.message) +
+          (r.detectedAmount !== null && r.detectedAmount !== undefined
+            ? " (נקרא: " + formatNumber(r.detectedAmount) + " " + escapeHtml(r.expected.unit) + ")"
+            : "") +
+        "</div>" +
+        (ha ? "<div><strong>תרופה בסיכון גבוה</strong> (" + escapeHtml(ha.category) + ") · מאמת שני: " +
+              escapeHtml(r.secondChecker || "—") + "</div>" : "") +
       "</div>";
   }
+
+  html +=
+    '<div class="summary-meta">Prototype בלבד. הסיכום אינו מחליף תיעוד רשמי במערכת הממוחשבת.</div>';
 
   summary.innerHTML = html;
   showScreen("finalScreen");
 }
-
 
 
 var ocrWarmupStarted = false;
