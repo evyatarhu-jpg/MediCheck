@@ -50,6 +50,12 @@ _ocr_lock = threading.Lock()
 _ocr_loading = False
 _ocr_error = None
 
+# Only one OCR inference at a time: parallel runs double peak memory on small instances.
+_predict_lock = threading.Lock()
+
+# Larger images are downscaled before OCR to bound memory use and CPU time.
+OCR_MAX_SIDE = int(os.environ.get("OCR_MAX_SIDE", "1280"))
+
 
 LOGIN_HTML = """
 <!doctype html>
@@ -263,7 +269,81 @@ def _plain_box(box):
     return _box_from_polygon(values)
 
 
-def run_ocr(upload):
+def _collect_lines(results, scale):
+    texts = []
+    scores = []
+    lines = []
+
+    for result in results:
+        payload = result.json
+        res = payload.get("res", payload)
+
+        rec_texts = _plain_list(res.get("rec_texts"))
+        rec_scores = _plain_list(res.get("rec_scores"))
+        rec_boxes = _plain_list(res.get("rec_boxes"))
+        dt_polys = _plain_list(res.get("dt_polys"))
+
+        for i, text in enumerate(rec_texts):
+            if text is None:
+                continue
+
+            text = str(text).strip()
+            if not text:
+                continue
+
+            score = 0.0
+
+            if i < len(rec_scores):
+                try:
+                    score = float(rec_scores[i])
+                except Exception:
+                    score = 0.0
+
+            box = None
+
+            if i < len(rec_boxes):
+                box = _plain_box(rec_boxes[i])
+
+            if box is None and i < len(dt_polys):
+                box = _box_from_polygon(dt_polys[i])
+
+            # Map boxes back to the full-size image the browser holds.
+            if box is not None and scale != 1.0:
+                box = [v / scale for v in box]
+
+            texts.append(text)
+            scores.append(score)
+            lines.append({"text": text, "score": score, "box": box})
+
+    return texts, scores, lines
+
+
+def _quality(texts, scores):
+    # Rewards long, confidently read text. Used to pick the best rotation.
+    return sum(len(t) * s for t, s in zip(texts, scores))
+
+
+def _mostly_vertical(lines):
+    boxes = [
+        line["box"] for line in lines
+        if line.get("box") and len(line.get("text", "")) >= 3
+    ]
+
+    if len(boxes) < 2:
+        return False
+
+    tall = sum(1 for b in boxes if (b[3] - b[1]) > 1.3 * (b[2] - b[0]))
+    return tall >= len(boxes) * 0.6
+
+
+def _predict(ocr, image):
+    with _predict_lock:
+        return ocr.predict(image, text_rec_score_thresh=0.10)
+
+
+def run_ocr(upload, try_rotations=False):
+    import cv2
+
     if not upload:
         raise ValueError("No image received")
 
@@ -272,70 +352,52 @@ def run_ocr(upload):
     try:
         ocr = get_ocr()
 
-        results = ocr.predict(
-            temp_path,
-            text_rec_score_thresh=0.10,
-        )
+        image = cv2.imread(temp_path, cv2.IMREAD_COLOR)
+        if image is None:
+            raise ValueError("Could not read the uploaded image")
 
-        texts = []
-        scores = []
-        lines = []
+        height, width = image.shape[:2]
+        scale = 1.0
 
-        for result in results:
-            payload = result.json
-            res = payload.get("res", payload)
+        if max(height, width) > OCR_MAX_SIDE:
+            scale = OCR_MAX_SIDE / float(max(height, width))
+            image = cv2.resize(
+                image,
+                (int(width * scale), int(height * scale)),
+                interpolation=cv2.INTER_AREA,
+            )
 
-            rec_texts = _plain_list(res.get("rec_texts"))
-            rec_scores = _plain_list(res.get("rec_scores"))
-            rec_boxes = _plain_list(res.get("rec_boxes"))
-            dt_polys = _plain_list(res.get("dt_polys"))
+        texts, scores, lines = _collect_lines(_predict(ocr, image), scale)
+        rotation = 0
 
-            for i, text in enumerate(rec_texts):
-                if text is None:
-                    continue
+        # Vials and bottles often lie on their side, so the label text is vertical.
+        # Re-read the image rotated and keep the orientation that reads best.
+        if try_rotations and _mostly_vertical(lines):
+            best = (_quality(texts, scores), 0, texts, scores, lines)
 
-                text = str(text).strip()
-                if not text:
-                    continue
+            for degrees, code in ((90, cv2.ROTATE_90_CLOCKWISE), (270, cv2.ROTATE_90_COUNTERCLOCKWISE)):
+                rotated = cv2.rotate(image, code)
+                r_texts, r_scores, r_lines = _collect_lines(_predict(ocr, rotated), scale)
+                quality = _quality(r_texts, r_scores)
 
-                score = 0.0
+                if quality > best[0] * 1.15:
+                    best = (quality, degrees, r_texts, r_scores, r_lines)
 
-                if i < len(rec_scores):
-                    try:
-                        score = float(rec_scores[i])
-                    except Exception:
-                        score = 0.0
+                # Good enough: skip the second rotation to save time.
+                if best[1] == degrees and r_scores and sum(r_scores) / len(r_scores) > 0.85:
+                    break
 
-                box = None
-
-                if i < len(rec_boxes):
-                    box = _plain_box(rec_boxes[i])
-
-                if box is None and i < len(dt_polys):
-                    box = _box_from_polygon(dt_polys[i])
-
-                texts.append(text)
-                scores.append(score)
-
-                lines.append({
-                    "text": text,
-                    "score": score,
-                    "box": box,
-                })
+            _, rotation, texts, scores, lines = best
 
         combined = " ".join(texts).strip()
-
-        confidence = (
-            sum(scores) / len(scores)
-            if scores
-            else 0.0
-        )
+        confidence = sum(scores) / len(scores) if scores else 0.0
 
         return {
             "text": combined,
             "confidence": confidence,
             "segments": texts,
             "lines": lines,
+            "rotation_degrees": rotation,
         }
 
     finally:
@@ -446,7 +508,7 @@ def ocr_order():
 @app.post("/api/ocr-medication")
 def ocr_medication():
     try:
-        result = run_ocr(request.files.get("image"))
+        result = run_ocr(request.files.get("image"), try_rotations=True)
         return jsonify(result)
     except Exception as exc:
         app.logger.exception("Medication OCR failed")

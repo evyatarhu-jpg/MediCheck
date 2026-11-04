@@ -1918,7 +1918,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.26</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.28</span></div>
       <div id="stepBadge" class="step">מסך פתיחה</div>
     </div>
     <div class="progress"><div id="progressBar"></div></div>
@@ -2110,7 +2110,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.26 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.28 · שלב 3</div>
 
     <div class="info">
       לכל הוראה מוצגת האריזה שהותאמה והחישוב לפי הנתונים שעל האריזה.
@@ -3718,7 +3718,8 @@ function normalizeUnit(value) {
   if (
     unit === "unit" ||
     unit === "units" ||
-    unit === "iu"
+    unit === "iu" ||
+    unit === "u"
   ) {
     return "units";
   }
@@ -4858,12 +4859,18 @@ function groupOcrLinesByDrug(lines, fullText) {
   for (var i = 0; i < usableLines.length; i++) {
     var matches = aliasesFoundInText(usableLines[i].text);
 
+    if (!matches.length) {
+      var approx = fuzzyDrugOnLine(usableLines[i].text);
+      if (approx) matches = [approx];
+    }
+
     for (var j = 0; j < matches.length; j++) {
       var center = lineCenter(usableLines[i]);
 
       anchors.push({
         canonical: matches[j].canonical,
         alias: matches[j].alias,
+        fuzzy: !!matches[j].fuzzy,
         center: center,
         lineIndex: i
       });
@@ -4897,6 +4904,7 @@ function groupOcrLinesByDrug(lines, fullText) {
 
     groups.push({
       canonical: canonical,
+      fuzzy: arr.every(function(a) { return a.fuzzy; }),
       anchor: center,
       texts: [],
       boxes: []
@@ -5285,8 +5293,66 @@ function closePackageImageZoom(event) {
   if (img) img.removeAttribute("src");
 }
 
+// Fix frequent OCR misreads in units on package labels.
+function fixOcrUnits(text) {
+  return String(text || "")
+    .replace(/(\d)\s*,\s*(\d)/g, "$1.$2")
+    .replace(/(\d\s*)(rng|rnq|mq)\b/gi, "$1mg")
+    .replace(/\b(m1|rnl|mI|rnL|mL\.|ml\.)(?![a-z])/g, "ml")
+    .replace(/(\d\s*)(µg|μg|ug)\b/gi, "$1mcg")
+    .replace(/(\d\s*)(I\.U\.|IU)\b/g, "$1units")
+    .replace(/(\d)\s*(mg|mcg|g|units?|u|meq|mmol)\s*\/?\s*(ml)\b/gi, function(all, n, u, ml) {
+      return n + " " + u + "/" + ml;
+    });
+}
+
+// Replace digits that OCR put inside words (VANC0MYCIN -> VANCOMYCIN).
+function fixOcrLettersInWords(text) {
+  return String(text || "").split(/(\s+)/).map(function(token) {
+    var letters = (token.match(/[a-zA-Z]/g) || []).length;
+    if (letters < 3) return token;
+    return token
+      .replace(/0/g, "o")
+      .replace(/1/g, "l")
+      .replace(/5/g, "s")
+      .replace(/8/g, "b");
+  }).join("");
+}
+
+// Approximate drug-name match for a single package OCR line.
+// Stricter than order matching: long aliases only and a high similarity score.
+function fuzzyDrugOnLine(text) {
+  var fixed = fixOcrLettersInWords(text);
+  var exact = findDrugOccurrencesInText(fixed);
+  if (exact.length) return { canonical: exact[0].canonical, alias: exact[0].alias, fuzzy: true };
+
+  var words = fixed.split(/[\s\/,;:()\-]+/).filter(function(w) {
+    return normalizeForMatching(w).length >= 6;
+  });
+
+  var best = { canonical: "", score: 0, alias: "" };
+
+  for (var i = 0; i < drugAliases.length; i++) {
+    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
+      var alias = drugAliases[i].aliases[j];
+      if (normalizeForMatching(alias).length < 6 || /\s/.test(alias)) continue;
+
+      for (var w = 0; w < words.length; w++) {
+        var score = similarity(words[w], alias);
+        if (score > best.score) {
+          best = { canonical: drugAliases[i].canonical, score: score, alias: alias };
+        }
+      }
+    }
+  }
+
+  return best.score >= 0.8
+    ? { canonical: best.canonical, alias: best.alias, fuzzy: true }
+    : null;
+}
+
 function parsePackageDetails(group, confidence) {
-  var clean = (group.texts || []).join(" ").replace(/\s+/g, " ").trim();
+  var clean = fixOcrUnits((group.texts || []).join(" ").replace(/\s+/g, " ").trim());
   var formulation = detectPackageFormulation(clean);
 
   var pkg = {
@@ -5305,9 +5371,11 @@ function parsePackageDetails(group, confidence) {
     imageUrl: ""
   };
 
-  // e.g. 500 mg / 100 mL, 20 mg/2 mL, 5 mg/mL
+  pkg.identityFuzzy = !!group.fuzzy;
+
+  // e.g. 500 mg / 100 mL, 20 mg/2 mL, 5 mg/mL, 2 mEq/mL, 5000 units/mL, 250 mg in 5 mL
   var ratio = clean.match(
-    /(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?)\s*(?:\/|per)\s*(?:(\d+(?:\.\d+)?)\s*)?m[lL]\b/i
+    /(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?|u|iu|meq|mmol)\s*(?:\/|per|in)\s*(?:(\d+(?:\.\d+)?)\s*)?ml\b/i
   );
 
   if (ratio) {
@@ -5317,6 +5385,35 @@ function parsePackageDetails(group, confidence) {
 
     if (!pkg.formulation) pkg.formulation = "liquid";
     return pkg;
+  }
+
+  // Ratio strength: 1:1000 = 1 mg/mL, 1:10000 = 0.1 mg/mL
+  var ratioStrength = clean.match(/\b1\s*:\s*(1000|10000|10\.000|100000)\b/);
+
+  if (ratioStrength) {
+    var denominator = parseFloat(ratioStrength[1].replace(".", ""));
+    pkg.concentrationDrug = 1000 / denominator;
+    pkg.concentrationUnit = "mg";
+    pkg.concentrationVolume = 1;
+    pkg.concentrationNote = "הריכוז חושב מיחס " + ratioStrength[0].replace(/\s/g, "") + " (" + formatNumber(pkg.concentrationDrug) + " mg/mL).";
+    if (!pkg.formulation) pkg.formulation = "liquid";
+    return pkg;
+  }
+
+  // Percent (w/v): X% = X g / 100 mL = 10X mg/mL. Only for liquids.
+  var percent = clean.match(/(\d+(?:\.\d+)?)\s*%/);
+
+  if (percent && pkg.formulation !== "tablet" && pkg.formulation !== "capsule") {
+    var pct = parseFloat(percent[1]);
+
+    if (pct > 0 && pct <= 100) {
+      pkg.concentrationDrug = pct * 10;
+      pkg.concentrationUnit = "mg";
+      pkg.concentrationVolume = 1;
+      pkg.concentrationNote = "הריכוז חושב מ-" + percent[1] + "% (w/v) = " + formatNumber(pct * 10) + " mg/mL. יש לוודא מול האריזה.";
+      if (!pkg.formulation) pkg.formulation = "liquid";
+      return pkg;
+    }
   }
 
   var strength = clean.match(
@@ -5386,8 +5483,8 @@ function packageFormulationOptions(selected) {
   return html;
 }
 function packageUnitOptions(selected) {
-  var values = ["", "mg", "mcg", "g", "units"];
-  var labels = ["לא זוהתה יחידה", "mg", "mcg", "g", "units"];
+  var values = ["", "mg", "mcg", "g", "units", "mEq", "mmol"];
+  var labels = ["לא זוהתה יחידה", "mg", "mcg", "g", "units", "mEq", "mmol"];
   var html = "";
 
   for (var i = 0; i < values.length; i++) {
@@ -5695,6 +5792,17 @@ function readPackageCard(index) {
     pkg.concentrationDrug = parseFloat(document.getElementById("pkgConcDrug_" + index).value);
     pkg.concentrationUnit = document.getElementById("pkgConcUnit_" + index).value;
     pkg.concentrationVolume = parseFloat(document.getElementById("pkgConcVol_" + index).value);
+  }
+
+  var detected = detectedPackages[index];
+
+  if (detected) {
+    if (detected.identityFuzzy && detected.genericDrug === pkg.genericDrug) {
+      pkg.identityFuzzy = true;
+    }
+    if (detected.concentrationNote && detected.concentrationDrug === pkg.concentrationDrug) {
+      pkg.concentrationNote = detected.concentrationNote;
+    }
   }
 
   return pkg;
@@ -6321,7 +6429,20 @@ function calculateBatchPreparation(order, pkg) {
   var calc = calculateBatchPreparationCore(order, pkg);
   var wc = weightCheck(order);
 
-  calc.warnings = wc.warnings.concat(calc.warnings || []);
+  var packageWarnings = [];
+
+  if (pkg.identityFuzzy) {
+    packageWarnings.push(
+      "שם התרופה על האריזה נקרא באופן חלקי וזוהה בקירוב כ-" + pkg.genericDrug +
+      ". יש לוודא בעין את שם התרופה על האריזה."
+    );
+  }
+
+  if (pkg.concentrationNote) {
+    packageWarnings.push(pkg.concentrationNote);
+  }
+
+  calc.warnings = packageWarnings.concat(wc.warnings, calc.warnings || []);
   calc.weightInfo = wc.info;
   calc.weightOk = wc.ok;
 
