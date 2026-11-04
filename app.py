@@ -18,13 +18,15 @@ from flask import (
 )
 
 # Keep the OCR runtime lightweight and deterministic on hosted CPU services.
-os.environ.setdefault("PADDLE_PDX_MODEL_SOURCE", "BOS")
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 os.environ.setdefault("MKL_NUM_THREADS", "1")
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
 os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
 
-from paddleocr import PaddleOCR
+# RapidOCR runs the PaddleOCR detection/recognition models with ONNX Runtime.
+# The models ship inside the pip package, so nothing is downloaded at startup,
+# and peak memory stays well under 512 MB.
+from rapidocr_onnxruntime import RapidOCR
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -189,20 +191,13 @@ def get_ocr():
         _ocr_error = None
 
         try:
-            print("Loading PaddleOCR mobile models...", flush=True)
-            _ocr = PaddleOCR(
-                text_detection_model_name="PP-OCRv5_mobile_det",
-                text_recognition_model_name="PP-OCRv5_mobile_rec",
-                use_doc_orientation_classify=False,
-                use_doc_unwarping=False,
-                use_textline_orientation=False,
-                engine="onnxruntime",
-            )
-            print("PaddleOCR ready.", flush=True)
+            print("Loading RapidOCR models...", flush=True)
+            _ocr = RapidOCR(intra_op_num_threads=1, inter_op_num_threads=1)
+            print("RapidOCR ready.", flush=True)
             return _ocr
         except Exception as exc:
             _ocr_error = f"{type(exc).__name__}: {exc}"
-            print(f"PaddleOCR failed to load: {_ocr_error}", flush=True)
+            print(f"RapidOCR failed to load: {_ocr_error}", flush=True)
             raise
         finally:
             _ocr_loading = False
@@ -270,50 +265,35 @@ def _plain_box(box):
 
 
 def _collect_lines(results, scale):
+    """results: RapidOCR output, a list of [polygon, text, score] or None."""
     texts = []
     scores = []
     lines = []
 
-    for result in results:
-        payload = result.json
-        res = payload.get("res", payload)
+    for item in results or []:
+        try:
+            polygon, text, score = item[0], item[1], item[2]
+        except (TypeError, IndexError):
+            continue
 
-        rec_texts = _plain_list(res.get("rec_texts"))
-        rec_scores = _plain_list(res.get("rec_scores"))
-        rec_boxes = _plain_list(res.get("rec_boxes"))
-        dt_polys = _plain_list(res.get("dt_polys"))
+        text = str(text or "").strip()
+        if not text:
+            continue
 
-        for i, text in enumerate(rec_texts):
-            if text is None:
-                continue
-
-            text = str(text).strip()
-            if not text:
-                continue
-
+        try:
+            score = float(score)
+        except (TypeError, ValueError):
             score = 0.0
 
-            if i < len(rec_scores):
-                try:
-                    score = float(rec_scores[i])
-                except Exception:
-                    score = 0.0
+        box = _box_from_polygon(polygon)
 
-            box = None
+        # Map boxes back to the full-size image the browser holds.
+        if box is not None and scale != 1.0:
+            box = [v / scale for v in box]
 
-            if i < len(rec_boxes):
-                box = _plain_box(rec_boxes[i])
-
-            if box is None and i < len(dt_polys):
-                box = _box_from_polygon(dt_polys[i])
-
-            # Map boxes back to the full-size image the browser holds.
-            if box is not None and scale != 1.0:
-                box = [v / scale for v in box]
-
-            texts.append(text)
-            scores.append(score)
-            lines.append({"text": text, "score": score, "box": box})
+        texts.append(text)
+        scores.append(score)
+        lines.append({"text": text, "score": score, "box": box})
 
     return texts, scores, lines
 
@@ -338,10 +318,13 @@ def _mostly_vertical(lines):
 
 def _predict(ocr, image):
     with _predict_lock:
-        return ocr.predict(image, text_rec_score_thresh=0.10)
+        result, _elapse = ocr(image, use_cls=True, text_score=0.3)
+        return result
 
 
 def run_ocr(upload, try_rotations=False):
+    # RapidOCR reads vertical label text directly, so rotation retries are off by
+    # default; they triple OCR time on a small CPU.
     import cv2
 
     if not upload:
@@ -508,7 +491,7 @@ def ocr_order():
 @app.post("/api/ocr-medication")
 def ocr_medication():
     try:
-        result = run_ocr(request.files.get("image"), try_rotations=True)
+        result = run_ocr(request.files.get("image"))
         return jsonify(result)
     except Exception as exc:
         app.logger.exception("Medication OCR failed")
@@ -517,5 +500,5 @@ def ocr_medication():
 
 if __name__ == "__main__":
     print("Starting MediCheck on port 8000")
-    print("The first OCR request downloads/loads the PaddleOCR models and may take longer.")
+    print("OCR models load on the first request (about one second).")
     app.run(host="0.0.0.0", port=8000, debug=False, threaded=True)
