@@ -2146,7 +2146,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.30</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.31</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
@@ -2335,7 +2335,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.30 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.31 · שלב 3</div>
 
 
 
@@ -5142,6 +5142,19 @@ function groupOcrLinesByDrug(lines, fullText) {
     var rangeX = Math.max(1, maxX - minX);
     var rangeY = Math.max(1, maxY - minY);
 
+    // Packages lying on their side give vertical text lines. Then the lines of one
+    // label spread horizontally and separate packages sit above each other,
+    // so the axis weighting is swapped.
+    var boxed = usableLines.filter(function(l) {
+      return Array.isArray(l.box) && l.box.length >= 4 && String(l.text || "").length >= 3;
+    });
+    var tallCount = boxed.filter(function(l) {
+      return (l.box[3] - l.box[1]) > 1.3 * (l.box[2] - l.box[0]);
+    }).length;
+    var verticalText = boxed.length >= 2 && tallCount >= boxed.length * 0.6;
+    var weightX = verticalText ? 0.8 : 1.4;
+    var weightY = verticalText ? 1.4 : 0.8;
+
     usableLines.forEach(function(line) {
       var c = lineCenter(line);
 
@@ -5155,7 +5168,7 @@ function groupOcrLinesByDrug(lines, fullText) {
         var dy = (c.y - group.anchor.y) / rangeY;
 
         // Stronger horizontal weighting helps when packages are side by side.
-        var distance = Math.sqrt((dx * dx * 1.4) + (dy * dy * 0.8));
+        var distance = Math.sqrt((dx * dx * weightX) + (dy * dy * weightY));
 
         if (distance < bestDistance) {
           bestDistance = distance;
@@ -5207,21 +5220,23 @@ function groupOcrLinesByDrug(lines, fullText) {
 function detectPackageFormulation(text) {
   var clean = text || "";
 
-  if (/\bcaps?\b|\bcapsules?\b|קפסולה|קפסולות/i.test(clean)) return "capsule";
-  if (/\btabs?\b|\btablets?\b|טבליה|טבליות/i.test(clean)) return "tablet";
+  // OCR often glues words together ("SINGLEDOSEVIAL"), so long keywords are
+  // matched without word boundaries; short ones keep them.
+  if (/\bcaps?\b|capsules?|קפסולה|קפסולות/i.test(clean)) return "capsule";
+  if (/\btabs?\b|tablets?|טבליה|טבליות/i.test(clean)) return "tablet";
 
   // Powder first because many injectable vials are powders for reconstitution.
-  if (/\bpowder\b|reconstitution|reconstitute|אבקה/i.test(clean)) return "powder";
+  if (/powder|reconstitution|reconstitute|אבקה/i.test(clean)) return "powder";
 
   // Explicit parenteral wording wins over the generic word "solution".
   if (
-    /\binfusion\b|\bintravenous\b|\bIV\b|\binjection\b|\binj\b|\bvial\b|\bampoule\b|\bampule\b|עירוי|תוך ורידי|להזרקה|אמפולה|בקבוקון/i.test(clean)
+    /infusion|intravenous|\bIV\b|injection|injectable|\binj\b|vial|ampoule|ampule|עירוי|תוך ורידי|להזרקה|אמפולה|בקבוקון/i.test(clean)
   ) {
     return "injectable_solution";
   }
 
   if (
-    /\bsyrup\b|\bsuspension\b|\boral liquid\b|\boral solution\b|\bfor oral use\b|סירופ|תרחיף|תמיסה פומית|למתן פומי/i.test(clean)
+    /syrup|suspension|oral ?liquid|oral ?solution|for ?oral ?use|סירופ|תרחיף|תמיסה פומית|למתן פומי/i.test(clean)
   ) {
     return "oral_liquid";
   }

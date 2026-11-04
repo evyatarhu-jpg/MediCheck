@@ -1,4 +1,4 @@
 flask>=3.0,<4
-paddleocr>=3.3,<4
+rapidocr_onnxruntime>=1.2.3
 onnxruntime>=1.18
 gunicorn>=23,<24
