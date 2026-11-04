@@ -11,6 +11,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>MediCheck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <script>
 (function () {
@@ -1905,23 +1908,258 @@
       font-size:18px !important;
     }
 
+
+    /* ===== v6.29 UI refresh ===== */
+    html, body, button, input, select, textarea {
+      font-family: "Assistant", Arial, sans-serif;
+    }
+
+    body {
+      font-variant-numeric: tabular-nums;
+    }
+
+    bdi[dir="ltr"] {
+      unicode-bidi: isolate;
+      direction: ltr;
+    }
+
+    /* Desktop / tablet: centered phone-width column */
+    @media (min-width: 720px) {
+      html:not(.phone-ui) body { background: #e9eef5; }
+      html:not(.phone-ui) .app {
+        width: 100%;
+        max-width: 620px;
+        margin: 0 auto;
+        min-height: 100dvh;
+        box-shadow: 0 0 0 1px #dbe4ee, 0 12px 40px rgba(16,24,40,.08);
+      }
+    }
+
+    /* Top bar */
+    .toprow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .top-icon, .top-logout {
+      width: auto !important;
+      min-height: 36px !important;
+      margin: 0 !important;
+      padding: 6px 12px !important;
+      border-radius: 10px !important;
+      border: 1px solid #cfdbe8 !important;
+      background: #f3f7fb !important;
+      color: #123a63 !important;
+      font-size: 15px !important;
+      font-weight: 700;
+      text-decoration: none;
+      line-height: 1.4;
+    }
+
+    /* Stepper */
+    .stepper {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 12px 0 0;
+      padding: 0;
+    }
+    .stepper-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #98a2b3;
+      position: relative;
+    }
+    .stepper-item::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      width: 100%;
+      height: 3px;
+      background: #e4e9f0;
+      z-index: 0;
+    }
+    .stepper-item:first-child::before { display: none; }
+    .stepper-dot {
+      position: relative;
+      z-index: 1;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #eef2f6;
+      border: 2px solid #d5dde7;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .stepper-item.active { color: #0d6efd; }
+    .stepper-item.active .stepper-dot { background: #0d6efd; border-color: #0d6efd; color: #fff; box-shadow: 0 0 0 4px rgba(13,110,253,.15); }
+    .stepper-item.done { color: #12805c; }
+    .stepper-item.done .stepper-dot { background: #12b76a; border-color: #12b76a; color: #fff; font-size: 0; }
+    .stepper-item.done .stepper-dot::after { content: "✓"; font-size: 15px; }
+    .stepper-item.done::before, .stepper-item.active::before { background: #12b76a; }
+
+    /* Medication status cards */
+    .med-card {
+      border-radius: 16px;
+      border: 1px solid #dbe4ee;
+      background: #fff;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(16,24,40,.05);
+    }
+    .med-status {
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+      letter-spacing: .2px;
+    }
+    .status-ready .med-status { background: #12b76a; }
+    .status-check .med-status { background: #f79009; }
+    .status-stop .med-status { background: #d92d20; }
+    .status-stop { border-color: #f5b5ae; }
+    .med-body { padding: 12px 14px 14px; }
+    .med-thumb { float: left; margin: 0 0 8px 12px; }
+    .med-thumb img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid #dbe4ee; }
+    .med-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: #101828;
+      line-height: 1.2;
+    }
+    .med-order {
+      margin-top: 4px;
+      color: #475467;
+      font-size: 15px;
+    }
+    .med-amount-label {
+      clear: both;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #667085;
+    }
+    .med-amount {
+      font-size: 38px;
+      font-weight: 800;
+      color: #0b3b6f;
+      line-height: 1.15;
+    }
+    .med-amount-note {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0b3b6f;
+    }
+    html.phone-ui .top-icon, html.phone-ui .top-logout {
+      min-height: 40px !important;
+      padding: 6px 12px !important;
+      font-size: 16px !important;
+    }
+    html.phone-ui .dilution-box > button,
+    html.phone-ui .dilution-actions button {
+      min-height: 48px !important;
+      font-size: 17px !important;
+      padding: 8px 12px !important;
+    }
+    .med-formula {
+      text-align: left;
+      direction: ltr;
+      unicode-bidi: isolate;
+      font-size: 13px;
+      color: #667085;
+      margin-top: 2px;
+    }
+    .med-stop-reason {
+      clear: both;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fef3f2;
+      color: #912018;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .status-check .med-stop-reason { background: #fffaeb; color: #93370d; }
+    .med-package {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #344054;
+    }
+    .med-package span { color: #667085; font-weight: 700; }
+    .med-alerts { margin-top: 10px; }
+    .med-alerts summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      color: #93370d;
+      padding: 6px 0;
+    }
+    .med-card .dilution-box { margin-top: 12px; }
+
+    /* Camera */
+    .camera-controls { display: flex; gap: 10px; }
+    .camera-controls .camera-capture { flex: 1; border-radius: 18px; }
+    .camera-torch {
+      width: auto !important;
+      flex: 0 0 auto;
+      margin: 0 !important;
+      min-height: 64px;
+      padding: 0 16px !important;
+      border-radius: 18px !important;
+      background: #2b2f36 !important;
+      color: #fff !important;
+      font-size: 17px !important;
+    }
+    .camera-torch.on { background: #fdb022 !important; color: #111 !important; }
+
+    .app-footer {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px solid #eaecf0;
+      text-align: center;
+      font-size: 12px;
+      color: #98a2b3;
+    }
+
+    /* Night mode: invert the light theme screen by screen. Camera and image
+       modals are left untouched so photos look natural and fixed positioning works. */
+    html.night, html.night body { background: #0e1116 !important; }
+    html.night .app { background: #0e1116 !important; }
+    html.night .app > .topbar,
+    html.night .app > section,
+    html.night .app > .app-footer {
+      filter: invert(.9) hue-rotate(180deg);
+    }
+    html.night .app > .topbar { background: #fff; }
+    html.night .app > section img { filter: invert(1) hue-rotate(180deg); }
 </style>
 </head>
 
 <body>
-  <a href="/logout"
-     aria-label="יציאה מ-MediCheck"
-     style="position:fixed;top:10px;left:10px;z-index:9999;text-decoration:none;background:#eef3f8;color:#123a63;border:1px solid #bfd0e0;border-radius:10px;padding:7px 11px;font:700 14px Arial,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-    יציאה
-  </a>
+
 <div class="app">
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.28</span></div>
-      <div id="stepBadge" class="step">מסך פתיחה</div>
+      <div class="brand">MediCheck <span class="app-version">v6.29</span></div>
+      <div class="top-actions">
+        <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
+        <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
+      </div>
+      <div id="stepBadge" class="step hidden">מסך פתיחה</div>
     </div>
-    <div class="progress"><div id="progressBar"></div></div>
+    <div class="progress hidden"><div id="progressBar"></div></div>
+    <ol id="stepper" class="stepper">
+      <li class="stepper-item"><span class="stepper-dot">1</span><span>הוראות</span></li>
+      <li class="stepper-item"><span class="stepper-dot">2</span><span>אריזות</span></li>
+      <li class="stepper-item"><span class="stepper-dot">3</span><span>הכנה</span></li>
+      <li class="stepper-item"><span class="stepper-dot">4</span><span>אימות</span></li>
+    </ol>
     <button id="globalBackButton" class="global-back hidden" type="button" onclick="goBackOneScreen()">
       ↩ חזרה למסך הקודם
     </button>
@@ -1941,7 +2179,7 @@
     </div>
 
     <div class="prototype-note">
-      Prototype בלבד – אינו מיועד לקבלת החלטות קליניות או למתן תרופות בפועל. OCR מתבצע בשרת ה־Codespace ללא API חיצוני.
+      Prototype בלבד – אינו מיועד לקבלת החלטות קליניות או למתן תרופות בפועל.
     </div>
   </section>
 
@@ -1963,9 +2201,7 @@
         </label>
       </div>
 
-      <div class="tip">
-        אפשר לצלם כמה הוראות יחד. מיד לאחר הצילום האפליקציה תזהה ותציג אותן אוטומטית.
-      </div>
+      <div class="tip">אפשר לצלם כמה הוראות יחד.</div>
 
       <img id="orderPreview" class="preview" alt="תצוגת ההוראות">
 <div id="orderOcrStatus" class="info hidden"></div>
@@ -2013,9 +2249,6 @@
           + הוסף הוראה ידנית
         </button>
 
-        <div class="warning">
-          בחירת התרופות ואישור הפרטים נעשים ידנית. OCR אינו מקור סמכות להוראה רפואית. האפליקציה בודקת גם התאמה בסיסית בין דרך המתן לצורת התכשיר.
-        </div>
 
         <button class="primary" type="button" onclick="confirmSelectedOrders()">
           אישור ההוראות שסומנו והמשך
@@ -2060,9 +2293,7 @@
         </label>
       </div>
 
-      <div class="tip">
-        אפשר לצלם כמה אריזות יחד. מיד לאחר הצילום האפליקציה תזהה ותתאים אותן אוטומטית להוראות.
-      </div>
+      <div class="tip">אפשר לצלם כמה אריזות יחד.</div>
 
       <img id="medicationPreview" class="preview" alt="תצוגת האריזות">
 <div id="medOcrStatus" class="info hidden"></div>
@@ -2082,9 +2313,7 @@
       <div id="packagesReviewSection" class="hidden recognition-result-anchor">
         <div id="packagesCount" class="batch-count"></div>
 
-        <div class="tip">
-          האפליקציה מנסה לזהות את כל האריזות אוטומטית. בדוק את הפרטים ותיקן אותם אם צריך.
-        </div>
+        <div class="tip">בדוק את פרטי האריזות ותקן אם צריך.</div>
 
         <div id="detectedPackagesContainer" class="packages-list"></div>
 
@@ -2095,10 +2324,6 @@
         <h3 style="margin-top:22px;">התאמה אוטומטית להוראות</h3>
         <div id="matchesContainer" class="matches-list"></div>
 
-        <div class="warning">
-          ההתאמה בשלב זה מבוססת על זהות החומר הפעיל והנתונים שעל האריזה.
-          לפני שימוש קליני יש צורך במקור תרופתי מוסמך ובאימות אנושי.
-        </div>
 
         <button class="primary" type="button" onclick="confirmBatchMatchesAndPrepare()">
           הצג חישובי הכנה / STOP
@@ -2110,18 +2335,13 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.28 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.29 · שלב 3</div>
 
-    <div class="info">
-      לכל הוראה מוצגת האריזה שהותאמה והחישוב לפי הנתונים שעל האריזה.
-    </div>
+
 
     <div id="batchPreparationsContainer" class="preparations-list"></div>
 
-    <div class="warning">
-      Prototype בלבד. האפליקציה עדיין אינה בודקת מידע תרופתי מלא כגון אפשרות חצייה/פתיחת קפסולה,
-      הוראות רה-קונסטיטוציה, התאמת דרך מתן, קצב מתן או מינוני מקסימום.
-    </div>
+
 
     <button id="goToPreparedVerificationButton"
             class="primary prepare-next-button"
@@ -2136,10 +2356,7 @@
   <section id="verifyScreen" class="hidden">
     <h2>אימות התרופות שהוכנו</h2>
 
-    <div class="verification-note">
-      צלם יחד את כל התרופות שהוכנו ואת כל המזרקים/מיכלים. רצוי שהמזרקים יהיו מסומנים
-      בשם התרופה ובכמות שהוכנה. האפליקציה תשווה את מה שניתן לקרוא בתמונה להוראות ולחישובים.
-    </div>
+    <div class="tip">צלם יחד את כל המזרקים והמיכלים שהוכנו, כשהמדבקות עם שם התרופה והכמות גלויות.</div>
 
     <div class="card">
       <div class="order-actions">
@@ -2168,10 +2385,7 @@
         <div id="preparedOcrRawText" class="raw"></div>
       </div>
 
-      <div class="warning">
-        צילום יכול לאמת מידע גלוי בלבד. הוא אינו יכול להוכיח מהו החומר שנמצא בתוך מזרק לא מסומן.
-        אם הכמות או הזהות אינן קריאות בבירור, האפליקציה תדרוש אימות ידני ולא תציג MATCH אוטומטי.
-      </div>
+      <div class="tip">צילום מאמת רק מידע גלוי. מזרק לא מסומן ידרוש אימות ידני.</div>
 
       <div id="preparedVerificationResults" class="verify-plan-list"></div>
 
@@ -2213,6 +2427,7 @@
     </div>
 
     <div class="camera-controls">
+      <button id="preparedTorch" class="camera-torch hidden" type="button">🔦 פנס</button>
       <button class="camera-capture" type="button" onclick="capturePreparedBatch()">
         צלם את כל ההכנות
       </button>
@@ -2239,11 +2454,12 @@
       <div class="package-camera-mask"></div>
       <div id="medicationBatchScanBox" class="package-camera-box"></div>
       <div class="package-camera-hint">
-        מקם את כל האריזות בתוך המסגרת כך שהשמות והחוזקים גלויים
+        הנח את האריזות כשהתוויות פונות למצלמה. השם והריכוז צריכים להיות בתוך המסגרת
       </div>
     </div>
 
     <div class="camera-controls">
+      <button id="medicationTorch" class="camera-torch hidden" type="button">🔦 פנס</button>
       <button class="camera-capture" type="button" onclick="captureMedicationBatch()">
         צלם את כל האריזות
       </button>
@@ -2265,12 +2481,14 @@
     </div>
 
     <div class="camera-controls">
+      <button id="orderTorch" class="camera-torch hidden" type="button">🔦 פנס</button>
       <button class="camera-capture" type="button" onclick="captureOrderLine()">
         צלם את ההוראות
       </button>
     </div>
   </div>
 
+  <div class="app-footer">Prototype · אינו מחליף שיקול דעת קליני ואימות כפול</div>
 </div>
 
 <script>
@@ -2521,6 +2739,7 @@ function showScreen(id) {
   }
 
   window.scrollTo(0, 0);
+  updateStepper(id);
 
   if (id === "homeScreen") setStep("מסך פתיחה", 0);
   if (id === "orderScreen") setStep("שלב 1 מתוך 4", 25);
@@ -2656,6 +2875,7 @@ async function openOrderCamera(automatic) {
     });
 
     video.srcObject = orderCameraStream;
+    setupTorch(orderCameraStream, "orderTorch");
     modal.classList.remove("hidden");
   } catch (error) {
     console.error(error);
@@ -3630,7 +3850,7 @@ function extractOrderDetails(text) {
 function orderSummaryText(order) {
   var o = order || {};
   var parts = [
-    o.drugName || "תרופה לא מזוהה",
+    (o.drugName ? tallMan(o.drugName) : "") || "תרופה לא מזוהה",
     (o.dose !== "" && o.dose !== null && o.dose !== undefined && !isNaN(Number(o.dose)) ? String(o.dose) : "?") +
       " " + (o.doseUnit || "?")
   ];
@@ -3642,7 +3862,7 @@ function orderSummaryText(order) {
   if (o.adminTimes) parts.push("שעות: " + o.adminTimes);
   if (o.adminDuration) parts.push("מתן במשך " + o.adminDuration);
   if (o.courseDuration) parts.push("טיפול " + o.courseDuration);
-  if (o.weightDose) parts.push("(" + o.weightDose + ")");
+  if (o.weightDose) parts.push(o.weightDose);
 
   return parts.join(" · ");
 }
@@ -4221,7 +4441,7 @@ function refreshOrderSummary(index) {
 
   if (!drugEl || !doseEl || !unitEl || !routeEl || !summary) return;
 
-  summary.textContent = orderSummaryText(readOrderCard(index));
+  summary.innerHTML = bidiHtml(orderSummaryText(readOrderCard(index)));
 
   var complete =
     !!drugEl.value.trim() &&
@@ -4280,7 +4500,7 @@ function buildOrderCard(order, index) {
         (order.complete ? " hidden" : "") +
         '" title="הזיהוי אינו מלא">⚠</span>' +
       '<div id="orderSummary_' + index + '" class="compact-summary">' +
-        escapeHtml(summaryText) +
+        bidiHtml(summaryText) +
       "</div>" +
       '<button id="orderEditBtn_' + index + '" class="compact-edit-btn" type="button" onclick="toggleOrderEdit(' + index + ')">ערוך</button>' +
     "</div>" +
@@ -4584,7 +4804,7 @@ function populateSelectedOrdersForMedicationScreen(preserveExisting) {
     var o = selectedOrders[i];
 
     html +=
-      (i + 1) + ". " + escapeHtml(orderSummaryText(o)) + "<br>";
+      (i + 1) + ". " + bidiHtml(orderSummaryText(o)) + "<br>";
   }
 
   info.innerHTML = html;
@@ -4698,6 +4918,7 @@ async function openMedicationBatchCamera(automatic) {
     });
 
     video.srcObject = medicationBatchCameraStream;
+    setupTorch(medicationBatchCameraStream, "medicationTorch");
     modal.classList.remove("hidden");
 
   } catch (error) {
@@ -5868,79 +6089,49 @@ function recomputeAutomaticMatches() {
   for (var i = 0; i < packageMatches.length; i++) {
     var match = packageMatches[i];
     var card = document.createElement("div");
-
-    var orderText = escapeHtml(orderSummaryText(match.order));
+    var cardHtml;
+    var status;
 
     if (match.status === "matched") {
       var matchedPackage = match.candidates[0].package;
       var missingFields = packageMissingFields(matchedPackage);
       var routeCheck = routeCompatibility(match.order, matchedPackage);
+      var packageText = packageDetailText(matchedPackage) + " · אריזה " + (match.candidates[0].packageIndex + 1);
 
       if (routeCheck.status === "incompatible") {
-        card.className = "match-card match-stop";
-        card.innerHTML =
-          "<h3>" + orderText + "</h3>" +
-          "<div><strong>התרופה הותאמה לאריזה:</strong> " +
-          escapeHtml(matchedPackage.genericDrug) +
-          " · אריזה " + (match.candidates[0].packageIndex + 1) +
-          "</div>" +
-          '<div class="match-status">STOP — ' +
-          escapeHtml(routeCheck.message) +
-          "</div>";
+        status = "stop";
+        cardHtml = medCardHtml({ order: match.order, status: status, stopMessage: routeCheck.message, packageText: packageText });
       } else if (missingFields.length === 0 && routeCheck.status === "compatible") {
         var inlineCalc = calculateBatchPreparation(match.order, matchedPackage);
-        card.className = "match-card " + (inlineCalc.ok ? "match-ok" : "match-stop");
-        card.innerHTML =
-          "<h3>" + orderText + "</h3>" +
-          "<div><strong>הותאמה אוטומטית:</strong> " +
-          escapeHtml(matchedPackage.genericDrug) +
-          " · אריזה " + (match.candidates[0].packageIndex + 1) +
-          "</div>" +
-          (inlineCalc.ok
-            ? '<div class="match-status">✓ זהות התרופה, נתוני האריזה ודרך המתן תואמים</div>' +
-              '<div class="prep-value">יש לקחת: ' + escapeHtml(inlineCalc.value) + "</div>" +
-              '<div dir="ltr" style="text-align:left; unicode-bidi:isolate; font-size:13px;">' +
-                escapeHtml(inlineCalc.explanation) +
-              "</div>"
-            : '<div class="match-status">STOP — ' + escapeHtml(inlineCalc.explanation) + "</div>") +
-          calcAlertsHtml(inlineCalc) +
-          safetyBadgesHtml(match.order) +
-          buildDilutionHtml("m", i, inlineCalc);
+        status = cardStatus(inlineCalc);
+        cardHtml = medCardHtml({
+          order: match.order,
+          calc: inlineCalc,
+          packageText: packageText,
+          extraHtml: buildDilutionHtml("m", i, inlineCalc)
+        });
       } else {
-        card.className = "match-card match-warn";
         var reasons = [];
-
-        if (missingFields.length) {
-          reasons.push("חסרים: " + missingFields.join(", "));
-        }
-
-        if (routeCheck.status === "unknown") {
-          reasons.push(routeCheck.message);
-        }
-
-        card.innerHTML =
-          "<h3>" + orderText + "</h3>" +
-          "<div><strong>זהות התרופה הותאמה:</strong> " +
-          escapeHtml(matchedPackage.genericDrug) +
-          " · אריזה " + (match.candidates[0].packageIndex + 1) +
-          "</div>" +
-          '<div class="match-status">⚠ ' +
-          escapeHtml(reasons.join(" · ")) +
-          ". במסך ההכנה יוצג STOP עד להשלמת האימות.</div>";
+        if (missingFields.length) reasons.push("חסרים בכרטיס האריזה: " + missingFields.join(", "));
+        if (routeCheck.status === "unknown") reasons.push(routeCheck.message);
+        status = "check";
+        cardHtml = medCardHtml({
+          order: match.order,
+          status: status,
+          stopMessage: reasons.join(" · ") + ". יש להשלים בכרטיס האריזה למעלה.",
+          packageText: packageText
+        });
       }
     } else if (match.status === "missing") {
-      card.className = "match-card match-stop";
-      card.innerHTML =
-        "<h3>" + orderText + "</h3>" +
-        '<div class="match-status">STOP — לא זוהתה אריזה מתאימה להוראה זו.</div>';
-
+      status = "stop";
+      cardHtml = medCardHtml({ order: match.order, status: status, stopMessage: "לא זוהתה אריזה מתאימה להוראה זו. צלם שוב או הוסף אריזה ידנית." });
     } else {
-      card.className = "match-card match-warn";
-      card.innerHTML =
-        "<h3>" + orderText + "</h3>" +
-        '<div class="match-status">נמצאו כמה אריזות אפשריות לאותה תרופה. נדרש אימות ידני.</div>';
+      status = "check";
+      cardHtml = medCardHtml({ order: match.order, status: status, stopMessage: "נמצאו כמה אריזות אפשריות לאותה תרופה. השאר אריזה אחת מתאימה." });
     }
 
+    card.className = "med-card status-" + status;
+    card.innerHTML = cardHtml;
     container.appendChild(card);
   }
 
@@ -6138,6 +6329,269 @@ function confirmBatchMatchesAndPrepare() {
     }
   }
 }
+
+// ===== Display helpers: bidi isolation, Tall Man lettering, status cards =====
+
+// Wrap every Latin/number run in an LTR isolate so "3 mL" never renders as "mL 3"
+// inside Hebrew text.
+function bidiHtml(text) {
+  var s = String(text === undefined || text === null ? "" : text);
+  // Parentheses stay outside the runs so RTL bracket mirroring pairs them correctly.
+  var re = /[A-Za-z0-9µ][A-Za-z0-9µ .,:\/%+\-×÷=]*[A-Za-z0-9µ%]|[A-Za-z0-9µ]/g;
+  var out = "";
+  var last = 0;
+  var m;
+
+  while ((m = re.exec(s)) !== null) {
+    out += escapeHtml(s.slice(last, m.index));
+    out += '<bdi dir="ltr">' + escapeHtml(m[0]) + "</bdi>";
+    last = m.index + m[0].length;
+  }
+
+  return out + escapeHtml(s.slice(last));
+}
+
+// ISMP / FDA Tall Man lettering for look-alike names.
+var TALL_MAN = {
+  "Dopamine": "DOPamine",
+  "Dobutamine": "DOBUTamine",
+  "Epinephrine": "EPINEPHrine",
+  "Norepinephrine": "norEPINEPHrine",
+  "Hydralazine": "hydrALAZINE",
+  "Hydrochlorothiazide": "hydroCHLOROthiazide",
+  "Cefazolin": "ceFAZolin",
+  "Ceftriaxone": "cefTRIAXone",
+  "Cefotaxime": "cefoTAXime",
+  "Ceftazidime": "cefTAZidime",
+  "Cefuroxime": "cefUROXime",
+  "Cefepime": "cefePIME",
+  "Nifedipine": "NIFEdipine",
+  "Nicardipine": "niCARdipine",
+  "Metoprolol": "metoPROLOL",
+  "Metoclopramide": "metoCLOPRAMIDE",
+  "Clonidine": "cloNIDine",
+  "Clonazepam": "clonazePAM",
+  "Lorazepam": "LORazepam",
+  "Prednisone": "predniSONE",
+  "Prednisolone": "prednisoLONE",
+  "Methylprednisolone": "methylPREDNISolone",
+  "Phenytoin": "PHENYtoin",
+  "Fosphenytoin": "fosPHENYtoin",
+  "Ganciclovir": "GANciclovir",
+  "Valganciclovir": "valGANciclovir",
+  "Fentanyl": "fentaNYL",
+  "Sufentanil": "SUFentanil",
+  "Remifentanil": "REMIFentanil",
+  "Amiodarone": "amIODarone",
+  "Amlodipine": "amLODIPine",
+  "Vasopressin": "VASOpressin",
+  "Desmopressin": "DESMOpressin",
+  "Rocuronium": "ROCuronium",
+  "Vecuronium": "VECuronium",
+  "Omeprazole": "OMEPRAZole",
+  "Esomeprazole": "ESOMEPRAZole",
+  "Cloxacillin": "CLOXacillin",
+  "Flucloxacillin": "FLUCLOXacillin",
+  "Calcium Gluconate": "Calcium GLUCONATE",
+  "Calcium Chloride": "Calcium CHLORIDE",
+  "Potassium Chloride": "Potassium CHLORIDE",
+  "Potassium Phosphate": "Potassium PHOSPHATE",
+  "Heparin": "HEPARIN",
+  "Enoxaparin": "ENOXAparin",
+  "Tramadol": "traMADol"
+};
+
+function tallMan(name) {
+  var canonical = findKnownDrug(name || "");
+  return (canonical && TALL_MAN[canonical]) || canonical || name || "";
+}
+
+function cardStatus(calc) {
+  if (!calc || !calc.ok) return "stop";
+  if ((calc.warnings && calc.warnings.length) || calc.dilutionSuggested) return "check";
+  return "ready";
+}
+
+var CARD_STATUS_LABEL = {
+  ready: "✓ מוכן להכנה",
+  check: "⚠ לבדוק לפני הכנה",
+  stop: "STOP"
+};
+
+function orderDetailText(order) {
+  var o = order || {};
+  var parts = [
+    (o.dose !== "" && o.dose !== undefined && o.dose !== null ? o.dose : "?") + " " + (o.doseUnit || "?")
+  ];
+
+  if (o.route) parts.push(o.route);
+  if (o.frequency) parts.push(o.frequency);
+  if (o.prn) parts.push("PRN");
+  if (o.adminDuration) parts.push("במשך " + o.adminDuration);
+  if (o.adminTimes) parts.push(o.adminTimes);
+  if (o.weightDose) parts.push(o.weightDose);
+
+  return parts.join(" · ");
+}
+
+function packageDetailText(pkg) {
+  if (!pkg) return "";
+
+  var strengthText =
+    pkg.formulation === "tablet" || pkg.formulation === "capsule"
+      ? (pkg.strength ? formatNumber(pkg.strength) + " " + (pkg.unit || "") : "")
+      : (pkg.concentrationDrug
+          ? formatNumber(pkg.concentrationDrug) + " " + (pkg.concentrationUnit || "") + "/" +
+            (Number(pkg.concentrationVolume) === 1 ? "" : formatNumber(pkg.concentrationVolume) + " ") + "mL"
+          : "");
+
+  return [tallMan(pkg.genericDrug), formulationLabel(pkg.formulation), strengthText]
+    .filter(Boolean).join(" · ");
+}
+
+function amountLabel(calc) {
+  return /mL/.test(String(calc && calc.value)) ? "לשאוב" : "לתת";
+}
+
+// One card layout for both the package-match screen and the preparation screen.
+function medCardHtml(opts) {
+  var order = opts.order || {};
+  var calc = opts.calc;
+  var status = opts.status || cardStatus(calc);
+  var alertsHtml = "";
+  var alertCount = 0;
+
+  if (calc) {
+    (calc.warnings || []).forEach(function(w) {
+      alertsHtml += '<div class="calc-alert">⚠ ' + bidiHtml(w) + "</div>";
+      alertCount++;
+    });
+  }
+
+  var partners = lasaPartners(order.drugName);
+
+  if (partners.length) {
+    alertsHtml +=
+      '<div class="lasa-alert">שם דומה: ' + bidiHtml(partners.map(tallMan).join(", ")) +
+      ". ודא שהאריזה היא " + bidiHtml(tallMan(order.drugName)) + ".</div>";
+    alertCount++;
+  }
+
+  var ha = highAlertInfo(order.drugName, order.route);
+
+  var html =
+    '<div class="med-status">' + CARD_STATUS_LABEL[status] + "</div>" +
+    '<div class="med-body">' +
+      (opts.thumbHtml ? '<div class="med-thumb">' + opts.thumbHtml + "</div>" : "") +
+      '<div class="med-name"><bdi dir="ltr">' + escapeHtml(tallMan(order.drugName)) + "</bdi></div>" +
+      '<div class="med-order">' + bidiHtml(orderDetailText(order)) + "</div>" +
+      (ha
+        ? '<div class="high-alert-badge">⚠ סיכון גבוה · ' + bidiHtml(ha.category) + " · נדרש אימות כפול</div>"
+        : "");
+
+  if (calc && calc.ok) {
+    html +=
+      '<div class="med-amount-label">' + amountLabel(calc) + "</div>" +
+      (function() {
+        var m = String(calc.value || "").match(/^(\S+\s+\S+)\s*(.*)$/);
+        return '<div class="med-amount">' + bidiHtml(m ? m[1] : calc.value) + "</div>" +
+          (m && m[2] ? '<div class="med-amount-note">' + bidiHtml(m[2]) + "</div>" : "");
+      })() +
+      '<div class="med-formula" dir="ltr">' + escapeHtml(calc.explanation || "") + "</div>";
+  } else if (opts.stopMessage || (calc && calc.explanation)) {
+    html += '<div class="med-stop-reason">' + bidiHtml(opts.stopMessage || calc.explanation) + "</div>";
+  }
+
+  if (calc && calc.weightInfo) {
+    html += '<div class="' + (calc.weightOk ? "calc-ok" : "calc-info") + '">' + bidiHtml(calc.weightInfo) + "</div>";
+  }
+
+  if (opts.packageText) {
+    html += '<div class="med-package"><span>אריזה:</span> ' + bidiHtml(opts.packageText) + "</div>";
+  }
+
+  if (alertCount) {
+    html +=
+      '<details class="med-alerts"' + (status === "stop" ? " open" : "") + ">" +
+        "<summary>" + alertCount + (alertCount === 1 ? " התראה לבדיקה" : " התראות לבדיקה") + "</summary>" +
+        alertsHtml +
+      "</details>";
+  }
+
+  if (opts.extraHtml) html += opts.extraHtml;
+
+  return html + "</div>";
+}
+
+// ===== Stepper =====
+
+var STEP_FOR_SCREEN = {
+  homeScreen: 0,
+  orderScreen: 1,
+  medicationScreen: 2,
+  prepareScreen: 3,
+  verifyScreen: 4,
+  finalScreen: 5
+};
+
+function updateStepper(screenId) {
+  var current = STEP_FOR_SCREEN[screenId] || 0;
+  var items = document.querySelectorAll("#stepper .stepper-item");
+
+  for (var i = 0; i < items.length; i++) {
+    var n = i + 1;
+    items[i].classList.toggle("done", n < current);
+    items[i].classList.toggle("active", n === current);
+  }
+}
+
+// ===== Camera torch =====
+
+function setupTorch(stream, buttonId) {
+  var button = document.getElementById(buttonId);
+  if (!button) return;
+
+  button.classList.add("hidden");
+  button.classList.remove("on");
+
+  try {
+    var track = stream && stream.getVideoTracks ? stream.getVideoTracks()[0] : null;
+    var caps = track && track.getCapabilities ? track.getCapabilities() : null;
+
+    if (caps && caps.torch) {
+      button.classList.remove("hidden");
+      button.onclick = function() {
+        var on = !button.classList.contains("on");
+        track.applyConstraints({ advanced: [{ torch: on }] }).then(function() {
+          button.classList.toggle("on", on);
+        }).catch(function() {});
+      };
+    }
+  } catch (e) {}
+}
+
+// ===== Night mode =====
+
+function applyNightMode(on) {
+  document.documentElement.classList.toggle("night", !!on);
+  var button = document.getElementById("nightToggle");
+  if (button) button.textContent = on ? "☀️" : "🌙";
+}
+
+function toggleNightMode() {
+  var on = !document.documentElement.classList.contains("night");
+  applyNightMode(on);
+  try { localStorage.setItem("medicheck-night", on ? "1" : "0"); } catch (e) {}
+}
+
+(function() {
+  try {
+    if (localStorage.getItem("medicheck-night") === "1") {
+      document.documentElement.classList.add("night");
+    }
+  } catch (e) {}
+})();
+
 
 var preparationDilutions = {};
 var patientWeight = null;
@@ -6682,11 +7136,11 @@ function buildDilutionHtml(ctx, index, calc) {
       '<div class="dilution-box">' +
         "<strong>מהילה</strong>" +
         '<div class="dilution-steps">' +
-          "1. שאב " + formatNumber(d.stockVolume) + " mL מהתכשיר (" +
-            formatNumber(calc.stockConcentration) + " " + escapeHtml(unit) + "/mL).<br>" +
-          "2. השלם עם " + escapeHtml(d.diluent) + " לנפח כולל של " + formatNumber(d.finalVolume) + " mL וערבב.<br>" +
-          "3. ריכוז התמיסה המהולה: " + formatNumber(d.concentration) + " " + escapeHtml(unit) + "/mL.<br>" +
-          "4. שאב <strong>" + formatNumber(d.drawVolume) + " mL</strong> מהתמיסה המהולה.<br>" +
+          bidiHtml("1. שאב " + formatNumber(d.stockVolume) + " mL מהתכשיר (" +
+            formatNumber(calc.stockConcentration) + " " + unit + "/mL).") + "<br>" +
+          bidiHtml("2. השלם עם " + d.diluent + " לנפח כולל של " + formatNumber(d.finalVolume) + " mL וערבב.") + "<br>" +
+          bidiHtml("3. ריכוז התמיסה המהולה: " + formatNumber(d.concentration) + " " + unit + "/mL.") + "<br>" +
+          "4. שאב <strong>" + bidiHtml(formatNumber(d.drawVolume) + " mL") + "</strong> מהתמיסה המהולה.<br>" +
           "סמן את המזרק בשם התרופה, בריכוז לאחר המהילה ובנפח." +
         "</div>" +
         '<div class="dilution-actions">' +
@@ -6794,34 +7248,21 @@ function renderBatchPreparations(matches) {
     });
 
     var card = document.createElement("div");
-    card.className = "prep-card" + (calc.ok ? "" : " prep-stop");
+    var status = cardStatus(calc);
+    card.className = "med-card status-" + status;
 
-    var imageHtml = pkg.imageUrl
-      ? '<div><img class="prep-package-thumb" src="' + pkg.imageUrl + '" alt="אריזת ' +
-        escapeHtml(pkg.genericDrug) +
-        '" onclick="openPackageImageZoom(this.src)"><div class="prep-image-caption">האריזה שזוהתה</div></div>'
-      : '<div class="prep-thumb-placeholder">לא ניתן היה לחתוך תמונת אריזה מדויקת</div>';
+    var thumbHtml = pkg.imageUrl
+      ? '<img class="prep-package-thumb" src="' + pkg.imageUrl + '" alt="אריזת ' +
+        escapeHtml(pkg.genericDrug) + '" onclick="openPackageImageZoom(this.src)">'
+      : "";
 
-    var formulationLabelText = formulationLabel(pkg.formulation);
-
-    card.innerHTML =
-      '<div class="prep-card-layout">' +
-        '<div class="prep-thumb-wrap">' +
-          imageHtml +
-        "</div>" +
-        '<div class="prep-card-text">' +
-          "<h3>" + escapeHtml(orderSummaryText(match.order)) + "</h3>" +
-          "<div><strong>אריזה:</strong> " + escapeHtml(pkg.genericDrug) + "</div>" +
-          "<div><strong>צורת תרופה:</strong> " + escapeHtml(formulationLabelText) + "</div>" +
-          '<div class="prep-value">' + escapeHtml(calc.value) + "</div>" +
-          '<div dir="ltr" style="text-align:left; unicode-bidi:isolate;">' +
-            escapeHtml(calc.explanation) +
-          "</div>" +
-          calcAlertsHtml(calc) +
-          safetyBadgesHtml(match.order) +
-          buildDilutionHtml("p", i, calc) +
-        "</div>" +
-      "</div>";
+    card.innerHTML = medCardHtml({
+      order: match.order,
+      calc: calc,
+      packageText: packageDetailText(pkg),
+      thumbHtml: thumbHtml,
+      extraHtml: buildDilutionHtml("p", i, calc)
+    });
 
     container.appendChild(card);
   }
@@ -6889,6 +7330,7 @@ async function openPreparedBatchCamera(automatic) {
     });
 
     video.srcObject = preparedBatchCameraStream;
+    setupTorch(preparedBatchCameraStream, "preparedTorch");
     modal.classList.remove("hidden");
 
   } catch (error) {
@@ -7235,12 +7677,12 @@ function renderPreparedVerificationResults() {
 
     item.innerHTML =
       '<div class="verify-line">' +
-        '<div class="verify-name">' + escapeHtml(result.drug) + "</div>" +
+        '<div class="verify-name"><bdi dir="ltr">' + escapeHtml(tallMan(result.drug)) + "</bdi></div>" +
         '<div class="verify-status">' + escapeHtml(verificationStatusLabel(result.status)) + "</div>" +
       "</div>" +
-      '<div class="verify-expected"><strong>צפוי:</strong> ' + escapeHtml(expectedText) + "</div>" +
-      '<div class="verify-expected"><strong>נקרא מהצילום:</strong> ' + escapeHtml(actualText) + "</div>" +
-      '<div class="verify-expected">' + escapeHtml(result.message) + "</div>" +
+      '<div class="verify-expected"><strong>צפוי:</strong> ' + bidiHtml(expectedText) + "</div>" +
+      '<div class="verify-expected"><strong>נקרא מהצילום:</strong> ' + bidiHtml(actualText) + "</div>" +
+      '<div class="verify-expected">' + bidiHtml(result.message) + "</div>" +
       manualHtml +
       checkerHtml;
 
@@ -7347,19 +7789,19 @@ function finishPreparedVerification() {
 
     html +=
       '<div class="summary-item summary-status-' + r.status + '">' +
-        "<h3>" + escapeHtml(order.drugName || r.drug) + " — " + escapeHtml(verificationStatusLabel(r.status)) + "</h3>" +
-        "<div><strong>הוראה:</strong> " + escapeHtml(orderSummaryText(order)) + "</div>" +
-        (order.notes ? "<div><strong>הערות:</strong> " + escapeHtml(order.notes) + "</div>" : "") +
+        "<h3>" + escapeHtml(tallMan(order.drugName || r.drug)) + " — " + escapeHtml(verificationStatusLabel(r.status)) + "</h3>" +
+        "<div><strong>הוראה:</strong> " + bidiHtml(orderSummaryText(order)) + "</div>" +
+        (order.notes ? "<div><strong>הערות:</strong> " + bidiHtml(order.notes) + "</div>" : "") +
         "<div><strong>אריזה:</strong> " + escapeHtml(pkg.genericDrug || "") + " · " +
-          escapeHtml(formulationLabel(pkg.formulation)) + " · " + escapeHtml(pkgText) + "</div>" +
-        "<div><strong>חישוב:</strong> " + escapeHtml(calc.value || "") + "</div>" +
+          escapeHtml(formulationLabel(pkg.formulation)) + " · " + bidiHtml(pkgText) + "</div>" +
+        "<div><strong>חישוב:</strong> " + bidiHtml(calc.value || "") + "</div>" +
         '<div dir="ltr" style="text-align:left; unicode-bidi:isolate;">' + escapeHtml(calc.explanation || "") + "</div>" +
         (d ? "<div><strong>מהילה:</strong> " + formatNumber(d.stockVolume) + " mL תכשיר + " +
               escapeHtml(d.diluent) + " עד " + formatNumber(d.finalVolume) + " mL (" +
               formatNumber(d.concentration) + " " + escapeHtml(calc.concentrationUnit || "") + "/mL)</div>" : "") +
-        (calc.weightInfo ? "<div>" + escapeHtml(calc.weightInfo) + "</div>" : "") +
-        (calc.warnings || []).map(function(w) { return "<div>⚠ " + escapeHtml(w) + "</div>"; }).join("") +
-        "<div><strong>אימות:</strong> " + escapeHtml(r.message) +
+        (calc.weightInfo ? "<div>" + bidiHtml(calc.weightInfo) + "</div>" : "") +
+        (calc.warnings || []).map(function(w) { return "<div>⚠ " + bidiHtml(w) + "</div>"; }).join("") +
+        "<div><strong>אימות:</strong> " + bidiHtml(r.message) +
           (r.detectedAmount !== null && r.detectedAmount !== undefined
             ? " (נקרא: " + formatNumber(r.detectedAmount) + " " + escapeHtml(r.expected.unit) + ")"
             : "") +
