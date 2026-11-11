@@ -2152,7 +2152,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.32</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.33</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
@@ -2341,7 +2341,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.32 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.33 · שלב 3</div>
 
 
 
@@ -4090,7 +4090,9 @@ function clusterOrderOcrRows(lines) {
   if (!usable.length) return [];
 
   var medianHeight = medianNumber(usable.map(function(line) { return line.center.height; })) || 16;
-  var yTolerance = Math.max(9, medianHeight * 0.85);
+  // Tight tolerance: with a slightly tilted photo, a wider window merges
+  // neighbouring rows and gives one drug the dose of the next row.
+  var yTolerance = Math.max(9, medianHeight * 0.5);
 
   usable.sort(function(a,b) {
     if (Math.abs(a.center.y - b.center.y) > yTolerance) return a.center.y - b.center.y;
@@ -4210,8 +4212,37 @@ function bestMedicationNameFromRow(rowLines, doseLine, doseInfo) {
 }
 
 function parseHospitalMedicationRows(lines, confidence) {
-  var rows = clusterOrderOcrRows(lines);
   var orders = [];
+  var rest = [];
+  var allLines = Array.isArray(lines) ? lines : [];
+
+  // 1. A single OCR line that already holds a known drug AND a dose is a complete
+  //    row by itself. It is never combined with other lines, so a dose can not
+  //    travel to a neighbouring drug.
+  for (var k = 0; k < allLines.length; k++) {
+    var lineText = String((allLines[k] && allLines[k].text) || "");
+    var lineDrug = findKnownDrug(lineText);
+    var lineDose = parseDoseValue(lineText);
+    var drugsInLine = findDrugOccurrencesInText(lineText).length;
+
+    if (lineDrug && lineDose && drugsInLine <= 1 &&
+        /^(mg|mcg|g|units|mEq|mmol)$/i.test(lineDose.unit)) {
+      orders.push({
+        drugName: lineDrug,
+        dose: lineDose.dose,
+        doseUnit: lineDose.unit,
+        route: detectRouteValue(lineText),
+        confidence: confidence || 0,
+        sourceText: lineText,
+        complete: true
+      });
+    } else {
+      rest.push(allLines[k]);
+    }
+  }
+
+  // 2. Remaining lines (name and dose in separate OCR boxes) are paired by row.
+  var rows = clusterOrderOcrRows(rest);
 
   for (var r = 0; r < rows.length; r++) {
     var row = rows[r];
@@ -4238,7 +4269,21 @@ function parseHospitalMedicationRows(lines, confidence) {
 
     if (!doseLine || !doseInfo) continue;
 
-    var drugName = bestMedicationNameFromRow(row.lines, doseLine, doseInfo);
+    var drugName;
+    var drugLines = row.lines.filter(function(line) { return !!findKnownDrug(line.text); });
+    var distinctDrugs = {};
+    drugLines.forEach(function(line) { distinctDrugs[findKnownDrug(line.text)] = true; });
+
+    if (Object.keys(distinctDrugs).length > 1) {
+      // Two drugs ended up in one row: use the one vertically closest to the dose.
+      drugLines.sort(function(a, b) {
+        return Math.abs(a.center.y - doseLine.center.y) - Math.abs(b.center.y - doseLine.center.y);
+      });
+      drugName = findKnownDrug(drugLines[0].text);
+    } else {
+      drugName = bestMedicationNameFromRow(row.lines, doseLine, doseInfo);
+    }
+
     if (!drugName) continue;
 
     // Extra guard against feed/fluid rows measured only in mL.
