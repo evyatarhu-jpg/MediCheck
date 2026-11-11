@@ -2050,6 +2050,37 @@
       color: #0b3b6f;
       line-height: 1.15;
     }
+    .route-buttons {
+      display: flex;
+      gap: 6px;
+      margin: 8px 34px 2px 0;
+      flex-wrap: wrap;
+    }
+    .route-btn,
+    html.phone-ui .route-btn {
+      width: auto !important;
+      min-height: 36px !important;
+      margin: 0 !important;
+      padding: 4px 14px !important;
+      border-radius: 18px !important;
+      border: 1px solid #cfd8e3 !important;
+      background: #fff !important;
+      color: #344054 !important;
+      font-size: 15px !important;
+      font-weight: 700;
+      direction: ltr;
+    }
+    .route-btn.suggested,
+    html.phone-ui .route-btn.suggested {
+      border: 2px dashed #0d6efd !important;
+      color: #0d6efd !important;
+    }
+    .route-btn.active,
+    html.phone-ui .route-btn.active {
+      background: #0d6efd !important;
+      border: 2px solid #0d6efd !important;
+      color: #fff !important;
+    }
     .order-notes-line {
       margin: 6px 34px 0 0;
       font-size: 13px;
@@ -2152,7 +2183,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.33</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.34</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
@@ -2341,7 +2372,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.33 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.34 · שלב 3</div>
 
 
 
@@ -4334,6 +4365,10 @@ function parseMultipleOrders(text, segments, lines, confidence) {
 
     // An order without a route is never complete: the user has to choose it.
     if (!order.route) order.complete = false;
+    if (order.dose === "" || order.dose === null || order.dose === undefined) {
+      order.doseMissing = true;
+      order.complete = false;
+    }
 
     var key = orderKey(order);
     if (!seen[key]) {
@@ -4386,6 +4421,33 @@ function parseMultipleOrders(text, segments, lines, confidence) {
       });
 
       tableDrugNames[canonicalKey] = true;
+    }
+
+    // A known drug name that was read but whose dose could not be paired must not
+    // disappear silently: show it as an incomplete order to fill in by hand.
+    var nameSources = (Array.isArray(lines) ? lines.map(function(l) { return l && l.text; }) : [])
+      .concat(safeParts)
+      .filter(Boolean);
+
+    for (var u = 0; u < nameSources.length; u++) {
+      var unreadDrug = findKnownDrug(nameSources[u]);
+      if (!unreadDrug) continue;
+
+      var unreadKey = normalizeDrugName(unreadDrug);
+      if (tableDrugNames[unreadKey]) continue;
+
+      addOrder({
+        drugName: unreadDrug,
+        dose: "",
+        doseUnit: "",
+        route: detectRouteValue(nameSources[u]),
+        confidence: confidence || 0,
+        sourceText: nameSources[u],
+        complete: false,
+        doseMissing: true
+      });
+
+      tableDrugNames[unreadKey] = true;
     }
 
     return orders;
@@ -4595,6 +4657,14 @@ function refreshOrderSummary(index) {
     badge.classList.toggle("hidden", complete);
   }
 
+  var routeButtons = document.querySelectorAll("#routeButtons_" + index + " .route-btn");
+  for (var rb = 0; rb < routeButtons.length; rb++) {
+    routeButtons[rb].classList.toggle("active", routeButtons[rb].dataset.route === routeEl.value);
+  }
+
+  var routeMissing = document.getElementById("orderRouteMissing_" + index);
+  if (routeMissing) routeMissing.classList.toggle("hidden", !!routeEl.value);
+
   var card = summary.closest(".order-item");
   if (card) {
     card.classList.toggle("incomplete", !complete);
@@ -4621,6 +4691,41 @@ function toggleOrderEdit(index, forceOpen) {
   }
 }
 
+// Routes suggested by the EMR form prefix. A suggestion is only highlighted;
+// the user still has to tap it.
+function suggestedRoutes(order) {
+  var hint = String((order && order.formHint) || "");
+  if (/להזרקה/.test(hint)) return ["IV", "IM"];
+  if (/טבליה|קפסולה|פומי/.test(hint)) return ["PO", "NG"];
+  if (/GTTS/.test(hint)) return ["PO"];
+  return [];
+}
+
+function routeButtonsHtml(order, index) {
+  var routes = ["PO", "IV", "IM", "SC", "NG"];
+  var suggested = suggestedRoutes(order);
+
+  return (
+    '<div class="route-buttons" id="routeButtons_' + index + '">' +
+    routes.map(function(r) {
+      var cls = "route-btn" +
+        (order.route === r ? " active" : "") +
+        (suggested.indexOf(r) !== -1 ? " suggested" : "");
+      return '<button type="button" class="' + cls + '" data-route="' + r +
+        '" onclick="setOrderRoute(' + index + ", '" + r + "')\">" + r + "</button>";
+    }).join("") +
+    "</div>"
+  );
+}
+
+function setOrderRoute(index, route) {
+  var select = document.getElementById("orderRoute_" + index);
+  if (!select) return;
+
+  select.value = route;
+  refreshOrderSummary(index);
+}
+
 function buildOrderCard(order, index) {
   var card = document.createElement("div");
   card.className =
@@ -4642,12 +4747,18 @@ function buildOrderCard(order, index) {
   } else if (order.nameMatch === "fuzzy") {
     notes.push("שם התרופה נקרא חלקית וזוהה בקירוב כ-" + tallMan(order.drugName) + ". ודא את השם.");
   }
+  if (order.doseMissing) notes.push("המינון לא נקרא מהמסך. יש להזין ידנית בעריכה.");
   if (order.formHint) notes.push("צורת מתן לפי המסך: " + order.formHint);
-  if (!order.route) notes.push("דרך המתן לא זוהתה. יש לבחור בעריכה.");
 
   var notesHtml = notes.length
     ? '<div class="order-notes-line">' + notes.map(bidiHtml).join("<br>") + "</div>"
     : "";
+
+  notesHtml +=
+    '<div id="orderRouteMissing_' + index + '" class="order-notes-line' + (order.route ? " hidden" : "") + '">' +
+      "דרך המתן לא זוהתה. בחר:" +
+    "</div>" +
+    routeButtonsHtml(order, index);
 
   card.innerHTML =
     '<div class="compact-row">' +
