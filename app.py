@@ -458,6 +458,7 @@ def home():
 def health():
     return jsonify({
         "ok": True,
+        "engine": "rapidocr",
         "ocr_loaded": _ocr is not None,
         "ocr_loading": _ocr_loading,
         "ocr_error": _ocr_error,

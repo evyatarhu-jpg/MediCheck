@@ -2050,6 +2050,12 @@
       color: #0b3b6f;
       line-height: 1.15;
     }
+    .order-notes-line {
+      margin: 6px 34px 0 0;
+      font-size: 13px;
+      color: #93370d;
+      line-height: 1.5;
+    }
     .med-amount-note {
       font-size: 16px;
       font-weight: 700;
@@ -2146,7 +2152,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.31</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.32</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
@@ -2335,7 +2341,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.31 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.32 · שלב 3</div>
 
 
 
@@ -2540,6 +2546,10 @@ var drugAliases = [
   { canonical: "Clonidine", aliases: ["clonidine","קלונידין"] },
   { canonical: "Chloral Hydrate", aliases: ["chloral hydrate","chloral","כלורל הידרט","כלורל"] },
   { canonical: "Melatonin", aliases: ["melatonin","circadin","מלטונין"] },
+  { canonical: "Promethazine", aliases: ["promethazine","phenergan","פרומתזין","פרומטזין"] },
+  { canonical: "Hydroxyzine", aliases: ["hydroxyzine","atarax","הידרוקסיזין"] },
+  { canonical: "Diphenhydramine", aliases: ["diphenhydramine","benadryl","דיפנהידרמין"] },
+  { canonical: "Chlorpromazine", aliases: ["chlorpromazine","largactil","כלורפרומזין"] },
   { canonical: "Haloperidol", aliases: ["haloperidol","haldol","הלופרידול"] },
   { canonical: "Quetiapine", aliases: ["quetiapine","seroquel","קווטיאפין"] },
   { canonical: "Risperidone", aliases: ["risperidone","risperdal","ריספרידון"] },
@@ -3089,6 +3099,9 @@ function findKnownDrug(text) {
 
   if (exact.canonical) return exact.canonical;
 
+  var truncated = findTruncatedDrug(text);
+  if (truncated) return truncated.canonical;
+
   var words = (text || "").split(/\s+/);
   var candidates = words.slice();
 
@@ -3114,6 +3127,80 @@ function findKnownDrug(text) {
   }
 
   return best.score >= 0.68 ? best.canonical : "";
+}
+
+// Order screens cut long names ("CLONAZEP...", "Adrenal..."). Find the longest
+// leading part (at least 6 letters) of an alias that appears in the text and
+// belongs to one drug only.
+function findTruncatedDrug(text) {
+  var normalizedText = normalizeForMatching(text);
+  var best = null;
+
+  for (var i = 0; i < drugAliases.length; i++) {
+    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
+      var alias = normalizeForMatching(drugAliases[i].aliases[j]);
+      if (alias.length < 7 || !/^[a-z]/.test(alias)) continue;
+
+      for (var len = alias.length - 1; len >= 6; len--) {
+        if (best && len <= best.length) break;
+        var prefix = alias.slice(0, len);
+
+        if (normalizedText.indexOf(prefix) !== -1) {
+          best = { canonical: drugAliases[i].canonical, length: len, prefix: prefix };
+          break;
+        }
+      }
+    }
+  }
+
+  if (!best) return null;
+
+  // Ambiguous prefix (shared by two different drugs): do not guess.
+  for (i = 0; i < drugAliases.length; i++) {
+    if (drugAliases[i].canonical === best.canonical) continue;
+    for (j = 0; j < drugAliases[i].aliases.length; j++) {
+      if (normalizeForMatching(drugAliases[i].aliases[j]).indexOf(best.prefix) === 0) return null;
+    }
+  }
+
+  return best;
+}
+
+// How the drug name was recognized: "exact", "truncated" or "fuzzy".
+function drugNameMatchType(text) {
+  var normalizedText = normalizeForMatching(text);
+
+  for (var i = 0; i < drugAliases.length; i++) {
+    for (var j = 0; j < drugAliases[i].aliases.length; j++) {
+      var a = normalizeForMatching(drugAliases[i].aliases[j]);
+      if (a && normalizedText.indexOf(a) !== -1) return "exact";
+    }
+  }
+
+  if (findTruncatedDrug(text)) return "truncated";
+  return findKnownDrug(text) ? "fuzzy" : "";
+}
+
+// EMR dosage-form prefixes such as "GTTS.CLONAZEPAM", "I.PROMETHAZINE", "TAB.X".
+function detectFormPrefix(text) {
+  var t = String(text || "").toUpperCase();
+  var checks = [
+    { re: /\bCOLL\.?|LLTEARS|EYE ?DROPS/, hint: "טיפות עיניים", route: "" },
+    { re: /\bGTTS?\.?/, hint: "טיפות (GTTS)", route: "" },
+    { re: /\bTAB\.|\bTABS?\b/, hint: "טבליה", route: "PO" },
+    { re: /\bCAP\.|\bCAPS?\b/, hint: "קפסולה", route: "PO" },
+    { re: /\bSYR\.|\bSUSP\.|\bSYRUP|\bSUSPENSION/, hint: "תמיסה / תרחיף פומי", route: "PO" },
+    { re: /\bSUPP\.?/, hint: "פתילה", route: "" },
+    { re: /\bINH\.?|\bNEB\.?/, hint: "אינהלציה", route: "" },
+    { re: /\bUNG\.?|\bOINT|\bCREAM/, hint: "משחה / קרם", route: "" },
+    { re: /\bINJ\.?|\bAMP\.?|\bVIAL|^\s*[IL1|]\s*\.?\s*[A-Z]{5,}/, hint: "להזרקה (I.)", route: "" }
+  ];
+
+  for (var i = 0; i < checks.length; i++) {
+    if (checks[i].re.test(t)) return checks[i];
+  }
+
+  return null;
 }
 
 // Remove hits whose matched text lies inside a longer hit
@@ -3731,11 +3818,13 @@ async function recognizeOrder() {
 
 function detectRouteValue(text) {
   var checks = [
-    { value: "PO", regex: /\bPO\b|P\.?O\.?|ORAL|BY MOUTH|פומי|דרך הפה/i },
-    { value: "IV", regex: /\bIV\b|I\.?V\.?|INTRAVENOUS|תוך ורידי/i },
-    { value: "IM", regex: /\bIM\b|I\.?M\.?|INTRAMUSCULAR|תוך שרירי/i },
-    { value: "SC", regex: /\bSC\b|S\.?C\.?|SUBCUTANEOUS|תת עורי/i },
-    { value: "NG", regex: /\bNG\b|NASOGASTRIC|זונדה/i }
+    // Letters around the abbreviation are not allowed, so "POTASSIUM",
+    // "PRIMACOR" or "DISC" do not count as a route.
+    { value: "PO", regex: /(?:^|[^A-Za-z])P\.?O\.?(?![A-Za-z])|\bORAL\b|BY MOUTH|פומי|דרך הפה/i },
+    { value: "IV", regex: /(?:^|[^A-Za-z])I\.?V\.?(?![A-Za-z])|INTRAVENOUS|תוך ורידי/i },
+    { value: "IM", regex: /(?:^|[^A-Za-z])I\.?M\.?(?![A-Za-z])|INTRAMUSCULAR|תוך שרירי/i },
+    { value: "SC", regex: /(?:^|[^A-Za-z])S\.?C\.?(?![A-Za-z])|SUBCUTANEOUS|תת עורי/i },
+    { value: "NG", regex: /(?:^|[^A-Za-z])NG(?![A-Za-z])|NASOGASTRIC|זונדה/i }
   ];
 
   for (var i = 0; i < checks.length; i++) {
@@ -4158,7 +4247,7 @@ function parseHospitalMedicationRows(lines, confidence) {
     }
 
     var rowText = row.lines.map(function(line) { return line.text; }).join(" | ");
-    var route = detectRouteValue(rowText) || "PO";
+    var route = detectRouteValue(rowText);
     var rowConfidence = row.lines.reduce(function(sum, line) { return sum + (line.score || 0); }, 0) / Math.max(1, row.lines.length);
 
     orders.push({
@@ -4186,6 +4275,20 @@ function parseMultipleOrders(text, segments, lines, confidence) {
     for (var field in details) {
       if (order[field] === undefined) order[field] = details[field];
     }
+
+    var known = findKnownDrug(order.drugName || "") || findKnownDrug(order.sourceText || "");
+    if (known) order.drugName = known;
+
+    order.nameMatch = drugNameMatchType(order.sourceText || order.drugName || "");
+
+    var form = detectFormPrefix(order.sourceText || "");
+    if (form) {
+      order.formHint = form.hint;
+      if (!order.route && form.route) order.route = form.route;
+    }
+
+    // An order without a route is never complete: the user has to choose it.
+    if (!order.route) order.complete = false;
 
     var key = orderKey(order);
     if (!seen[key]) {
@@ -4231,7 +4334,7 @@ function parseMultipleOrders(text, segments, lines, confidence) {
         drugName: knownDrug,
         dose: sameSegmentDose.dose,
         doseUnit: sameSegmentDose.unit,
-        route: detectRouteValue(safeParts[s]) || "PO",
+        route: detectRouteValue(safeParts[s]),
         confidence: confidence || 0,
         sourceText: safeParts[s],
         complete: true
@@ -4440,7 +4543,8 @@ function refreshOrderSummary(index) {
   var complete =
     !!drugEl.value.trim() &&
     !!doseEl.value &&
-    !!unitEl.value;
+    !!unitEl.value &&
+    !!routeEl.value;
 
   if (badge) {
     badge.classList.toggle("hidden", complete);
@@ -4486,6 +4590,19 @@ function buildOrderCard(order, index) {
     : "";
 
   var summaryText = orderSummaryText(order);
+  var notes = [];
+
+  if (order.nameMatch === "truncated") {
+    notes.push("שם התרופה קטוע במסך וזוהה כ-" + tallMan(order.drugName) + ". ודא את השם.");
+  } else if (order.nameMatch === "fuzzy") {
+    notes.push("שם התרופה נקרא חלקית וזוהה בקירוב כ-" + tallMan(order.drugName) + ". ודא את השם.");
+  }
+  if (order.formHint) notes.push("צורת מתן לפי המסך: " + order.formHint);
+  if (!order.route) notes.push("דרך המתן לא זוהתה. יש לבחור בעריכה.");
+
+  var notesHtml = notes.length
+    ? '<div class="order-notes-line">' + notes.map(bidiHtml).join("<br>") + "</div>"
+    : "";
 
   card.innerHTML =
     '<div class="compact-row">' +
@@ -4498,6 +4615,7 @@ function buildOrderCard(order, index) {
       "</div>" +
       '<button id="orderEditBtn_' + index + '" class="compact-edit-btn" type="button" onclick="toggleOrderEdit(' + index + ')">ערוך</button>' +
     "</div>" +
+    notesHtml +
     '<div id="orderEditPanel_' + index + '" class="compact-edit-panel hidden">' +
       '<div class="compact-edit-grid-order">' +
         "<div>" +
@@ -4746,6 +4864,12 @@ function confirmSelectedOrders() {
 
     if (isNaN(order.dose) || order.dose <= 0 || !order.doseUnit) {
       alert("בהוראה " + (i + 1) + " יש לאשר מינון ויחידה");
+      return;
+    }
+
+    if (!order.route) {
+      alert("בהוראה " + (i + 1) + " (" + order.drugName + ") יש לבחור דרך מתן. האפליקציה אינה מניחה דרך מתן.");
+      toggleOrderEdit(i, true);
       return;
     }
 
@@ -6407,7 +6531,10 @@ var TALL_MAN = {
   "Potassium Phosphate": "Potassium PHOSPHATE",
   "Heparin": "HEPARIN",
   "Enoxaparin": "ENOXAparin",
-  "Tramadol": "traMADol"
+  "Tramadol": "traMADol",
+  "Hydroxyzine": "hydrOXYzine",
+  "Promethazine": "promethazine",
+  "Chlorpromazine": "chlorproMAZINE"
 };
 
 function tallMan(name) {
@@ -6653,6 +6780,7 @@ var HIGH_ALERT_MEDS = {
   "Procainamide": { category: "אנטי-אריתמי IV", ivOnly: true },
   "Digoxin": { category: "דיגוקסין IV", ivOnly: true },
   "Sodium Nitroprusside": { category: "ניטרופרוסיד" },
+  "Promethazine": { category: "פרומתזין IV", ivOnly: true },
   "Amphotericin B Liposomal": { category: "תכשיר ליפוזומלי" },
   "Amphotericin B (conventional)": { category: "אמפוטריצין (מינון שונה מהליפוזומלי)" }
 };
@@ -6678,7 +6806,9 @@ var LASA_GROUPS = [
   ["Potassium Chloride", "Potassium Phosphate"],
   ["Amphotericin B Liposomal", "Amphotericin B (conventional)"],
   ["Hydralazine", "Hydrochlorothiazide"],
-  ["Heparin", "Enoxaparin"]
+  ["Heparin", "Enoxaparin"],
+  ["Hydralazine", "Hydroxyzine"],
+  ["Promethazine", "Chlorpromazine"]
 ];
 
 function highAlertInfo(drugName, route) {
