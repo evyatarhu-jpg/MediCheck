@@ -29,6 +29,7 @@ os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
 from rapidocr_onnxruntime import RapidOCR
 
 import vision
+import deidentify
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -555,6 +556,7 @@ def health():
         "engine": "rapidocr",
         "vision_available": vision.vision_available(),
         "vision_model": vision.VISION_MODEL if vision.vision_available() else None,
+        "deidentify": DEIDENTIFY,
         "ocr_loaded": _ocr is not None,
         "ocr_loading": _ocr_loading,
         "ocr_error": _ocr_error,
@@ -595,7 +597,24 @@ def ocr_medication():
         return jsonify({"error": str(exc)}), 500
 
 
-def _vision_endpoint(reader):
+DEIDENTIFY = os.environ.get("MEDICHECK_DEIDENTIFY", "1") != "0"
+
+
+def _ocr_lines_for_masking(bgr_image):
+    lines = []
+    for item in _predict(get_ocr(), bgr_image) or []:
+        try:
+            polygon, text = item[0], str(item[1] or "").strip()
+        except (TypeError, IndexError):
+            continue
+        if not text:
+            continue
+        poly = [(float(p[0]), float(p[1])) for p in _plain_list(polygon)] if polygon is not None else None
+        lines.append({"text": text, "box": _box_from_polygon(polygon), "poly": poly if poly and len(poly) == 4 else None})
+    return lines
+
+
+def _vision_endpoint(reader, orders_screen):
     if not vision.vision_available():
         return jsonify({"error": "vision_disabled"}), 503
 
@@ -611,9 +630,24 @@ def _vision_endpoint(reader):
 
     media_type = upload.mimetype if upload.mimetype in ("image/jpeg", "image/png", "image/webp") else "image/jpeg"
 
+    masking = None
+    if DEIDENTIFY:
+        # Identifiers are blacked out locally; only the masked copy leaves the server.
+        # If masking cannot be done, nothing is sent and the app falls back to OCR.
+        try:
+            data, masking = deidentify.mask_image(data, _ocr_lines_for_masking, orders_screen=orders_screen,
+                                                  max_side=OCR_MAX_SIDE)
+            media_type = "image/jpeg"
+        except Exception as exc:
+            app.logger.warning("De-identification failed, image not sent: %s", exc)
+            return jsonify({"error": "deidentify_failed"}), 422
+
     try:
         # The image is held in memory only for the duration of the request.
-        return jsonify(reader(data, media_type))
+        result = reader(data, media_type)
+        if masking is not None and isinstance(result, dict):
+            result["deidentified"] = masking
+        return jsonify(result)
     except Exception as exc:
         app.logger.exception("Vision request failed")
         return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 502
@@ -621,12 +655,12 @@ def _vision_endpoint(reader):
 
 @app.post("/api/vision-orders")
 def vision_orders():
-    return _vision_endpoint(vision.read_orders)
+    return _vision_endpoint(vision.read_orders, orders_screen=True)
 
 
 @app.post("/api/vision-packages")
 def vision_packages():
-    return _vision_endpoint(vision.read_packages)
+    return _vision_endpoint(vision.read_packages, orders_screen=False)
 
 
 if __name__ == "__main__":
