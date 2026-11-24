@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+tests/scenario_report_*_photo*.html
+tests/scenario_results_*_photo*.json
