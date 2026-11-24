@@ -28,6 +28,8 @@ os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
 # and peak memory stays well under 512 MB.
 from rapidocr_onnxruntime import RapidOCR
 
+import vision
+
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -532,6 +534,8 @@ def health():
     return jsonify({
         "ok": True,
         "engine": "rapidocr",
+        "vision_available": vision.vision_available(),
+        "vision_model": vision.VISION_MODEL if vision.vision_available() else None,
         "ocr_loaded": _ocr is not None,
         "ocr_loading": _ocr_loading,
         "ocr_error": _ocr_error,
@@ -570,6 +574,40 @@ def ocr_medication():
     except Exception as exc:
         app.logger.exception("Medication OCR failed")
         return jsonify({"error": str(exc)}), 500
+
+
+def _vision_endpoint(reader):
+    if not vision.vision_available():
+        return jsonify({"error": "vision_disabled"}), 503
+
+    upload = request.files.get("image")
+    if not upload:
+        return jsonify({"error": "No image received"}), 400
+
+    data = upload.read()
+    if not data:
+        return jsonify({"error": "Empty image"}), 400
+    if len(data) > 8 * 1024 * 1024:
+        return jsonify({"error": "Image too large"}), 413
+
+    media_type = upload.mimetype if upload.mimetype in ("image/jpeg", "image/png", "image/webp") else "image/jpeg"
+
+    try:
+        # The image is held in memory only for the duration of the request.
+        return jsonify(reader(data, media_type))
+    except Exception as exc:
+        app.logger.exception("Vision request failed")
+        return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 502
+
+
+@app.post("/api/vision-orders")
+def vision_orders():
+    return _vision_endpoint(vision.read_orders)
+
+
+@app.post("/api/vision-packages")
+def vision_packages():
+    return _vision_endpoint(vision.read_packages)
 
 
 if __name__ == "__main__":
