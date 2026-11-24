@@ -68,7 +68,7 @@ LOGIN_HTML = """
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#ff5400">
-  <title>MediCheck – כניסה</title>
+  <title>MATAMED – כניסה</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -131,6 +131,23 @@ LOGIN_HTML = """
       margin: 14px 0 6px;
       direction: ltr;
       text-align: right;
+    }
+    .wordmark {
+      display: flex;
+      gap: 0;
+      align-items: baseline;
+      justify-content: flex-end;
+    }
+    .wordmark b { font-weight: 700; color: #fff; }
+    .wordmark span { font-weight: 400; color: rgba(255, 255, 255, .82); }
+    .claim {
+      direction: ltr;
+      text-align: right;
+      margin: 0 0 14px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .3px;
+      color: rgba(255, 255, 255, .92);
     }
     .tagline {
       font-family: "Rubik", "Open Sans", sans-serif;
@@ -202,8 +219,9 @@ LOGIN_HTML = """
   <section class="hero">
     <div class="hero-inner">
       <span class="tag">Prototype</span>
-      <h1>MediCheck</h1>
-      <p class="tagline">הכנת תרופות.<br><b>בדיוק לפי ההוראה.</b></p>
+      <h1 class="wordmark"><b>MATA</b><span>MED</span></h1>
+      <p class="claim">Medication Assurance Through AI</p>
+      <p class="tagline">בטיחות חכמה בהכנת תרופות.<br><b>בדיוק לפי ההוראה.</b></p>
     </div>
   </section>
 
@@ -242,10 +260,10 @@ CONFIG_HTML = """
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MediCheck – הגדרה נדרשת</title>
+  <title>MATAMED – הגדרה נדרשת</title>
 </head>
 <body style="font-family:Arial,sans-serif;max-width:760px;margin:50px auto;padding:20px;direction:rtl">
-  <h1>MediCheck אינו מוגדר עדיין</h1>
+  <h1>MATAMED אינו מוגדר עדיין</h1>
   <p>יש להגדיר את <code>MEDICHECK_PASSWORD</code> ב־Environment Variables של השרת.</p>
 </body>
 </html>
@@ -611,6 +629,6 @@ def vision_packages():
 
 
 if __name__ == "__main__":
-    print("Starting MediCheck on port 8000")
+    print("Starting MATAMED on port 8000")
     print("OCR models load on the first request (about one second).")
     app.run(host="0.0.0.0", port=8000, debug=False, threaded=True)
