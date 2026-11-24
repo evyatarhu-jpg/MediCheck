@@ -65,75 +65,148 @@ LOGIN_HTML = """
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ff5400">
   <title>MediCheck – כניסה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --ink: #280003;
+      --ink-soft: rgba(40, 0, 3, .62);
+      --paper: #fff7ef;
+      --brand: #ff5400;
+      --sun: #ffd23f;
+      --grad: linear-gradient(135deg, #ff5400 0%, #ff6a2b 28%, #e8457a 66%, #a24bc9 100%);
+    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: #f4f7fb;
-      color: #123a63;
-      font-family: Arial, Helvetica, sans-serif;
-      padding: 20px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Open Sans", Arial, sans-serif;
     }
-    .login-card {
-      width: min(430px, 100%);
+    .hero {
+      background: var(--grad);
+      color: #fff;
+      padding: 56px 24px 120px;
+      text-align: right;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: -80px;
+      bottom: -140px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255, 210, 63, .35);
+      filter: blur(10px);
+    }
+    .hero-inner { max-width: 430px; margin: 0 auto; position: relative; z-index: 1; }
+    .tag {
+      display: inline-block;
+      background: var(--sun);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 3px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-family: "Rubik", "Open Sans", sans-serif;
+      font-weight: 600;
+      font-size: 44px;
+      letter-spacing: -1px;
+      margin: 14px 0 6px;
+      direction: ltr;
+      text-align: right;
+    }
+    .tagline {
+      font-family: "Rubik", "Open Sans", sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.3;
+      margin: 0;
+    }
+    .tagline b { font-weight: 700; }
+    main {
+      width: min(430px, calc(100% - 32px));
+      margin: -84px auto 24px;
       background: #fff;
-      border: 1px solid #d8e1ea;
-      border-radius: 20px;
-      box-shadow: 0 14px 40px rgba(21, 45, 74, .10);
-      padding: 28px;
+      border: 1px solid #f0dccb;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(40, 0, 3, .12);
+      padding: 26px 22px;
+      position: relative;
+      z-index: 2;
     }
-    h1 { margin: 0 0 8px; font-size: 32px; }
-    .subtitle { color: #667085; margin-bottom: 24px; line-height: 1.5; }
-    label { display: block; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: var(--ink-soft); margin: 0 0 18px; line-height: 1.5; }
+    label { display: block; font-weight: 700; margin-bottom: 8px; }
     input {
       width: 100%;
-      min-height: 54px;
-      border: 1px solid #b9c7d6;
-      border-radius: 12px;
-      padding: 10px 12px;
+      min-height: 56px;
+      border: 1px solid #ead5c3;
+      border-radius: 14px;
+      padding: 10px 14px;
       font-size: 19px;
       direction: ltr;
+      color: var(--ink);
+      background: #fff;
     }
+    input:focus { outline: 3px solid rgba(255, 84, 0, .25); border-color: var(--brand); }
     button {
       width: 100%;
       min-height: 56px;
-      margin-top: 14px;
+      margin-top: 16px;
       border: 0;
-      border-radius: 12px;
-      background: #0d6efd;
+      border-radius: 999px;
+      background: var(--ink);
       color: #fff;
-      font-size: 19px;
-      font-weight: 800;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: .3px;
       cursor: pointer;
+      box-shadow: 0 10px 22px rgba(40, 0, 3, .2);
     }
+    button:active { transform: translateY(1px); }
     .error {
       margin-top: 14px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #fff1f1;
-      color: #a42323;
-      border: 1px solid #efc2c2;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: #fef3f2;
+      color: #912018;
+      border: 1px solid #f5b5ae;
     }
     .prototype {
-      margin-top: 18px;
-      color: #7a5b12;
-      background: #fff8df;
-      border: 1px solid #ead79c;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 14px;
+      width: min(430px, calc(100% - 32px));
+      margin: 0 auto 28px;
+      color: var(--ink-soft);
+      font-size: 13px;
       line-height: 1.5;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <main class="login-card">
-    <h1>MediCheck</h1>
-    <div class="subtitle">גישה למערכת מוגנת בסיסמה.</div>
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="tag">Prototype</span>
+      <h1>MediCheck</h1>
+      <p class="tagline">הכנת תרופות.<br><b>בדיוק לפי ההוראה.</b></p>
+    </div>
+  </section>
+
+  <main>
+    <p class="subtitle">גישה למערכת מוגנת בסיסמה.</p>
 
     <form method="post" autocomplete="off">
       <label for="password">סיסמה</label>
@@ -151,11 +224,11 @@ LOGIN_HTML = """
     {% if error %}
       <div class="error">{{ error }}</div>
     {% endif %}
-
-    <div class="prototype">
-      Prototype בלבד. אין להשתמש במערכת לצורך החלטה קלינית או מתן תרופה ללא אימות אנושי מלא.
-    </div>
   </main>
+
+  <div class="prototype">
+    Prototype בלבד. אין להשתמש במערכת לצורך החלטה קלינית או מתן תרופה ללא אימות אנושי מלא.
+  </div>
 </body>
 </html>
 """
