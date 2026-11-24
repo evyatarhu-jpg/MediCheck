@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0d6efd">
+  <meta name="theme-color" content="#280003">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -13,7 +13,7 @@
   <title>MediCheck</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <script>
 (function () {
@@ -34,11 +34,11 @@
     * { box-sizing: border-box; }
 
     :root {
-      --blue: #0d6efd;
-      --blue-dark: #123a63;
-      --bg: #eef3f9;
-      --line: #dbe4ee;
-      --muted: #667085;
+      --blue: #280003;
+      --blue-dark: #280003;
+      --bg: #fff7ef;
+      --line: #f0dccb;
+      --muted: #7a5a5c;
       --ok-bg: #ecfdf3;
       --ok: #166534;
       --bad-bg: #fef2f2;
@@ -53,7 +53,7 @@
       margin: 0;
       padding: 0;
       background: var(--bg);
-      color: #1f2937;
+      color: #280003;
       font-family: Arial, sans-serif;
       -webkit-text-size-adjust: 100%;
       overflow-x: hidden;
@@ -86,7 +86,7 @@
         12px;
       background: rgba(255,255,255,.97);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid #edf1f5;
+      border-bottom: 1px solid #feefe0;
     }
 
     .toprow {
@@ -105,8 +105,8 @@
     .step {
       font-size: 15px;
       color: var(--muted);
-      background: #f3f6fa;
-      border: 1px solid #e2e8f0;
+      background: #fff7ef;
+      border: 1px solid #f0dccb;
       border-radius: 999px;
       padding: 7px 10px;
     }
@@ -116,7 +116,7 @@
       margin-top: 10px;
       border-radius: 999px;
       overflow: hidden;
-      background: #e8edf4;
+      background: #feefe0;
     }
 
     .progress > div {
@@ -176,7 +176,7 @@
       width: 100%;
       margin-top: 16px;
       padding: 18px;
-      background: #f9fbfd;
+      background: #fffaf5;
       border: 1px solid var(--line);
       border-radius: 20px;
       box-shadow: 0 4px 16px rgba(16,24,40,.04);
@@ -193,10 +193,10 @@
       width: 100%;
       min-height: 62px;
       padding: 13px 14px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ead5c3;
       border-radius: 14px;
       background: white;
-      color: #111827;
+      color: #280003;
       font-size: 21px;
     }
 
@@ -219,7 +219,7 @@
     }
 
     .primary { background: var(--blue); color: white; }
-    .secondary { background: #e9eef5; color: var(--blue-dark); }
+    .secondary { background: #feefe0; color: var(--blue-dark); }
 
     .preview {
       width: 100%;
@@ -241,8 +241,8 @@
     }
 
     .info {
-      background: #eef6ff;
-      border: 1px solid #c7dcf5;
+      background: #fff7ef;
+      border: 1px solid #f0dccb;
     }
 
     .success {
@@ -294,7 +294,7 @@
       margin-top: 18px;
       padding: 24px 18px;
       text-align: center;
-      background: #eef7ff;
+      background: #fff7ef;
       border: 2px solid var(--blue);
       border-radius: 20px;
       font-size: 19px;
@@ -423,7 +423,7 @@
       right: 8%;
       top: calc(47% - 1px);
       height: 2px;
-      background: #0d6efd;
+      background: #280003;
       box-shadow: 0 0 8px rgba(13,110,253,.8);
       pointer-events: none;
     }
@@ -449,7 +449,7 @@
     .camera-capture {
       margin: 0;
       min-height: 64px;
-      background: #0d6efd;
+      background: #280003;
       color: white;
       font-size: 21px;
     }
@@ -471,7 +471,7 @@
 
     .order-item {
       padding: 14px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ead5c3;
       border-radius: 16px;
       background: #ffffff;
     }
@@ -507,7 +507,7 @@
       margin: 8px 0 12px;
       padding: 8px 10px;
       border-radius: 10px;
-      background: #f3f6fa;
+      background: #fff7ef;
       color: #5b6470;
       direction: ltr;
       text-align: left;
@@ -548,8 +548,8 @@
       margin-top: 14px;
       padding: 14px;
       border-radius: 14px;
-      background: #eef6ff;
-      border: 1px solid #c7dcf5;
+      background: #fff7ef;
+      border: 1px solid #f0dccb;
     }
 
     @media (max-width: 560px) {
@@ -644,7 +644,7 @@
     .prep-card {
       padding: 14px;
       border-radius: 16px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ead5c3;
       background: #fff;
     }
 
@@ -660,7 +660,7 @@
       margin: 8px 0 12px;
       padding: 9px 10px;
       border-radius: 10px;
-      background: #f3f6fa;
+      background: #fff7ef;
       direction: ltr;
       text-align: left;
       font-size: 14px;
@@ -729,22 +729,22 @@
       flex: 1;
       min-height: 48px;
       border-radius: 12px;
-      border: 1px solid #b9c7d6;
-      background: #f3f7fb;
-      color: #123a63;
+      border: 1px solid #e2c6b0;
+      background: #fff7ef;
+      color: #280003;
       font-size: 16px;
       font-weight: 700;
     }
 
     .order-item.selected {
-      border: 2px solid #1d74f5;
-      background: #f3f8ff;
+      border: 2px solid #280003;
+      background: #fff7ef;
     }
 
     .selection-count {
       margin: 8px 0 0;
       font-weight: 800;
-      color: #123a63;
+      color: #280003;
     }
 
     #orderSelectionError {
@@ -1177,7 +1177,7 @@
       width: 96px;
       height: 96px;
       object-fit: contain;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ead5c3;
       border-radius: 12px;
       background: #fff;
       cursor: zoom-in;
@@ -1187,10 +1187,10 @@
     .prep-thumb-placeholder {
       width: 96px;
       min-height: 96px;
-      border: 1px dashed #b9c7d6;
+      border: 1px dashed #e2c6b0;
       border-radius: 12px;
-      background: #f5f7fa;
-      color: #667085;
+      background: #fffaf5;
+      color: #7a5a5c;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1239,7 +1239,7 @@
       margin-top: 10px;
       border: 0;
       border-radius: 12px;
-      background: #123a63;
+      background: #280003;
       color: #fff;
       font-size: 19px;
       font-weight: 800;
@@ -1297,7 +1297,7 @@
       object-fit: contain !important;
       object-position: center center !important;
       aspect-ratio: auto !important;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ead5c3;
       border-radius: 12px;
       background: #fff;
       cursor: zoom-in;
@@ -1319,7 +1319,7 @@
       margin-top: 6px;
       font-size: 12px;
       line-height: 1.25;
-      color: #475467;
+      color: #5a3a3c;
       text-align: center;
       direction: rtl;
     }
@@ -1382,7 +1382,7 @@
     }
 
     .compact-row.selected {
-      background: #f3f8ff;
+      background: #fff7ef;
     }
 
     .compact-row-warning {
@@ -1399,7 +1399,7 @@
       font-size: 18px;
       line-height: 1.25;
       font-weight: 800;
-      color: #123a63;
+      color: #280003;
       direction: ltr;
       text-align: right;
       unicode-bidi: plaintext;
@@ -1416,18 +1416,18 @@
       min-height: 40px !important;
       padding: 6px 10px !important;
       margin: 0 !important;
-      border: 1px solid #b9c7d6 !important;
+      border: 1px solid #e2c6b0 !important;
       border-radius: 10px !important;
-      background: #f3f7fb !important;
-      color: #123a63 !important;
+      background: #fff7ef !important;
+      color: #280003 !important;
       font-size: 15px !important;
       font-weight: 800 !important;
     }
 
     .compact-edit-panel {
-      border-top: 1px solid #e2e8f0;
+      border-top: 1px solid #f0dccb;
       padding: 12px;
-      background: #fbfdff;
+      background: #fffaf5;
     }
 
     .compact-edit-panel.hidden {
@@ -1467,8 +1467,8 @@
       margin: 12px 0;
       padding: 12px;
       border-radius: 14px;
-      background: #eef6ff;
-      border: 2px solid #9cc3ec;
+      background: #fff7ef;
+      border: 2px solid #ffbb99;
     }
 
     .weight-box input[type="number"] {
@@ -1491,7 +1491,7 @@
     .calc-info {
       margin-top: 8px;
       font-size: 14px;
-      color: #344054;
+      color: #3d1a1c;
     }
 
     .calc-ok {
@@ -1531,7 +1531,7 @@
 
     .summary-meta {
       font-size: 14px;
-      color: #475467;
+      color: #5a3a3c;
       margin-bottom: 12px;
     }
 
@@ -1576,8 +1576,8 @@
       margin-top: 10px;
       padding: 10px;
       border-radius: 12px;
-      background: #f2f7fc;
-      border: 1px solid #c9dcef;
+      background: #fff7ef;
+      border: 1px solid #f0dccb;
     }
 
     .dilution-box.suggested {
@@ -1644,9 +1644,9 @@
       margin-top: 8px;
       padding: 7px 8px;
       border-radius: 8px;
-      background: #f3f6fa;
+      background: #fff7ef;
       font-size: 12px !important;
-      color: #667085;
+      color: #7a5a5c;
       direction: ltr;
       text-align: left;
       overflow-wrap: anywhere;
@@ -1705,7 +1705,7 @@
     }
 
     .verify-item {
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ead5c3;
       border-radius: 14px;
       padding: 12px;
       background: #fff;
@@ -1736,7 +1736,7 @@
 
     .verify-name {
       font-weight: 900;
-      color: #123a63;
+      color: #280003;
       font-size: 19px;
     }
 
@@ -1833,16 +1833,16 @@
       margin-right: 6px;
       padding: 2px 6px;
       border-radius: 8px;
-      background: #eef4fb;
-      color: #526579;
+      background: #fff7ef;
+      color: #5a3a3c;
       font-size: 11px;
       font-weight: 700;
       vertical-align: middle;
     }
 
     .global-back {
-      background: #eef3f8 !important;
-      color: #123a63 !important;
+      background: #fff7ef !important;
+      color: #280003 !important;
       border: 1px solid #bfd0e0 !important;
       box-shadow: none !important;
     }
@@ -1854,7 +1854,7 @@
       width: 100% !important;
       margin-top: 14px !important;
       margin-bottom: 10px !important;
-      background: #0d6efd !important;
+      background: #280003 !important;
       color: #fff !important;
       border: 0 !important;
       position: sticky;
@@ -1875,8 +1875,8 @@
       margin-right:6px;
       padding:2px 6px;
       border-radius:8px;
-      background:#eef4fb;
-      color:#526579;
+      background:#fff7ef;
+      color:#5a3a3c;
       font-size:11px;
       font-weight:700;
       vertical-align:middle;
@@ -1890,7 +1890,7 @@
       border:1px solid #c7d4e0 !important;
       border-radius:10px !important;
       background:#f5f8fb !important;
-      color:#123a63 !important;
+      color:#280003 !important;
       font-size:15px !important;
       font-weight:800 !important;
     }
@@ -1925,13 +1925,13 @@
 
     /* Desktop / tablet: centered phone-width column */
     @media (min-width: 720px) {
-      html:not(.phone-ui) body { background: #e9eef5; }
+      html:not(.phone-ui) body { background: #feefe0; }
       html:not(.phone-ui) .app {
         width: 100%;
         max-width: 620px;
         margin: 0 auto;
         min-height: 100dvh;
-        box-shadow: 0 0 0 1px #dbe4ee, 0 12px 40px rgba(16,24,40,.08);
+        box-shadow: 0 0 0 1px #f0dccb, 0 12px 40px rgba(16,24,40,.08);
       }
     }
 
@@ -1944,9 +1944,9 @@
       margin: 0 !important;
       padding: 6px 12px !important;
       border-radius: 10px !important;
-      border: 1px solid #cfdbe8 !important;
-      background: #f3f7fb !important;
-      color: #123a63 !important;
+      border: 1px solid #ead5c3 !important;
+      background: #fff7ef !important;
+      color: #280003 !important;
       font-size: 15px !important;
       font-weight: 700;
       text-decoration: none;
@@ -1969,7 +1969,7 @@
       gap: 4px;
       font-size: 13px;
       font-weight: 600;
-      color: #98a2b3;
+      color: #a08a8b;
       position: relative;
     }
     .stepper-item::before {
@@ -1979,7 +1979,7 @@
       left: 50%;
       width: 100%;
       height: 3px;
-      background: #e4e9f0;
+      background: #f0dccb;
       z-index: 0;
     }
     .stepper-item:first-child::before { display: none; }
@@ -1992,12 +1992,12 @@
       display: grid;
       place-items: center;
       background: #eef2f6;
-      border: 2px solid #d5dde7;
+      border: 2px solid #ead5c3;
       font-weight: 800;
       font-size: 14px;
     }
-    .stepper-item.active { color: #0d6efd; }
-    .stepper-item.active .stepper-dot { background: #0d6efd; border-color: #0d6efd; color: #fff; box-shadow: 0 0 0 4px rgba(13,110,253,.15); }
+    .stepper-item.active { color: #280003; }
+    .stepper-item.active .stepper-dot { background: #280003; border-color: #280003; color: #fff; box-shadow: 0 0 0 4px rgba(255,84,0,.18); }
     .stepper-item.done { color: #12805c; }
     .stepper-item.done .stepper-dot { background: #12b76a; border-color: #12b76a; color: #fff; font-size: 0; }
     .stepper-item.done .stepper-dot::after { content: "✓"; font-size: 15px; }
@@ -2006,7 +2006,7 @@
     /* Medication status cards */
     .med-card {
       border-radius: 16px;
-      border: 1px solid #dbe4ee;
+      border: 1px solid #f0dccb;
       background: #fff;
       overflow: hidden;
       margin-bottom: 14px;
@@ -2025,16 +2025,16 @@
     .status-stop { border-color: #f5b5ae; }
     .med-body { padding: 12px 14px 14px; }
     .med-thumb { float: left; margin: 0 0 8px 12px; }
-    .med-thumb img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid #dbe4ee; }
+    .med-thumb img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; border: 1px solid #f0dccb; }
     .med-name {
       font-size: 22px;
       font-weight: 800;
-      color: #101828;
+      color: #280003;
       line-height: 1.2;
     }
     .med-order {
       margin-top: 4px;
-      color: #475467;
+      color: #5a3a3c;
       font-size: 15px;
     }
     .med-amount-label {
@@ -2042,12 +2042,12 @@
       margin-top: 12px;
       font-size: 14px;
       font-weight: 700;
-      color: #667085;
+      color: #7a5a5c;
     }
     .med-amount {
       font-size: 38px;
       font-weight: 800;
-      color: #0b3b6f;
+      color: #280003;
       line-height: 1.15;
     }
     .route-buttons {
@@ -2063,22 +2063,22 @@
       margin: 0 !important;
       padding: 4px 14px !important;
       border-radius: 18px !important;
-      border: 1px solid #cfd8e3 !important;
+      border: 1px solid #ead5c3 !important;
       background: #fff !important;
-      color: #344054 !important;
+      color: #3d1a1c !important;
       font-size: 15px !important;
       font-weight: 700;
       direction: ltr;
     }
     .route-btn.suggested,
     html.phone-ui .route-btn.suggested {
-      border: 2px dashed #0d6efd !important;
-      color: #0d6efd !important;
+      border: 2px dashed #280003 !important;
+      color: #280003 !important;
     }
     .route-btn.active,
     html.phone-ui .route-btn.active {
-      background: #0d6efd !important;
-      border: 2px solid #0d6efd !important;
+      background: #280003 !important;
+      border: 2px solid #280003 !important;
       color: #fff !important;
     }
     .order-notes-line {
@@ -2090,7 +2090,7 @@
     .med-amount-note {
       font-size: 16px;
       font-weight: 700;
-      color: #0b3b6f;
+      color: #280003;
     }
     html.phone-ui .top-icon, html.phone-ui .top-logout {
       min-height: 40px !important;
@@ -2108,7 +2108,7 @@
       direction: ltr;
       unicode-bidi: isolate;
       font-size: 13px;
-      color: #667085;
+      color: #7a5a5c;
       margin-top: 2px;
     }
     .med-stop-reason {
@@ -2125,9 +2125,9 @@
     .med-package {
       margin-top: 10px;
       font-size: 14px;
-      color: #344054;
+      color: #3d1a1c;
     }
-    .med-package span { color: #667085; font-weight: 700; }
+    .med-package span { color: #7a5a5c; font-weight: 700; }
     .med-alerts { margin-top: 10px; }
     .med-alerts summary {
       cursor: pointer;
@@ -2160,7 +2160,7 @@
       border-top: 1px solid #eaecf0;
       text-align: center;
       font-size: 12px;
-      color: #98a2b3;
+      color: #a08a8b;
     }
 
     /* Night mode: invert the light theme screen by screen. Camera and image
@@ -2174,6 +2174,171 @@
     }
     html.night .app > .topbar { background: #fff; }
     html.night .app > section img { filter: invert(1) hue-rotate(180deg); }
+
+    /* ===== v6.35 theme: warm editorial style (inspired by sliceglobal.com) =====
+       Palette: deep maroon ink, cream paper, orange→magenta→violet gradient,
+       sunny yellow tags. Clinical status colours stay semantic and distinct:
+       green = ready, yellow = check, red = STOP. Orange is brand only. */
+    :root {
+      --ink: #280003;
+      --ink-soft: rgba(40, 0, 3, 0.62);
+      --paper: #fff7ef;
+      --paper-2: #feefe0;
+      --brand: #ff5400;
+      --brand-2: #ff7939;
+      --peach: #ffbb99;
+      --sun: #ffd23f;
+      --grad: linear-gradient(120deg, #ff5400 0%, #ff6a2b 30%, #e8457a 68%, #a24bc9 100%);
+      --card-shadow: 0 1px 0 rgba(40,0,3,.04), 0 10px 30px rgba(40,0,3,.07);
+      --bg: var(--paper);
+      --blue: var(--ink);
+      --blue-dark: var(--ink);
+      --line: #f0dccb;
+    }
+
+    html, body, button, input, select, textarea {
+      font-family: "Open Sans", "Assistant", Arial, sans-serif;
+    }
+
+    html, body { background: var(--paper); color: var(--ink); }
+    .app { background: var(--paper); }
+
+    h1, h2, h3, .brand, .med-name, .med-amount, .stepper-item, .med-status {
+      font-family: "Rubik", "Kanit", "Open Sans", sans-serif;
+    }
+
+    h1, h2 { color: var(--ink); font-weight: 500; letter-spacing: -0.4px; }
+    h3 { color: var(--ink); }
+    p, .subtitle, .tip { color: var(--ink-soft); }
+
+    /* Top bar: brand gradient */
+    .topbar {
+      background: var(--grad) !important;
+      border-bottom: 0 !important;
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(232, 69, 122, .18);
+    }
+    .brand { color: #fff !important; font-weight: 600; letter-spacing: -0.3px; }
+    .app-version {
+      background: var(--sun) !important;
+      color: var(--ink) !important;
+      border-radius: 999px !important;
+      padding: 2px 8px !important;
+      font-weight: 800;
+      font-size: 11px !important;
+      letter-spacing: .4px;
+    }
+    .top-icon, .top-logout,
+    html.phone-ui .top-icon, html.phone-ui .top-logout {
+      background: rgba(255,255,255,.18) !important;
+      border: 1px solid rgba(255,255,255,.55) !important;
+      color: #fff !important;
+      border-radius: 999px !important;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      font-size: 13px !important;
+    }
+    .stepper-item { color: rgba(255,255,255,.75); }
+    .stepper-item::before { background: rgba(255,255,255,.35); }
+    .stepper-dot { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.7); color: #fff; }
+    .stepper-item.active { color: #fff; }
+    .stepper-item.active .stepper-dot {
+      background: #fff; border-color: #fff; color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.25);
+    }
+    .stepper-item.done { color: #fff; }
+    .stepper-item.done .stepper-dot { background: var(--sun); border-color: var(--sun); color: var(--ink); }
+    .stepper-item.done::before, .stepper-item.active::before { background: #fff; }
+
+    /* Cards */
+    .card, .order-item, .package-card, .match-card, .prep-card, .compact-list-card {
+      background: #fff;
+      border: 1px solid var(--line) !important;
+      border-radius: 22px !important;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Buttons: pill shape. Primary = deep maroon, secondary = outlined */
+    button, html.phone-ui button { border-radius: 999px !important; }
+    .primary, html.phone-ui .primary {
+      background: var(--ink) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 20px rgba(40,0,3,.18);
+    }
+    .secondary, html.phone-ui .secondary {
+      background: transparent !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+    }
+    .compact-edit-btn {
+      border-radius: 999px !important;
+      border: 1px solid var(--ink) !important;
+      background: #fff !important;
+      color: var(--ink) !important;
+    }
+    .camera-capture { background: var(--brand) !important; color: #fff !important; }
+
+    input, select, textarea {
+      border-color: #ead5c3 !important;
+      background: #fff !important;
+      color: var(--ink) !important;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 3px solid rgba(255, 84, 0, .25) !important;
+      border-color: var(--brand) !important;
+    }
+
+    /* Messages */
+    .info { background: #fff; border: 1px solid var(--line); color: var(--ink); }
+    .warning { background: #fff8d6; border: 1px solid var(--sun); color: #5c3b00; }
+    .weight-box { background: #fff; border: 2px solid var(--peach) !important; border-radius: 22px !important; }
+
+    /* Medication cards: keep semantic status colours */
+    .med-card { border-radius: 22px; border-color: var(--line); box-shadow: var(--card-shadow); }
+    .status-ready .med-status { background: #12b76a; color: #fff; }
+    .status-check .med-status { background: var(--sun); color: var(--ink); }
+    .status-stop .med-status { background: #d92d20; color: #fff; }
+    .med-name { color: var(--ink); font-weight: 600; }
+    .med-amount { color: var(--ink); font-weight: 600; }
+    .med-amount-label {
+      display: inline-block;
+      background: var(--paper-2);
+      color: var(--brand);
+      border-radius: 999px;
+      padding: 2px 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-size: 12px;
+    }
+    .med-order, .med-package, .med-formula { color: var(--ink-soft); }
+
+    /* Tags */
+    .high-alert-badge { border-radius: 999px; }
+    .lasa-alert { background: #f6ecff; border-color: #a24bc9; color: #4b1d6e; border-radius: 14px; }
+    .calc-alert { background: #fff8d6; border-color: var(--sun); color: #5c3b00; border-radius: 14px; }
+
+    .route-btn.active, html.phone-ui .route-btn.active {
+      background: var(--ink) !important; border-color: var(--ink) !important; color: #fff !important;
+    }
+    .route-btn.suggested, html.phone-ui .route-btn.suggested {
+      border-color: var(--brand) !important; color: var(--brand) !important;
+    }
+
+    .app-footer { color: var(--ink-soft); border-top-color: var(--line); }
+
+    @media (min-width: 720px) {
+      html:not(.phone-ui) body { background: var(--paper-2); }
+      html:not(.phone-ui) .app { box-shadow: 0 0 0 1px var(--line), 0 20px 60px rgba(40,0,3,.08); }
+    }
+
+
+    button:not(.primary):not(.route-btn):not(.camera-torch):not(.camera-capture):not(.top-icon):not(.compact-edit-btn) {
+      background: #fff !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: none;
+    }
+    .compact-summary, .batch-count, h3 { color: var(--ink) !important; }
 </style>
 </head>
 
@@ -2183,7 +2348,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.34</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.35</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
@@ -2221,7 +2386,7 @@
   </section>
 
   <section id="orderScreen">
-    <h2>זיהוי ההוראות הרפואיות</h2><div style="font-size:13px;color:#667085;margin-top:-8px;margin-bottom:10px;">זיהוי אוטומטי לאחר צילום</div>
+    <h2>זיהוי ההוראות הרפואיות</h2><div style="font-size:13px;color:#7a5a5c;margin-top:-8px;margin-bottom:10px;">זיהוי אוטומטי לאחר צילום</div>
 
     <div class="card">
       <label>סריקת רשימת ההוראות</label>
@@ -2231,7 +2396,7 @@
           📷 פתח מצלמה לסריקת ההוראות
         </button>
 
-        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#eef3f8; color:#123a63;">
+        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#fff7ef; color:#280003;">
           בחירת תמונה קיימת
           <input id="orderImageInput" type="file" accept="image/*"
                  onchange="handleOrderImage(event)" style="display:none;">
@@ -2311,7 +2476,7 @@
   </datalist>
 
   <section id="medicationScreen" class="hidden">
-    <h2>זיהוי האריזות והתאמה להוראות</h2><div style="font-size:13px;color:#667085;margin-top:-8px;margin-bottom:10px;">זיהוי והתאמה אוטומטיים לאחר צילום</div>
+    <h2>זיהוי האריזות והתאמה להוראות</h2><div style="font-size:13px;color:#7a5a5c;margin-top:-8px;margin-bottom:10px;">זיהוי והתאמה אוטומטיים לאחר צילום</div>
 
     <div id="orderInfoBox" class="info"></div>
 
@@ -2323,7 +2488,7 @@
           📷 פתח מצלמה לסריקת כל האריזות
         </button>
 
-        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#eef3f8; color:#123a63;">
+        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#fff7ef; color:#280003;">
           בחירת תמונה קיימת
           <input id="medicationImageInput" type="file" accept="image/*"
                  onchange="handleMedicationBatchImage(event)" style="display:none;">
@@ -2372,7 +2537,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.34 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.35 · שלב 3</div>
 
 
 
@@ -2401,7 +2566,7 @@
           📷 צלם את כל ההכנות והמזרקים
         </button>
 
-        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#eef3f8; color:#123a63;">
+        <label style="display:block; margin:0; padding:14px; border-radius:14px; text-align:center; cursor:pointer; background:#fff7ef; color:#280003;">
           בחירת תמונה קיימת
           <input id="preparedBatchImageInput" type="file" accept="image/*"
                  onchange="handlePreparedBatchImage(event)" style="display:none;">
