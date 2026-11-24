@@ -1,0 +1,34 @@
+{
+  "image": "packages_03.jpg",
+  "sideways_labels": true,
+  "photo_severity": 1.2,
+  "packages": [
+    {
+      "generic": "Amoxicillin",
+      "dosage_form": "capsule",
+      "strength": {
+        "value": 250,
+        "unit": "mg"
+      },
+      "concentration": null,
+      "label_route": "Oral",
+      "expiry": "2027-01",
+      "expired": false,
+      "lot": "L18369"
+    },
+    {
+      "generic": "Morphine",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 10,
+        "unit": "mg",
+        "volume_ml": 1
+      },
+      "label_route": "IV / SC",
+      "expiry": "2028-03",
+      "expired": false,
+      "lot": "L18888"
+    }
+  ]
+}

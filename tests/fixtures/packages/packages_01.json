@@ -1,0 +1,35 @@
+{
+  "image": "packages_01.jpg",
+  "sideways_labels": false,
+  "photo_severity": 0.8,
+  "packages": [
+    {
+      "generic": "Digoxin",
+      "dosage_form": "oral_liquid",
+      "strength": null,
+      "concentration": {
+        "amount": 50,
+        "unit": "mcg",
+        "volume_ml": 1
+      },
+      "label_route": "Oral",
+      "expiry": "2028-05",
+      "expired": false,
+      "lot": "L82382"
+    },
+    {
+      "generic": "Enoxaparin",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 20,
+        "unit": "mg",
+        "volume_ml": 0.2
+      },
+      "label_route": "SC",
+      "expiry": "2027-08",
+      "expired": false,
+      "lot": "L26826"
+    }
+  ]
+}

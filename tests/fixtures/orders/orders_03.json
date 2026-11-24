@@ -1,0 +1,53 @@
+{
+  "image": "orders_03.jpg",
+  "patient_weight_kg": 12.3,
+  "route_column_shown": false,
+  "names_truncated": false,
+  "photo_severity": 1.2,
+  "orders": [
+    {
+      "generic": "Pantoprazole",
+      "dose": 2.1,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "24 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Vancomycin",
+      "dose": 150,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Ceftriaxone",
+      "dose": 400,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "24 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Meropenem",
+      "dose": 40,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "8 h",
+      "prn": false,
+      "continuous_infusion": false
+    }
+  ]
+}

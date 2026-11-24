@@ -1,0 +1,64 @@
+{
+  "image": "orders_08.jpg",
+  "patient_weight_kg": 4.6,
+  "route_column_shown": true,
+  "names_truncated": true,
+  "photo_severity": 0.5,
+  "orders": [
+    {
+      "generic": "Midazolam",
+      "dose": 0.5,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": null,
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Sildenafil",
+      "dose": 2,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": "PO",
+      "frequency": "8 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Ceftriaxone",
+      "dose": 400,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "24 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Levetiracetam",
+      "dose": 100,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": "PO",
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Hydrocortisone",
+      "dose": 5,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    }
+  ]
+}

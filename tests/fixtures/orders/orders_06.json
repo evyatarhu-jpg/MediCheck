@@ -1,0 +1,53 @@
+{
+  "image": "orders_06.jpg",
+  "patient_weight_kg": 6.5,
+  "route_column_shown": true,
+  "names_truncated": false,
+  "photo_severity": 1.0,
+  "orders": [
+    {
+      "generic": "Ampicillin",
+      "dose": 250,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Morphine",
+      "dose": 0.5,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "4 h",
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Vancomycin",
+      "dose": 150,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Epinephrine",
+      "dose": null,
+      "unit": "mcg",
+      "rate": "0.05 mcg/kg/min",
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": null,
+      "prn": false,
+      "continuous_infusion": true
+    }
+  ]
+}

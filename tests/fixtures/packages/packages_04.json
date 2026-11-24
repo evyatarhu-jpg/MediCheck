@@ -1,0 +1,31 @@
+{
+  "image": "packages_04.jpg",
+  "sideways_labels": false,
+  "photo_severity": 0.5,
+  "packages": [
+    {
+      "generic": "Vancomycin",
+      "dosage_form": "powder",
+      "strength": null,
+      "concentration": null,
+      "label_route": "IV infusion after reconstitution",
+      "expiry": "2027-05",
+      "expired": false,
+      "lot": "L69752"
+    },
+    {
+      "generic": "Dobutamine",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 12.5,
+        "unit": "mg",
+        "volume_ml": 1
+      },
+      "label_route": "IV infusion after dilution",
+      "expiry": "2028-06",
+      "expired": false,
+      "lot": "L26841"
+    }
+  ]
+}

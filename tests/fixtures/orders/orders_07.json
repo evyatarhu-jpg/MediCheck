@@ -1,0 +1,75 @@
+{
+  "image": "orders_07.jpg",
+  "patient_weight_kg": 10.3,
+  "route_column_shown": false,
+  "names_truncated": true,
+  "photo_severity": 1.2,
+  "orders": [
+    {
+      "generic": "Digoxin",
+      "dose": 10,
+      "unit": "mcg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": null,
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Pantoprazole",
+      "dose": 2.1,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "24 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Vancomycin",
+      "dose": 150,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Morphine",
+      "dose": 0.5,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "4 h",
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Potassium Chloride",
+      "dose": 2,
+      "unit": "mEq",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": null,
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Paracetamol",
+      "dose": 120,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": null,
+      "frequency": "6 h",
+      "prn": true,
+      "continuous_infusion": false
+    }
+  ]
+}
