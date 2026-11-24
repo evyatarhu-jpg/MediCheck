@@ -71,7 +71,7 @@ LOGIN_HTML = """
   <title>MATAMED – כניסה</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink: #280003;
@@ -139,16 +139,17 @@ LOGIN_HTML = """
       justify-content: flex-end;
     }
     .wordmark b { font-weight: 700; color: #fff; }
-    .wordmark span { font-weight: 400; color: rgba(255, 255, 255, .82); }
+    .wordmark span { font-weight: 300; color: rgba(255, 255, 255, .78); }
     .claim {
       direction: ltr;
       text-align: right;
       margin: 0 0 14px;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 400;
       letter-spacing: .3px;
-      color: rgba(255, 255, 255, .92);
+      color: rgba(255, 255, 255, .9);
     }
+    .claim b { font-weight: 800; color: #fff; }
     .tagline {
       font-family: "Rubik", "Open Sans", sans-serif;
       font-size: 22px;
@@ -220,7 +221,7 @@ LOGIN_HTML = """
     <div class="hero-inner">
       <span class="tag">Prototype</span>
       <h1 class="wordmark"><b>MATA</b><span>MED</span></h1>
-      <p class="claim">Medication Assurance Through AI</p>
+      <p class="claim"><b>M</b>edication <b>A</b>ssurance <b>T</b>hrough <b>A</b>I</p>
       <p class="tagline">בטיחות חכמה בהכנת תרופות.<br><b>בדיוק לפי ההוראה.</b></p>
     </div>
   </section>
