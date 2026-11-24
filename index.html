@@ -2348,7 +2348,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand">MediCheck <span class="app-version">v6.35</span></div>
+      <div class="brand">MediCheck <span class="app-version">v6.36</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MediCheck">יציאה</a>
@@ -2537,7 +2537,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.35 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MediCheck v6.36 · שלב 3</div>
 
 
 
@@ -3951,10 +3951,286 @@ async function refineHospitalDoseLines(lines) {
   return refined;
 }
 
+// ===== Vision model (Claude) path =====
+// Used when the server reports vision_available. Any failure falls back to OCR.
+
+var visionAvailable = null;
+
+async function checkVisionAvailable() {
+  if (visionAvailable !== null) return visionAvailable;
+
+  try {
+    var response = await fetch("/api/health", { credentials: "same-origin" });
+    var data = await response.json();
+    visionAvailable = !!data.vision_available;
+  } catch (e) {
+    visionAvailable = false;
+  }
+
+  return visionAvailable;
+}
+
+var VISION_ROUTE_MAP = { PO: "PO", IV: "IV", IM: "IM", SC: "SC", NG: "NG" };
+var VISION_FORM_MAP = {
+  tablet: "tablet",
+  capsule: "capsule",
+  injectable_solution: "injectable_solution",
+  powder: "powder",
+  oral_liquid: "oral_liquid",
+  drops: "oral_liquid"
+};
+var VISION_FIELD_LABELS = {
+  dose: "מינון",
+  dose_unit: "יחידה",
+  route: "דרך מתן",
+  name: "שם",
+  generic_name: "שם",
+  name_as_written: "שם",
+  frequency: "תדירות",
+  concentration: "ריכוז",
+  concentration_amount: "ריכוז",
+  concentration_volume_ml: "נפח",
+  strength_value: "חוזק",
+  expiry: "תפוגה",
+  lot: "אצווה",
+  brand_name: "שם מסחרי",
+  label_route: "דרך מתן בתווית",
+  strength_unit: "יחידת חוזק",
+  concentration_unit: "יחידת ריכוז"
+};
+
+function visionUnit(unit) {
+  if (!unit || unit === "other") return "";
+  if (unit === "drops" || unit === "puffs") return "";
+  return normalizeUnit(unit);
+}
+
+function visionUncertainText(fields) {
+  var names = [];
+  (fields || []).forEach(function(f) {
+    var label = VISION_FIELD_LABELS[f] || f;
+    if (names.indexOf(label) === -1) names.push(label);
+  });
+  return names.join(", ");
+}
+
+async function postImageForVision(url, blob, filename) {
+  var form = new FormData();
+  form.append("image", blob, filename);
+
+  var controller = new AbortController();
+  var timeoutId = setTimeout(function() { controller.abort(); }, 120000);
+
+  try {
+    var response = await fetch(url, {
+      method: "POST",
+      body: form,
+      credentials: "same-origin",
+      signal: controller.signal
+    });
+
+    if (response.status === 401) {
+      window.location.href = "/login";
+      throw new Error("פג תוקף החיבור. יש להתחבר מחדש.");
+    }
+
+    var data = await readJsonResponse(response);
+    if (data && data.error) throw new Error(data.error);
+    return data;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function visionOrderToOrder(v) {
+  var name = v.generic_name || v.name_as_written || "";
+  var canonical = findKnownDrug(name) || findKnownDrug(v.name_as_written || "") || name;
+  var uncertain = Array.isArray(v.uncertain_fields) ? v.uncertain_fields : [];
+  // A route the model is not sure about is left empty: the user chooses it.
+  var route = uncertain.indexOf("route") !== -1 ? "" : (VISION_ROUTE_MAP[v.route] || "");
+  var unit = visionUnit(v.dose_unit);
+  var dose = (v.dose === null || v.dose === undefined || !Number.isFinite(Number(v.dose))) ? "" : Number(v.dose);
+
+  var order = {
+    drugName: canonical,
+    dose: dose,
+    doseUnit: unit,
+    route: route,
+    frequency: v.frequency || "",
+    prn: !!v.prn,
+    infusion: !!v.continuous_infusion,
+    adminTimes: v.administration_times || "",
+    adminDuration: v.duration || "",
+    weightDose: v.weight_based_dose || "",
+    courseDuration: "",
+    notes: v.continuous_infusion && v.rate_as_written ? "קצב: " + v.rate_as_written : "",
+    confidence: Math.round(Number(v.confidence || 0) * 100),
+    sourceText: [v.name_as_written, v.dose_as_written, v.route_evidence].filter(Boolean).join(" | "),
+    source: "vision",
+    visionUncertain: visionUncertainText(uncertain),
+    nameMatch: v.name_truncated ? "truncated" : (findKnownDrug(name) ? "exact" : ""),
+    formHint: v.dosage_form && v.dosage_form !== "unknown" ? formulationLabel(VISION_FORM_MAP[v.dosage_form] || v.dosage_form) : ""
+  };
+
+  order.doseMissing = dose === "";
+  order.complete = !!(order.drugName && dose !== "" && unit && route) && uncertain.indexOf("dose") === -1;
+
+  if (!findKnownDrug(order.drugName)) {
+    order.unknownDrug = true;
+  }
+
+  return order;
+}
+
+function visionPackageToPackage(v, imgW, imgH) {
+  var name = v.generic_name || v.name_as_written || "";
+  var canonical = findKnownDrug(name) || findKnownDrug(v.brand_name || "") || findKnownDrug(v.name_as_written || "") || name;
+  var form = VISION_FORM_MAP[v.dosage_form] || "";
+  var uncertain = Array.isArray(v.uncertain_fields) ? v.uncertain_fields : [];
+
+  var pkg = {
+    genericDrug: canonical,
+    formulation: form,
+    strength: v.strength_value === null || v.strength_value === undefined ? "" : Number(v.strength_value),
+    unit: visionUnit(v.strength_unit),
+    concentrationDrug: v.concentration_amount === null || v.concentration_amount === undefined ? "" : Number(v.concentration_amount),
+    concentrationUnit: visionUnit(v.concentration_unit),
+    concentrationVolume: v.concentration_volume_ml === null || v.concentration_volume_ml === undefined ? "" : Number(v.concentration_volume_ml),
+    sourceText: [v.name_as_written, v.brand_name, v.concentration_as_written, v.total_amount_as_written, v.label_route]
+      .filter(Boolean).join(" | "),
+    confidence: Math.round(Number(v.confidence || 0) * 100),
+    source: "vision",
+    visionUncertain: visionUncertainText(uncertain),
+    expiry: v.expiry || "",
+    lot: v.lot || "",
+    labelRoute: v.label_route || ""
+  };
+
+  if ((form === "tablet" || form === "capsule") && pkg.concentrationDrug === "") {
+    pkg.concentrationDrug = "";
+  }
+
+  if (Array.isArray(v.bbox) && v.bbox.length === 4 && imgW && imgH) {
+    var x0 = Math.max(0, Math.min(1, Number(v.bbox[0]))) * imgW;
+    var y0 = Math.max(0, Math.min(1, Number(v.bbox[1]))) * imgH;
+    var x1 = Math.max(0, Math.min(1, Number(v.bbox[2]))) * imgW;
+    var y1 = Math.max(0, Math.min(1, Number(v.bbox[3]))) * imgH;
+    if (x1 > x0 && y1 > y0) pkg.imageCropBox = [x0, y0, x1, y1];
+  }
+
+  return pkg;
+}
+
+// Expiry as YYYY-MM or YYYY-MM-DD. A month-only date is valid to the end of that month.
+function isExpired(expiry) {
+  var m = String(expiry || "").match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?/);
+  if (!m) return false;
+
+  var year = Number(m[1]);
+  var month = Number(m[2]);
+  var end = m[3]
+    ? new Date(year, month - 1, Number(m[3]), 23, 59, 59)
+    : new Date(year, month, 0, 23, 59, 59);
+
+  return end.getTime() < Date.now();
+}
+
+async function recognizeOrderWithVision() {
+  var status = document.getElementById("orderOcrStatus");
+  status.classList.remove("hidden");
+  status.innerHTML = "קורא את ההוראות עם מודל ראייה...";
+
+  var uploadBlob = await prepareImageForUpload(selectedOrderFile, 1800, 0.9);
+  lastOrderOcrImageBlob = uploadBlob;
+  showBlobInPreview(uploadBlob, "orderPreview");
+
+  var data = await postImageForVision("/api/vision-orders", uploadBlob, "orders.jpg");
+  var orders = Array.isArray(data.orders) ? data.orders : [];
+
+  detectedOrders = orders.map(visionOrderToOrder).filter(function(o) { return o.drugName; });
+
+  document.getElementById("orderOcrRawText").innerText = orders.map(function(o) {
+    return [o.name_as_written, o.dose_as_written, o.route, o.frequency].filter(Boolean).join("  ·  ");
+  }).join("\n") || "לא זוהו הוראות";
+  document.getElementById("orderOcrTextBox").classList.remove("hidden");
+
+  var unreadable = Number(data.unreadable_medication_rows || 0);
+  status.innerHTML =
+    "✓ ההוראות נקראו במודל ראייה · " + detectedOrders.length + " הוראות" +
+    (unreadable ? " · " + unreadable + " שורות תרופה לא נקראו, יש לבדוק מול המסך" : "");
+
+  renderDetectedOrders(100);
+
+  if (data.patient_weight_kg) {
+    var weightInput = document.getElementById("patientWeightInput");
+    if (weightInput && !weightInput.value) {
+      weightInput.value = data.patient_weight_kg;
+      var weightSource = document.getElementById("patientWeightSource");
+      if (weightSource) {
+        weightSource.textContent = "המשקל נקרא מהצילום. יש לוודא שהוא נכון.";
+        weightSource.classList.remove("hidden");
+      }
+    }
+  }
+}
+
+async function recognizeMedicationWithVision() {
+  var status = document.getElementById("medOcrStatus");
+  status.classList.remove("hidden");
+  status.innerHTML = "קורא את התוויות עם מודל ראייה...";
+
+  var uploadBlob = await prepareImageForUpload(selectedMedicationFile, 1800, 0.9);
+  lastMedicationOcrImageBlob = uploadBlob;
+  showBlobInPreview(uploadBlob, "medPreview");
+
+  var data = await postImageForVision("/api/vision-packages", uploadBlob, "packages.jpg");
+  var list = Array.isArray(data.packages) ? data.packages : [];
+
+  var loaded = await loadBlobImage(uploadBlob);
+  var w = loaded.img.naturalWidth;
+  var h = loaded.img.naturalHeight;
+  URL.revokeObjectURL(loaded.url);
+
+  detectedPackages = list.map(function(v) { return visionPackageToPackage(v, w, h); })
+    .filter(function(p) { return p.genericDrug; });
+
+  for (var i = 0; i < detectedPackages.length; i++) {
+    if (detectedPackages[i].imageCropBox) {
+      try {
+        detectedPackages[i].imageUrl = await makePackageThumbnail(uploadBlob, detectedPackages[i].imageCropBox);
+      } catch (e) {
+        detectedPackages[i].imageUrl = "";
+      }
+    }
+  }
+
+  document.getElementById("medOcrRawText").innerText = list.map(function(p) {
+    return [p.name_as_written, p.concentration_as_written || p.total_amount_as_written, p.label_route, p.expiry ? "EXP " + p.expiry : ""]
+      .filter(Boolean).join("  ·  ");
+  }).join("\n") || "לא זוהו אריזות";
+  document.getElementById("medOcrTextBox").classList.remove("hidden");
+
+  status.innerHTML = "✓ התוויות נקראו במודל ראייה · " + detectedPackages.length + " אריזות";
+
+  renderDetectedPackages();
+  recomputeAutomaticMatches();
+}
+
 async function recognizeOrder() {
   if (!selectedOrderFile) {
     alert("יש לצלם או לבחור תמונה של ההוראות");
     return;
+  }
+
+  if (await checkVisionAvailable()) {
+    try {
+      await recognizeOrderWithVision();
+      return;
+    } catch (visionError) {
+      console.error("Vision orders failed, falling back to OCR", visionError);
+      var vStatus = document.getElementById("orderOcrStatus");
+      if (vStatus) vStatus.innerHTML = "מודל הראייה לא הגיב. עובר ל-OCR המקומי...";
+    }
   }
 
   try {
@@ -4789,8 +5065,10 @@ function renderDetectedOrders(confidence) {
   }).length;
 
   if (confidence < 55 || incompleteCount > 0) {
-    warning.innerHTML =
-      "חלק מהזיהוי אינו מלא או ברמת ביטחון נמוכה. מינונים קטנים נבדקים גם בקריאה שנייה של תא המינון. יש לבדוק ולתקן את הנתונים לפני סימון ואישור.";
+    var fromVision = detectedOrders.some(function(o) { return o.source === "vision"; });
+    warning.innerHTML = fromVision
+      ? "בחלק מההוראות חסר מידע (בדרך כלל דרך מתן). השלם בכרטיס לפני הבחירה."
+      : "חלק מהזיהוי אינו מלא או ברמת ביטחון נמוכה. מינונים קטנים נבדקים גם בקריאה שנייה של תא המינון. יש לבדוק ולתקן את הנתונים לפני סימון ואישור.";
     warning.classList.remove("hidden");
   }
 
@@ -4913,6 +5191,9 @@ function buildOrderCard(order, index) {
     notes.push("שם התרופה נקרא חלקית וזוהה בקירוב כ-" + tallMan(order.drugName) + ". ודא את השם.");
   }
   if (order.doseMissing) notes.push("המינון לא נקרא מהמסך. יש להזין ידנית בעריכה.");
+  if (order.visionUncertain) notes.push("לא נקרא בוודאות: " + order.visionUncertain + ". בדוק מול המסך.");
+  if (order.unknownDrug) notes.push("התרופה אינה ברשימת התרופות של האפליקציה. בדיקות סיכון גבוה ו-LASA לא יחולו עליה.");
+  if (order.infusion && order.notes) notes.push(order.notes);
   if (order.formHint) notes.push("צורת מתן לפי המסך: " + order.formHint);
 
   var notesHtml = notes.length
@@ -5473,6 +5754,17 @@ async function recognizeMedicationBatch() {
   if (!selectedMedicationFile) {
     alert("יש לצלם או לבחור תמונה של האריזות");
     return;
+  }
+
+  if (await checkVisionAvailable()) {
+    try {
+      await recognizeMedicationWithVision();
+      return;
+    } catch (visionError) {
+      console.error("Vision packages failed, falling back to OCR", visionError);
+      var vStatus = document.getElementById("medOcrStatus");
+      if (vStatus) vStatus.innerHTML = "מודל הראייה לא הגיב. עובר ל-OCR המקומי...";
+    }
   }
 
   var result = await runMedicationOcr(selectedMedicationFile);
@@ -6478,6 +6770,13 @@ function readPackageCard(index) {
     if (detected.concentrationNote && detected.concentrationDrug === pkg.concentrationDrug) {
       pkg.concentrationNote = detected.concentrationNote;
     }
+    if (detected.expiry) pkg.expiry = detected.expiry;
+    if (detected.lot) pkg.lot = detected.lot;
+    if (detected.source) pkg.source = detected.source;
+    if (detected.visionUncertain && detected.genericDrug === pkg.genericDrug) {
+      pkg.visionUncertain = detected.visionUncertain;
+    }
+    if (!pkg.imageUrl && detected.imageUrl) pkg.imageUrl = detected.imageUrl;
   }
 
   return pkg;
@@ -7356,7 +7655,25 @@ function calculateBatchPreparation(order, pkg) {
     packageWarnings.push(pkg.concentrationNote);
   }
 
+  if (pkg.formulation === "powder") {
+    packageWarnings.push("אבקה להמסה: הריכוז בחישוב תקף רק לאחר המסה בדיוק לפי הוראות התווית.");
+  }
+
+  if (pkg.visionUncertain) {
+    packageWarnings.push("בתווית לא נקרא בוודאות: " + pkg.visionUncertain + ". בדוק מול האריזה.");
+  }
+
   calc.warnings = packageWarnings.concat(wc.warnings, calc.warnings || []);
+
+  if (pkg.expiry && isExpired(pkg.expiry) && calc.ok) {
+    return {
+      ok: false,
+      value: "STOP",
+      warnings: calc.warnings,
+      weightInfo: "",
+      explanation: "פג תוקף התכשיר (" + pkg.expiry + "). אין להשתמש באריזה זו."
+    };
+  }
   calc.weightInfo = wc.info;
   calc.weightOk = wc.ok;
 
