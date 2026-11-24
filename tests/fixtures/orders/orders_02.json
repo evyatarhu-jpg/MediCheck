@@ -1,0 +1,75 @@
+{
+  "image": "orders_02.jpg",
+  "patient_weight_kg": 12.1,
+  "route_column_shown": true,
+  "names_truncated": true,
+  "photo_severity": 1.0,
+  "orders": [
+    {
+      "generic": "Pantoprazole",
+      "dose": 2.1,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "24 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Promethazine",
+      "dose": 1.05,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": null,
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Captopril",
+      "dose": 1.5,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": "PO",
+      "frequency": "8 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Epinephrine",
+      "dose": null,
+      "unit": "mcg",
+      "rate": "0.05 mcg/kg/min",
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": null,
+      "prn": false,
+      "continuous_infusion": true
+    },
+    {
+      "generic": "Morphine",
+      "dose": 0.5,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "4 h",
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Hydrocortisone",
+      "dose": 5,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    }
+  ]
+}

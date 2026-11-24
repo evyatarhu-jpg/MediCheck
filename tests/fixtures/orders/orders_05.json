@@ -1,0 +1,64 @@
+{
+  "image": "orders_05.jpg",
+  "patient_weight_kg": 15.5,
+  "route_column_shown": false,
+  "names_truncated": true,
+  "photo_severity": 0.8,
+  "orders": [
+    {
+      "generic": "Enoxaparin",
+      "dose": 1.5,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Paracetamol",
+      "dose": 120,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": null,
+      "frequency": "6 h",
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Sildenafil",
+      "dose": 2,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": null,
+      "frequency": "8 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Potassium Chloride",
+      "dose": 2,
+      "unit": "mEq",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": null,
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Vancomycin",
+      "dose": 150,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    }
+  ]
+}

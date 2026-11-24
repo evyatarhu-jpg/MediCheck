@@ -1,0 +1,35 @@
+{
+  "image": "packages_06.jpg",
+  "sideways_labels": true,
+  "photo_severity": 1.0,
+  "packages": [
+    {
+      "generic": "Potassium Chloride",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 2,
+        "unit": "mEq",
+        "volume_ml": 1
+      },
+      "label_route": "IV after dilution",
+      "expiry": "2028-03",
+      "expired": false,
+      "lot": "L77848"
+    },
+    {
+      "generic": "Dobutamine",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 12.5,
+        "unit": "mg",
+        "volume_ml": 1
+      },
+      "label_route": "IV infusion after dilution",
+      "expiry": "2028-04",
+      "expired": false,
+      "lot": "L39591"
+    }
+  ]
+}

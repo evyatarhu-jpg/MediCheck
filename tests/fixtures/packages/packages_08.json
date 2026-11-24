@@ -1,0 +1,31 @@
+{
+  "image": "packages_08.jpg",
+  "sideways_labels": false,
+  "photo_severity": 0.5,
+  "packages": [
+    {
+      "generic": "Meropenem",
+      "dosage_form": "powder",
+      "strength": null,
+      "concentration": null,
+      "label_route": "IV",
+      "expiry": "2028-02",
+      "expired": false,
+      "lot": "L15291"
+    },
+    {
+      "generic": "Epinephrine",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 1,
+        "unit": "mg",
+        "volume_ml": 1
+      },
+      "label_route": "IM / IV",
+      "expiry": "2028-02",
+      "expired": false,
+      "lot": "L90934"
+    }
+  ]
+}

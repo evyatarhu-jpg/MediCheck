@@ -1,0 +1,215 @@
+{
+  "mode": "ocr",
+  "orders": [
+    {
+      "expected": 2,
+      "found": 2,
+      "dose_ok": 2,
+      "dose_wrong": 0,
+      "route_ok": 2,
+      "route_guessed": 0,
+      "infusion_ok": 2,
+      "infusions": 2,
+      "extra": 0,
+      "details": [],
+      "weight_ok": false,
+      "image": "orders_01.jpg"
+    },
+    {
+      "expected": 5,
+      "found": 5,
+      "dose_ok": 5,
+      "dose_wrong": 0,
+      "route_ok": 5,
+      "route_guessed": 0,
+      "infusion_ok": 1,
+      "infusions": 1,
+      "extra": 0,
+      "details": [],
+      "weight_ok": false,
+      "image": "orders_02.jpg"
+    },
+    {
+      "expected": 4,
+      "found": 4,
+      "dose_ok": 4,
+      "dose_wrong": 0,
+      "route_ok": 4,
+      "route_guessed": 0,
+      "infusion_ok": 0,
+      "infusions": 0,
+      "extra": 0,
+      "details": [],
+      "weight_ok": false,
+      "image": "orders_03.jpg"
+    },
+    {
+      "expected": 6,
+      "found": 5,
+      "dose_ok": 5,
+      "dose_wrong": 0,
+      "route_ok": 5,
+      "route_guessed": 0,
+      "infusion_ok": 0,
+      "infusions": 0,
+      "extra": 0,
+      "details": [
+        "missed Potassium Chloride 2 mEq"
+      ],
+      "weight_ok": false,
+      "image": "orders_04.jpg"
+    },
+    {
+      "expected": 5,
+      "found": 4,
+      "dose_ok": 4,
+      "dose_wrong": 0,
+      "route_ok": 4,
+      "route_guessed": 0,
+      "infusion_ok": 0,
+      "infusions": 0,
+      "extra": 0,
+      "details": [
+        "missed Potassium Chloride 2 mEq"
+      ],
+      "weight_ok": false,
+      "image": "orders_05.jpg"
+    },
+    {
+      "expected": 3,
+      "found": 3,
+      "dose_ok": 3,
+      "dose_wrong": 0,
+      "route_ok": 3,
+      "route_guessed": 0,
+      "infusion_ok": 1,
+      "infusions": 1,
+      "extra": 0,
+      "details": [],
+      "weight_ok": false,
+      "image": "orders_06.jpg"
+    },
+    {
+      "expected": 6,
+      "found": 5,
+      "dose_ok": 5,
+      "dose_wrong": 0,
+      "route_ok": 5,
+      "route_guessed": 0,
+      "infusion_ok": 0,
+      "infusions": 0,
+      "extra": 0,
+      "details": [
+        "missed Potassium Chloride 2 mEq"
+      ],
+      "weight_ok": false,
+      "image": "orders_07.jpg"
+    },
+    {
+      "expected": 5,
+      "found": 5,
+      "dose_ok": 5,
+      "dose_wrong": 0,
+      "route_ok": 5,
+      "route_guessed": 0,
+      "infusion_ok": 0,
+      "infusions": 0,
+      "extra": 0,
+      "details": [],
+      "weight_ok": false,
+      "image": "orders_08.jpg"
+    }
+  ],
+  "packages": [
+    {
+      "expected": 2,
+      "found": 2,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 0,
+      "extra": 0,
+      "details": [],
+      "image": "packages_01.jpg"
+    },
+    {
+      "expected": 3,
+      "found": 3,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 1,
+      "extra": 0,
+      "details": [
+        "Dobutamine: concentration not read (expected 12.5 mg/1 mL)"
+      ],
+      "image": "packages_02.jpg"
+    },
+    {
+      "expected": 2,
+      "found": 2,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 0,
+      "extra": 0,
+      "details": [],
+      "image": "packages_03.jpg"
+    },
+    {
+      "expected": 2,
+      "found": 2,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 0,
+      "extra": 0,
+      "details": [],
+      "image": "packages_04.jpg"
+    },
+    {
+      "expected": 2,
+      "found": 2,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 0,
+      "extra": 0,
+      "details": [],
+      "image": "packages_05.jpg"
+    },
+    {
+      "expected": 2,
+      "found": 2,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 0,
+      "extra": 0,
+      "details": [],
+      "image": "packages_06.jpg"
+    },
+    {
+      "expected": 3,
+      "found": 3,
+      "value_ok": 3,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 1,
+      "extra": 0,
+      "details": [],
+      "image": "packages_07.jpg"
+    },
+    {
+      "expected": 2,
+      "found": 2,
+      "value_ok": 2,
+      "value_wrong": 0,
+      "expired_flagged": 0,
+      "expired": 0,
+      "extra": 0,
+      "details": [],
+      "image": "packages_08.jpg"
+    }
+  ]
+}

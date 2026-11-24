@@ -1,0 +1,53 @@
+{
+  "image": "orders_01.jpg",
+  "patient_weight_kg": 20.3,
+  "route_column_shown": false,
+  "names_truncated": true,
+  "photo_severity": 0.8,
+  "orders": [
+    {
+      "generic": "Vancomycin",
+      "dose": 150,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "6 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Heparin",
+      "dose": null,
+      "unit": "units",
+      "rate": "10 units/kg/h",
+      "route": null,
+      "route_on_screen": null,
+      "frequency": null,
+      "prn": false,
+      "continuous_infusion": true
+    },
+    {
+      "generic": "Milrinone",
+      "dose": null,
+      "unit": "mcg",
+      "rate": "0.5 mcg/kg/min",
+      "route": null,
+      "route_on_screen": null,
+      "frequency": null,
+      "prn": false,
+      "continuous_infusion": true
+    },
+    {
+      "generic": "Clonazepam",
+      "dose": 0.1,
+      "unit": "mg",
+      "rate": null,
+      "route": null,
+      "route_on_screen": null,
+      "frequency": "8 h",
+      "prn": false,
+      "continuous_infusion": false
+    }
+  ]
+}

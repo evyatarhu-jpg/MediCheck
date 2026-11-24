@@ -1,0 +1,49 @@
+{
+  "image": "packages_02.jpg",
+  "sideways_labels": false,
+  "photo_severity": 1.0,
+  "packages": [
+    {
+      "generic": "Paracetamol",
+      "dosage_form": "oral_liquid",
+      "strength": null,
+      "concentration": {
+        "amount": 120,
+        "unit": "mg",
+        "volume_ml": 5
+      },
+      "label_route": "Oral",
+      "expiry": "2025-06",
+      "expired": true,
+      "lot": "L62228"
+    },
+    {
+      "generic": "Epinephrine",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 1,
+        "unit": "mg",
+        "volume_ml": 1
+      },
+      "label_route": "IM / IV",
+      "expiry": "2027-02",
+      "expired": false,
+      "lot": "L59698"
+    },
+    {
+      "generic": "Dobutamine",
+      "dosage_form": "injectable_solution",
+      "strength": null,
+      "concentration": {
+        "amount": 12.5,
+        "unit": "mg",
+        "volume_ml": 1
+      },
+      "label_route": "IV infusion after dilution",
+      "expiry": "2027-06",
+      "expired": false,
+      "lot": "L19582"
+    }
+  ]
+}

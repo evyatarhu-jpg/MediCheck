@@ -1,0 +1,75 @@
+{
+  "image": "orders_04.jpg",
+  "patient_weight_kg": 10.9,
+  "route_column_shown": true,
+  "names_truncated": true,
+  "photo_severity": 0.5,
+  "orders": [
+    {
+      "generic": "Pantoprazole",
+      "dose": 2.1,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "24 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Furosemide",
+      "dose": 2,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Enoxaparin",
+      "dose": 1.5,
+      "unit": "mg",
+      "rate": null,
+      "route": "SC",
+      "route_on_screen": "SC",
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Midazolam",
+      "dose": 0.5,
+      "unit": "mg",
+      "rate": null,
+      "route": "IV",
+      "route_on_screen": "IV",
+      "frequency": null,
+      "prn": true,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Potassium Chloride",
+      "dose": 2,
+      "unit": "mEq",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": "PO",
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    },
+    {
+      "generic": "Spironolactone",
+      "dose": 6.25,
+      "unit": "mg",
+      "rate": null,
+      "route": "PO",
+      "route_on_screen": "PO",
+      "frequency": "12 h",
+      "prn": false,
+      "continuous_infusion": false
+    }
+  ]
+}
