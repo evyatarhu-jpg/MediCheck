@@ -134,7 +134,14 @@ def close(a, b):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--vision", action="store_true")
-    mode = "vision" if ap.parse_args().vision else "ocr"
+    ap.add_argument("--photo", type=int, default=0,
+                    help="1-3: turn the order screen into a simulated phone photo of a monitor")
+    args = ap.parse_args()
+    mode = "vision" if args.vision else "ocr"
+    if args.photo:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from PIL import Image
+        from simulate_photo import simulate
     start_server()
     from playwright.sync_api import sync_playwright
 
@@ -150,7 +157,12 @@ def main():
 
         for folder in sorted(SC.glob("scenario_*")):
             exp = json.loads((folder / "expected.json").read_text())
-            b64 = lambda n: base64.b64encode((folder / n).read_bytes()).decode()
+            def b64(n, folder=folder):
+                if args.photo and n == "1_orders.jpg":
+                    buf = io.BytesIO()
+                    simulate(Image.open(folder / n), args.photo, seed=int(folder.name[-2:])).save(buf, "JPEG", quality=80)
+                    return base64.b64encode(buf.getvalue()).decode()
+                return base64.b64encode((folder / n).read_bytes()).decode()
             routes = {o["generic"]: o["route"] for o in exp["orders"]}
             out = page.evaluate(STEP_JS, [mode, b64("1_orders.jpg"), b64("2_packages.jpg"), b64("3_prepared.jpg"),
                                           exp["patient_weight_kg"], routes])
@@ -188,7 +200,7 @@ def main():
 
     total = sum(len(r["rows"]) for r in results)
     ok = {k: sum(1 for r in results for x in r["rows"] if x[k]) for k in ("s1", "s2", "s3")}
-    print(f"=== End-to-end scenarios ({mode}) ===")
+    print(f"=== End-to-end scenarios ({mode}{', photo level ' + str(args.photo) if args.photo else ''}) ===")
     print(f"Step 1 order read correctly: {ok['s1']}/{total} · Step 2 calculation/STOP correct: {ok['s2']}/{total} · "
           f"Step 3 verification correct: {ok['s3']}/{total}")
     for r in results:
@@ -198,7 +210,7 @@ def main():
                 print(f"  {r['folder']} {x['drug']}: wrong at step {','.join(bad)} · read {x['s1_actual']} · "
                       f"calc {x['s2_actual']} · verify {x['s3_actual']}")
 
-    write_report(results, mode, total, ok)
+    write_report(results, mode + (f'_photo{args.photo}' if args.photo else ''), total, ok)
 
 
 def write_report(results, mode, total, ok):
