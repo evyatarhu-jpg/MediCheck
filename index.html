@@ -2505,7 +2505,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand"><b class="wm-a">MATA</b><span class="wm-b">MED</span> <span class="app-version">v6.40</span></div>
+      <div class="brand"><b class="wm-a">MATA</b><span class="wm-b">MED</span> <span class="app-version">v6.41</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MATAMED">יציאה</a>
@@ -2690,7 +2690,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MATAMED v6.40 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MATAMED v6.41 · שלב 3</div>
 
 
 
@@ -4474,6 +4474,12 @@ function parseDoseValue(text) {
       continue;
     }
 
+    // "08 mg" is almost always "0.8 mg" with the decimal point lost in the photo.
+    // Never guess: leave the dose empty so the order is blocked until it is typed in.
+    if (/^0\d/.test(match[1])) {
+      return { dose: "", unit: normalizeUnit(match[2]), raw: match[0], suspectDecimal: true };
+    }
+
     return {
       dose: parseFloat(match[1]),
       unit: normalizeUnit(match[2]),
@@ -5450,7 +5456,8 @@ function buildOrderCard(order, index) {
 
   if (order.nameMatch === "truncated") tag("שם קטוע", "שם התרופה קטוע במסך וזוהה כ-" + tallMan(order.drugName) + ". ודא את השם.", "warn");
   else if (order.nameMatch === "fuzzy") tag("שם בקירוב", "שם התרופה נקרא חלקית וזוהה בקירוב. ודא את השם.", "warn");
-  if (order.doseMissing) tag("מינון לא נקרא", "המינון לא נקרא מהמסך. יש להזין ידנית בעריכה.", "stop");
+  if (order.doseMissing && /(^|[^\d.])0\d/.test(order.sourceText || "")) tag("נקודה עשרונית?", "נקרא מספר שמתחיל ב-0 בלי נקודה (למשל 08). ייתכן שהכוונה ל-0.8. יש להזין את המינון ידנית לפי המסך.", "stop");
+  else if (order.doseMissing) tag("מינון לא נקרא", "המינון לא נקרא מהמסך. יש להזין ידנית בעריכה.", "stop");
   if (order.visionUncertain) tag("לא ודאי: " + order.visionUncertain, "לא נקרא בוודאות. בדוק מול המסך.", "warn");
   if (order.unknownDrug) tag("לא ברשימה", "התרופה אינה ברשימת התרופות של האפליקציה. בדיקות סיכון גבוה ו-LASA לא יחולו עליה.", "warn");
   if (order.infusion) tag("עירוי רציף", order.notes || "עירוי רציף", "");
