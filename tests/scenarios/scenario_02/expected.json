@@ -1,0 +1,51 @@
+{
+  "title": "טעות עשרונית בהכנה והמרת יחידות",
+  "patient_weight_kg": 3.6,
+  "orders": [
+    {
+      "generic": "Captopril",
+      "dose": 1.5,
+      "unit": "mg",
+      "route": "PO",
+      "prep": {
+        "status": "ok",
+        "amount": 1.5,
+        "unit": "mL"
+      },
+      "verify": "stop",
+      "verify_note": "במזרק סומן 15 mL במקום 1.5 mL"
+    },
+    {
+      "generic": "Epinephrine",
+      "dose": 10,
+      "unit": "mcg",
+      "route": "IV",
+      "prep": {
+        "status": "ok",
+        "amount": 0.01,
+        "unit": "mL",
+        "note": "המרת mcg ל-mg והמלצה למהול"
+      },
+      "verify": "review",
+      "verify_note": "לא הוכן ולא צולם"
+    }
+  ],
+  "packages": [
+    {
+      "generic": "Captopril",
+      "expiry": "2028-09",
+      "expired": false
+    },
+    {
+      "generic": "Epinephrine",
+      "expiry": "2027-01",
+      "expired": false
+    }
+  ],
+  "prepared": [
+    {
+      "kind": "syringe",
+      "label": "CAPTOPRIL 15 mL"
+    }
+  ]
+}

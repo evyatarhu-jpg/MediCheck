@@ -6078,7 +6078,7 @@ function detectPackageFormulation(text) {
 
   // Explicit parenteral wording wins over the generic word "solution".
   if (
-    /infusion|intravenous|\bIV\b|injection|injectable|\binj\b|vial|ampoule|ampule|עירוי|תוך ורידי|להזרקה|אמפולה|בקבוקון/i.test(clean)
+    /infusion|intravenous|\bIV\b|\bIV(?=after|infusion|use|only|bolus)|injection|injectable|\binj\b|vial|ampoule|ampule|dilut|עירוי|תוך ורידי|להזרקה|אמפולה|בקבוקון/i.test(clean)
   ) {
     return "injectable_solution";
   }
@@ -6374,6 +6374,9 @@ function closePackageImageZoom(event) {
 // Fix frequent OCR misreads in units on package labels.
 function fixOcrUnits(text) {
   return String(text || "")
+    // "5,000" is a thousands separator (comma + exactly three digits, not after a lone 0);
+    // "0,5" or "2,25" is a decimal comma.
+    .replace(/\b([1-9]\d{0,2}),(\d{3})(?!\d)/g, "$1$2")
     .replace(/(\d)\s*,\s*(\d)/g, "$1.$2")
     .replace(/(\d\s*)(rng|rnq|mq)\b/gi, "$1mg")
     .replace(/\b(m1|rnl|mI|rnL|mL\.|ml\.)(?![a-z])/g, "ml")
@@ -6429,6 +6432,22 @@ function fuzzyDrugOnLine(text) {
     : null;
 }
 
+// Expiry on a label: "EXP 2025-06", "EXP: 06/2025", "EXP 06/25", "תפוגה 06/2025".
+function parseExpiryText(text) {
+  var t = String(text || "");
+  var m;
+
+  if ((m = t.match(/(?:EXP|EXPIRY|USE BY|תפוגה|ת\.?\s?תפוגה)\s*[:.]?\s*(20\d{2})[-\/.](\d{1,2})(?:[-\/.](\d{1,2}))?/i))) {
+    return m[1] + "-" + ("0" + m[2]).slice(-2) + (m[3] ? "-" + ("0" + m[3]).slice(-2) : "");
+  }
+  if ((m = t.match(/(?:EXP|EXPIRY|USE BY|תפוגה|ת\.?\s?תפוגה)\s*[:.]?\s*(\d{1,2})[-\/.](20\d{2}|\d{2})(?!\d)/i))) {
+    var year = m[2].length === 2 ? "20" + m[2] : m[2];
+    var month = Number(m[1]);
+    if (month >= 1 && month <= 12) return year + "-" + ("0" + month).slice(-2);
+  }
+  return "";
+}
+
 function parsePackageDetails(group, confidence) {
   var clean = fixOcrUnits((group.texts || []).join(" ").replace(/\s+/g, " ").trim());
   var formulation = detectPackageFormulation(clean);
@@ -6450,10 +6469,12 @@ function parsePackageDetails(group, confidence) {
   };
 
   pkg.identityFuzzy = !!group.fuzzy;
+  pkg.expiry = parseExpiryText(clean);
 
   // e.g. 500 mg / 100 mL, 20 mg/2 mL, 5 mg/mL, 2 mEq/mL, 5000 units/mL, 250 mg in 5 mL
   var ratio = clean.match(
-    /(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?|u|iu|meq|mmol)\s*(?:\/|per|in)\s*(?:(\d+(?:\.\d+)?)\s*)?ml\b/i
+    // No word boundary after "ml": OCR often glues the next word ("50mg/mLafter").
+    /(\d+(?:\.\d+)?)\s*(mcg|µg|ug|mg|g|units?|u|iu|meq|mmol)\s*(?:\/|per|in)\s*(?:(\d+(?:\.\d+)?)\s*)?ml/i
   );
 
   if (ratio) {

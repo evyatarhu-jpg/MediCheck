@@ -1,0 +1,718 @@
+[
+  {
+    "folder": "scenario_01",
+    "title": "הכנה תקינה של שלוש תרופות",
+    "weight": 8.4,
+    "error": null,
+    "rows": [
+      {
+        "drug": "Meropenem",
+        "order": "42 mg IV",
+        "s1": true,
+        "s1_actual": "42 mg (ללא דרך מתן)",
+        "s2": true,
+        "s2_expected": "0.84 mL",
+        "s2_actual": "0.84 mL",
+        "warnings": [
+          "אבקה להמסה: הריכוז בחישוב תקף רק לאחר המסה בדיוק לפי הוראות התווית."
+        ],
+        "s3": true,
+        "s3_expected": "match",
+        "s3_actual": "match (0.84)",
+        "route_tapped": true
+      },
+      {
+        "drug": "Furosemide",
+        "order": "2 mg IV",
+        "s1": true,
+        "s1_actual": "2 mg IV",
+        "s2": true,
+        "s2_expected": "0.2 mL",
+        "s2_actual": "0.2 mL",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "match",
+        "s3_actual": "match (0.2)",
+        "route_tapped": false
+      },
+      {
+        "drug": "Spironolactone",
+        "order": "25 mg PO",
+        "s1": true,
+        "s1_actual": "25 mg PO",
+        "s2": true,
+        "s2_expected": "1 tablets",
+        "s2_actual": "1 טבליות",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "match",
+        "s3_actual": "match (1)",
+        "route_tapped": false
+      }
+    ],
+    "raw": {
+      "ordersRead": [
+        {
+          "drug": "Furosemide",
+          "dose": 2,
+          "unit": "mg",
+          "route": "IV"
+        },
+        {
+          "drug": "Meropenem",
+          "dose": 42,
+          "unit": "mg",
+          "route": ""
+        },
+        {
+          "drug": "Spironolactone",
+          "dose": 25,
+          "unit": "mg",
+          "route": "PO"
+        }
+      ],
+      "routeTapped": [
+        "Meropenem"
+      ],
+      "packagesRead": [
+        {
+          "drug": "Meropenem",
+          "form": "powder",
+          "strength": "",
+          "unit": "",
+          "conc": 50,
+          "concUnit": "mg",
+          "concVol": 1,
+          "expiry": ""
+        },
+        {
+          "drug": "Spironolactone",
+          "form": "tablet",
+          "strength": 25,
+          "unit": "mg",
+          "conc": "",
+          "concUnit": "",
+          "concVol": "",
+          "expiry": "2028-05"
+        },
+        {
+          "drug": "Furosemide",
+          "form": "injectable_solution",
+          "strength": "",
+          "unit": "",
+          "conc": 20,
+          "concUnit": "mg",
+          "concVol": 2,
+          "expiry": "2028-04"
+        }
+      ],
+      "plan": [
+        {
+          "drug": "Furosemide",
+          "ok": true,
+          "value": "0.2 mL",
+          "explanation": "(2 mg ÷ 20 mg) × 2 mL = 0.2 mL",
+          "warnings": []
+        },
+        {
+          "drug": "Meropenem",
+          "ok": true,
+          "value": "0.84 mL",
+          "explanation": "(42 mg ÷ 50 mg) × 1 mL = 0.84 mL",
+          "warnings": [
+            "אבקה להמסה: הריכוז בחישוב תקף רק לאחר המסה בדיוק לפי הוראות התווית."
+          ]
+        },
+        {
+          "drug": "Spironolactone",
+          "ok": true,
+          "value": "1 טבליות",
+          "explanation": "25 mg ÷ 25 mg = 1",
+          "warnings": []
+        }
+      ],
+      "preparedText": [
+        "MEROPENEM0.84mL",
+        "FUROSEMIDE0.2mL",
+        "SPIRONOLACTONE1tablet"
+      ],
+      "verify": [
+        {
+          "drug": "Furosemide",
+          "status": "match",
+          "detected": 0.2,
+          "message": "הזהות והכמות הנראות בתמונה תואמות לחישוב."
+        },
+        {
+          "drug": "Meropenem",
+          "status": "match",
+          "detected": 0.84,
+          "message": "הזהות והכמות הנראות בתמונה תואמות לחישוב."
+        },
+        {
+          "drug": "Spironolactone",
+          "status": "match",
+          "detected": 1,
+          "message": "הזהות והכמות הנראות בתמונה תואמות לחישוב."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario_02",
+    "title": "טעות עשרונית בהכנה והמרת יחידות",
+    "weight": 3.6,
+    "error": null,
+    "rows": [
+      {
+        "drug": "Captopril",
+        "order": "1.5 mg PO",
+        "s1": true,
+        "s1_actual": "1.5 mg PO",
+        "s2": true,
+        "s2_expected": "1.5 mL",
+        "s2_actual": "1.5 mL",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "stop (במזרק סומן 15 mL במקום 1.5 mL)",
+        "s3_actual": "stop (15)",
+        "route_tapped": false
+      },
+      {
+        "drug": "Epinephrine",
+        "order": "10 mcg IV",
+        "s1": true,
+        "s1_actual": "10 mcg (ללא דרך מתן)",
+        "s2": true,
+        "s2_expected": "0.01 mL",
+        "s2_actual": "0.01 mL",
+        "warnings": [
+          "המרת יחידות: ההוראה ב-mcg והאריזה ב-mg. 10 mcg = 0.01 mg. יש לוודא את ההמרה לפני ההכנה.",
+          "הנפח לשאיבה (0.01 mL) קטן מ-0.1 mL וקשה למדוד אותו במדויק. מומלץ למהול."
+        ],
+        "s3": true,
+        "s3_expected": "review (לא הוכן ולא צולם)",
+        "s3_actual": "review",
+        "route_tapped": true
+      }
+    ],
+    "raw": {
+      "ordersRead": [
+        {
+          "drug": "Epinephrine",
+          "dose": 10,
+          "unit": "mcg",
+          "route": ""
+        },
+        {
+          "drug": "Captopril",
+          "dose": 1.5,
+          "unit": "mg",
+          "route": "PO"
+        }
+      ],
+      "routeTapped": [
+        "Epinephrine"
+      ],
+      "packagesRead": [
+        {
+          "drug": "Captopril",
+          "form": "oral_liquid",
+          "strength": "",
+          "unit": "",
+          "conc": 1,
+          "concUnit": "mg",
+          "concVol": 1,
+          "expiry": "2028-09"
+        },
+        {
+          "drug": "Epinephrine",
+          "form": "injectable_solution",
+          "strength": "",
+          "unit": "",
+          "conc": 1,
+          "concUnit": "mg",
+          "concVol": 1,
+          "expiry": "2027-01"
+        }
+      ],
+      "plan": [
+        {
+          "drug": "Epinephrine",
+          "ok": true,
+          "value": "0.01 mL",
+          "explanation": "10 mcg = 0.01 mg; (0.01 mg ÷ 1 mg) × 1 mL = 0.01 mL",
+          "warnings": [
+            "המרת יחידות: ההוראה ב-mcg והאריזה ב-mg. 10 mcg = 0.01 mg. יש לוודא את ההמרה לפני ההכנה.",
+            "הנפח לשאיבה (0.01 mL) קטן מ-0.1 mL וקשה למדוד אותו במדויק. מומלץ למהול."
+          ]
+        },
+        {
+          "drug": "Captopril",
+          "ok": true,
+          "value": "1.5 mL",
+          "explanation": "(1.5 mg ÷ 1 mg) × 1 mL = 1.5 mL",
+          "warnings": []
+        }
+      ],
+      "preparedText": [
+        "CAPTOPRIL15mL"
+      ],
+      "verify": [
+        {
+          "drug": "Epinephrine",
+          "status": "review",
+          "detected": null,
+          "message": "שם התרופה לא זוהה בבירור בתמונה."
+        },
+        {
+          "drug": "Captopril",
+          "status": "stop",
+          "detected": 15,
+          "message": "הכמות שנקראה (15 mL) אינה תואמת לכמות הצפויה (1.5 mL)."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario_03",
+    "title": "אריזה חסרה ושם דומה",
+    "weight": 12.0,
+    "error": null,
+    "rows": [
+      {
+        "drug": "Cefazolin",
+        "order": "250 mg IV",
+        "s1": true,
+        "s1_actual": "250 mg (ללא דרך מתן)",
+        "s2": true,
+        "s2_expected": "STOP: missing_package",
+        "s2_actual": "STOP: לא נמצאה אריזה מתאימה",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "stop (במקום ceFAZolin צולמה cefTRIAXone)",
+        "s3_actual": "stop",
+        "route_tapped": true
+      },
+      {
+        "drug": "Ondansetron",
+        "order": "0.8 mg IV",
+        "s1": true,
+        "s1_actual": "0.8 mg IV",
+        "s2": true,
+        "s2_expected": "0.4 mL",
+        "s2_actual": "0.4 mL",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "match",
+        "s3_actual": "match (0.4)",
+        "route_tapped": false
+      }
+    ],
+    "raw": {
+      "ordersRead": [
+        {
+          "drug": "Ondansetron",
+          "dose": 0.8,
+          "unit": "mg",
+          "route": "IV"
+        },
+        {
+          "drug": "Cefazolin",
+          "dose": 250,
+          "unit": "mg",
+          "route": ""
+        }
+      ],
+      "routeTapped": [
+        "Cefazolin"
+      ],
+      "packagesRead": [
+        {
+          "drug": "Ceftriaxone",
+          "form": "powder",
+          "strength": "",
+          "unit": "",
+          "conc": "",
+          "concUnit": "",
+          "concVol": "",
+          "expiry": "2028-07"
+        },
+        {
+          "drug": "Ondansetron",
+          "form": "injectable_solution",
+          "strength": "",
+          "unit": "",
+          "conc": 4,
+          "concUnit": "mg",
+          "concVol": 2,
+          "expiry": "2027-03"
+        }
+      ],
+      "plan": [
+        {
+          "drug": "Ondansetron",
+          "ok": true,
+          "value": "0.4 mL",
+          "explanation": "(0.8 mg ÷ 4 mg) × 2 mL = 0.4 mL",
+          "warnings": []
+        },
+        {
+          "drug": "Cefazolin",
+          "ok": false,
+          "value": "STOP",
+          "explanation": "לא נמצאה אריזה מתאימה",
+          "warnings": []
+        }
+      ],
+      "preparedText": [
+        "ONDANSETRON0.4mL"
+      ],
+      "verify": [
+        {
+          "drug": "Ondansetron",
+          "status": "match",
+          "detected": 0.4,
+          "message": "הזהות והכמות הנראות בתמונה תואמות לחישוב."
+        },
+        {
+          "drug": "Cefazolin",
+          "status": "stop",
+          "detected": null,
+          "message": "לא אמורה להיות הכנה לתרופה זו עד לפתרון ה-STOP."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario_04",
+    "title": "דרך מתן לא מתאימה ואריזה שפג תוקפה",
+    "weight": 6.2,
+    "error": null,
+    "rows": [
+      {
+        "drug": "Paracetamol",
+        "order": "90 mg PO",
+        "s1": true,
+        "s1_actual": "90 mg PO",
+        "s2": true,
+        "s2_expected": "STOP: route",
+        "s2_actual": "STOP: ההוראה היא PO אך התכשיר שזוהה הוא תכשיר להזרקה/עירוי.",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "stop (הוראה PO מול תכשיר לעירוי)",
+        "s3_actual": "stop",
+        "route_tapped": false
+      },
+      {
+        "drug": "Digoxin",
+        "order": "10 mcg PO",
+        "s1": true,
+        "s1_actual": "10 mcg PO",
+        "s2": true,
+        "s2_expected": "STOP: expired",
+        "s2_actual": "STOP: פג תוקף התכשיר (2025-09). אין להשתמש באריזה זו.",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "stop (האריזה פגת תוקף)",
+        "s3_actual": "stop",
+        "route_tapped": false
+      }
+    ],
+    "raw": {
+      "ordersRead": [
+        {
+          "drug": "Paracetamol",
+          "dose": 90,
+          "unit": "mg",
+          "route": "PO"
+        },
+        {
+          "drug": "Digoxin",
+          "dose": 10,
+          "unit": "mcg",
+          "route": "PO"
+        }
+      ],
+      "routeTapped": [],
+      "packagesRead": [
+        {
+          "drug": "Paracetamol",
+          "form": "injectable_solution",
+          "strength": "",
+          "unit": "",
+          "conc": 10,
+          "concUnit": "mg",
+          "concVol": 1,
+          "expiry": "2028-01"
+        },
+        {
+          "drug": "Digoxin",
+          "form": "oral_liquid",
+          "strength": "",
+          "unit": "",
+          "conc": 50,
+          "concUnit": "mcg",
+          "concVol": 1,
+          "expiry": "2025-09"
+        }
+      ],
+      "plan": [
+        {
+          "drug": "Paracetamol",
+          "ok": false,
+          "value": "STOP",
+          "explanation": "ההוראה היא PO אך התכשיר שזוהה הוא תכשיר להזרקה/עירוי.",
+          "warnings": []
+        },
+        {
+          "drug": "Digoxin",
+          "ok": false,
+          "value": "STOP",
+          "explanation": "פג תוקף התכשיר (2025-09). אין להשתמש באריזה זו.",
+          "warnings": []
+        }
+      ],
+      "preparedText": [
+        "DIGOXIN 0.2 mL"
+      ],
+      "verify": [
+        {
+          "drug": "Paracetamol",
+          "status": "stop",
+          "detected": null,
+          "message": "לא אמורה להיות הכנה לתרופה זו עד לפתרון ה-STOP."
+        },
+        {
+          "drug": "Digoxin",
+          "status": "stop",
+          "detected": null,
+          "message": "התרופה מופיעה בצילום למרות שבשלב ההכנה התקבל STOP."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario_05",
+    "title": "חצי טבליה",
+    "weight": 9.8,
+    "error": null,
+    "rows": [
+      {
+        "drug": "Spironolactone",
+        "order": "12.5 mg PO",
+        "s1": true,
+        "s1_actual": "12.5 mg PO",
+        "s2": true,
+        "s2_expected": "STOP: fraction_tablet",
+        "s2_actual": "STOP: החישוב האריתמטי הוא 0.5 טבליות. האפליקציה אינה מניחה שמותר לחצות טבליה, לפתוח קפסולה או לחלק את תכולתה ללא מקור תרופתי מוסמך.",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "stop (הוכנה חצי טבליה למרות STOP)",
+        "s3_actual": "stop",
+        "route_tapped": false
+      },
+      {
+        "drug": "Levetiracetam",
+        "order": "100 mg PO",
+        "s1": true,
+        "s1_actual": "100 mg PO",
+        "s2": true,
+        "s2_expected": "1 mL",
+        "s2_actual": "1 mL",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "match",
+        "s3_actual": "match (1)",
+        "route_tapped": false
+      }
+    ],
+    "raw": {
+      "ordersRead": [
+        {
+          "drug": "Spironolactone",
+          "dose": 12.5,
+          "unit": "mg",
+          "route": "PO"
+        },
+        {
+          "drug": "Levetiracetam",
+          "dose": 100,
+          "unit": "mg",
+          "route": "PO"
+        }
+      ],
+      "routeTapped": [],
+      "packagesRead": [
+        {
+          "drug": "Spironolactone",
+          "form": "tablet",
+          "strength": 25,
+          "unit": "mg",
+          "conc": "",
+          "concUnit": "",
+          "concVol": "",
+          "expiry": "2027-12"
+        },
+        {
+          "drug": "Levetiracetam",
+          "form": "oral_liquid",
+          "strength": "",
+          "unit": "",
+          "conc": 100,
+          "concUnit": "mg",
+          "concVol": 1,
+          "expiry": "2028-11"
+        }
+      ],
+      "plan": [
+        {
+          "drug": "Spironolactone",
+          "ok": false,
+          "value": "STOP",
+          "explanation": "החישוב האריתמטי הוא 0.5 טבליות. האפליקציה אינה מניחה שמותר לחצות טבליה, לפתוח קפסולה או לחלק את תכולתה ללא מקור תרופתי מוסמך.",
+          "warnings": []
+        },
+        {
+          "drug": "Levetiracetam",
+          "ok": true,
+          "value": "1 mL",
+          "explanation": "(100 mg ÷ 100 mg) × 1 mL = 1 mL",
+          "warnings": []
+        }
+      ],
+      "preparedText": [
+        "SPIRONOLACTONE 0.5 tablet",
+        "LEVETIRACETAM1mL"
+      ],
+      "verify": [
+        {
+          "drug": "Spironolactone",
+          "status": "stop",
+          "detected": null,
+          "message": "התרופה מופיעה בצילום למרות שבשלב ההכנה התקבל STOP."
+        },
+        {
+          "drug": "Levetiracetam",
+          "status": "match",
+          "detected": 1,
+          "message": "הזהות והכמות הנראות בתמונה תואמות לחישוב."
+        }
+      ]
+    }
+  },
+  {
+    "folder": "scenario_06",
+    "title": "תרופות בסיכון גבוה",
+    "weight": 15.5,
+    "error": null,
+    "rows": [
+      {
+        "drug": "Potassium Chloride",
+        "order": "2 mEq IV",
+        "s1": true,
+        "s1_actual": "2 mEq IV",
+        "s2": true,
+        "s2_expected": "1 mL",
+        "s2_actual": "1 mL",
+        "warnings": [],
+        "s3": true,
+        "s3_expected": "match",
+        "s3_actual": "match (1)",
+        "route_tapped": false
+      },
+      {
+        "drug": "Heparin",
+        "order": "50 units IV",
+        "s1": true,
+        "s1_actual": "50 units (ללא דרך מתן)",
+        "s2": true,
+        "s2_expected": "0.01 mL",
+        "s2_actual": "0.01 mL",
+        "warnings": [
+          "הנפח לשאיבה (0.01 mL) קטן מ-0.1 mL וקשה למדוד אותו במדויק. מומלץ למהול."
+        ],
+        "s3": true,
+        "s3_expected": "review (לא צולם)",
+        "s3_actual": "review",
+        "route_tapped": true
+      }
+    ],
+    "raw": {
+      "ordersRead": [
+        {
+          "drug": "Potassium Chloride",
+          "dose": 2,
+          "unit": "mEq",
+          "route": "IV"
+        },
+        {
+          "drug": "Heparin",
+          "dose": 50,
+          "unit": "units",
+          "route": ""
+        }
+      ],
+      "routeTapped": [
+        "Heparin"
+      ],
+      "packagesRead": [
+        {
+          "drug": "Potassium Chloride",
+          "form": "injectable_solution",
+          "strength": "",
+          "unit": "",
+          "conc": 2,
+          "concUnit": "mEq",
+          "concVol": 1,
+          "expiry": "2028-09"
+        },
+        {
+          "drug": "Heparin",
+          "form": "injectable_solution",
+          "strength": "",
+          "unit": "",
+          "conc": 5000,
+          "concUnit": "units",
+          "concVol": 1,
+          "expiry": "2027-11"
+        }
+      ],
+      "plan": [
+        {
+          "drug": "Potassium Chloride",
+          "ok": true,
+          "value": "1 mL",
+          "explanation": "(2 mEq ÷ 2 mEq) × 1 mL = 1 mL",
+          "warnings": []
+        },
+        {
+          "drug": "Heparin",
+          "ok": true,
+          "value": "0.01 mL",
+          "explanation": "(50 units ÷ 5000 units) × 1 mL = 0.01 mL",
+          "warnings": [
+            "הנפח לשאיבה (0.01 mL) קטן מ-0.1 mL וקשה למדוד אותו במדויק. מומלץ למהול."
+          ]
+        }
+      ],
+      "preparedText": [
+        "POTASSIUMCHLORIDE1mL"
+      ],
+      "verify": [
+        {
+          "drug": "Potassium Chloride",
+          "status": "match",
+          "detected": 1,
+          "message": "הזהות והכמות הנראות בתמונה תואמות לחישוב."
+        },
+        {
+          "drug": "Heparin",
+          "status": "review",
+          "detected": null,
+          "message": "שם התרופה לא זוהה בבירור בתמונה."
+        }
+      ]
+    }
+  }
+]

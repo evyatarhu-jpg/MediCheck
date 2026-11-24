@@ -1,0 +1,52 @@
+{
+  "title": "חצי טבליה",
+  "patient_weight_kg": 9.8,
+  "orders": [
+    {
+      "generic": "Spironolactone",
+      "dose": 12.5,
+      "unit": "mg",
+      "route": "PO",
+      "prep": {
+        "status": "stop",
+        "reason": "fraction_tablet"
+      },
+      "verify": "stop",
+      "verify_note": "הוכנה חצי טבליה למרות STOP"
+    },
+    {
+      "generic": "Levetiracetam",
+      "dose": 100,
+      "unit": "mg",
+      "route": "PO",
+      "prep": {
+        "status": "ok",
+        "amount": 1,
+        "unit": "mL"
+      },
+      "verify": "match"
+    }
+  ],
+  "packages": [
+    {
+      "generic": "Spironolactone",
+      "expiry": "2027-12",
+      "expired": false
+    },
+    {
+      "generic": "Levetiracetam",
+      "expiry": "2028-11",
+      "expired": false
+    }
+  ],
+  "prepared": [
+    {
+      "kind": "cup",
+      "label": "SPIRONOLACTONE 0.5 tablet"
+    },
+    {
+      "kind": "syringe",
+      "label": "LEVETIRACETAM 1 mL"
+    }
+  ]
+}

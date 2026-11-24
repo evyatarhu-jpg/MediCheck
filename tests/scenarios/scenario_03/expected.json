@@ -1,0 +1,48 @@
+{
+  "title": "אריזה חסרה ושם דומה",
+  "patient_weight_kg": 12.0,
+  "orders": [
+    {
+      "generic": "Cefazolin",
+      "dose": 250,
+      "unit": "mg",
+      "route": "IV",
+      "prep": {
+        "status": "stop",
+        "reason": "missing_package"
+      },
+      "verify": "stop",
+      "verify_note": "במקום ceFAZolin צולמה cefTRIAXone"
+    },
+    {
+      "generic": "Ondansetron",
+      "dose": 0.8,
+      "unit": "mg",
+      "route": "IV",
+      "prep": {
+        "status": "ok",
+        "amount": 0.4,
+        "unit": "mL"
+      },
+      "verify": "match"
+    }
+  ],
+  "packages": [
+    {
+      "generic": "Ceftriaxone",
+      "expiry": "2028-07",
+      "expired": false
+    },
+    {
+      "generic": "Ondansetron",
+      "expiry": "2027-03",
+      "expired": false
+    }
+  ],
+  "prepared": [
+    {
+      "kind": "syringe",
+      "label": "ONDANSETRON 0.4 mL"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "title": "הכנה תקינה של שלוש תרופות",
+  "patient_weight_kg": 8.4,
+  "orders": [
+    {
+      "generic": "Meropenem",
+      "dose": 42,
+      "unit": "mg",
+      "route": "IV",
+      "prep": {
+        "status": "ok",
+        "amount": 0.84,
+        "unit": "mL",
+        "note": "אבקה: התראת המסה"
+      },
+      "verify": "match"
+    },
+    {
+      "generic": "Furosemide",
+      "dose": 2,
+      "unit": "mg",
+      "route": "IV",
+      "prep": {
+        "status": "ok",
+        "amount": 0.2,
+        "unit": "mL"
+      },
+      "verify": "match"
+    },
+    {
+      "generic": "Spironolactone",
+      "dose": 25,
+      "unit": "mg",
+      "route": "PO",
+      "prep": {
+        "status": "ok",
+        "amount": 1,
+        "unit": "tablets"
+      },
+      "verify": "match"
+    }
+  ],
+  "packages": [
+    {
+      "generic": "Meropenem",
+      "expiry": "2027-08",
+      "expired": false
+    },
+    {
+      "generic": "Furosemide",
+      "expiry": "2028-04",
+      "expired": false
+    },
+    {
+      "generic": "Spironolactone",
+      "expiry": "2028-05",
+      "expired": false
+    }
+  ],
+  "prepared": [
+    {
+      "kind": "syringe",
+      "label": "MEROPENEM 0.84 mL"
+    },
+    {
+      "kind": "syringe",
+      "label": "FUROSEMIDE 0.2 mL"
+    },
+    {
+      "kind": "cup",
+      "label": "SPIRONOLACTONE 1 tablet"
+    }
+  ]
+}
