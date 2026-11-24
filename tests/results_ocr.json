@@ -135,14 +135,12 @@
     {
       "expected": 3,
       "found": 3,
-      "value_ok": 2,
+      "value_ok": 3,
       "value_wrong": 0,
-      "expired_flagged": 0,
+      "expired_flagged": 1,
       "expired": 1,
       "extra": 0,
-      "details": [
-        "Dobutamine: concentration not read (expected 12.5 mg/1 mL)"
-      ],
+      "details": [],
       "image": "packages_02.jpg"
     },
     {
@@ -194,7 +192,7 @@
       "found": 3,
       "value_ok": 3,
       "value_wrong": 0,
-      "expired_flagged": 0,
+      "expired_flagged": 1,
       "expired": 1,
       "extra": 0,
       "details": [],

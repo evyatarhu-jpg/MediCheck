@@ -1,0 +1,51 @@
+{
+  "title": "תרופות בסיכון גבוה",
+  "patient_weight_kg": 15.5,
+  "orders": [
+    {
+      "generic": "Potassium Chloride",
+      "dose": 2,
+      "unit": "mEq",
+      "route": "IV",
+      "prep": {
+        "status": "ok",
+        "amount": 1,
+        "unit": "mL",
+        "note": "סיכון גבוה: נדרש אימות כפול"
+      },
+      "verify": "match"
+    },
+    {
+      "generic": "Heparin",
+      "dose": 50,
+      "unit": "units",
+      "route": "IV",
+      "prep": {
+        "status": "ok",
+        "amount": 0.01,
+        "unit": "mL",
+        "note": "נפח קטן: מומלץ למהול"
+      },
+      "verify": "review",
+      "verify_note": "לא צולם"
+    }
+  ],
+  "packages": [
+    {
+      "generic": "Potassium Chloride",
+      "expiry": "2028-09",
+      "expired": false
+    },
+    {
+      "generic": "Heparin",
+      "expiry": "2027-11",
+      "expired": false
+    }
+  ],
+  "prepared": [
+    {
+      "kind": "syringe",
+      "label": "POTASSIUM CHLORIDE 1 mL"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "title": "דרך מתן לא מתאימה ואריזה שפג תוקפה",
+  "patient_weight_kg": 6.2,
+  "orders": [
+    {
+      "generic": "Paracetamol",
+      "dose": 90,
+      "unit": "mg",
+      "route": "PO",
+      "prep": {
+        "status": "stop",
+        "reason": "route"
+      },
+      "verify": "stop",
+      "verify_note": "הוראה PO מול תכשיר לעירוי"
+    },
+    {
+      "generic": "Digoxin",
+      "dose": 10,
+      "unit": "mcg",
+      "route": "PO",
+      "prep": {
+        "status": "stop",
+        "reason": "expired"
+      },
+      "verify": "stop",
+      "verify_note": "האריזה פגת תוקף"
+    }
+  ],
+  "packages": [
+    {
+      "generic": "Paracetamol",
+      "expiry": "2028-01",
+      "expired": false
+    },
+    {
+      "generic": "Digoxin",
+      "expiry": "2025-09",
+      "expired": true
+    }
+  ],
+  "prepared": [
+    {
+      "kind": "syringe",
+      "label": "DIGOXIN 0.2 mL"
+    }
+  ]
+}
