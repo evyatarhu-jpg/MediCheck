@@ -2342,6 +2342,160 @@
       box-shadow: none;
     }
     .compact-summary, .batch-count, h3 { color: var(--ink) !important; }
+
+    /* ===== Full-screen camera: header and controls float over the video,
+       the scan frame fills almost the whole screen ===== */
+    .camera-modal .camera-stage { position: absolute; inset: 0; }
+    .camera-modal .camera-header {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+      background: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,0)) !important;
+    }
+    .camera-modal .camera-controls {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 3;
+      background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.75)) !important;
+    }
+    .camera-modal .scan-mask,
+    .camera-modal .package-camera-mask,
+    .camera-modal .prepared-camera-mask,
+    .camera-modal .scan-guide { display: none !important; }
+    .camera-modal .scan-box,
+    #orderCameraModal .scan-box,
+    .camera-modal .package-camera-box,
+    .camera-modal .prepared-camera-box {
+      position: absolute;
+      left: 2.5% !important;
+      right: 2.5% !important;
+      top: calc(72px + env(safe-area-inset-top)) !important;
+      bottom: calc(104px + env(safe-area-inset-bottom)) !important;
+      height: auto !important;
+      border: 3px solid rgba(255,255,255,.95) !important;
+      border-radius: 18px !important;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,.38);
+      pointer-events: none;
+    }
+    .camera-modal .camera-hint,
+    #orderCameraModal .camera-hint,
+    .camera-modal .package-camera-hint,
+    .camera-modal .prepared-camera-hint {
+      position: absolute;
+      left: 8% !important;
+      right: 8% !important;
+      top: calc(84px + env(safe-area-inset-top)) !important;
+      bottom: auto !important;
+      z-index: 2;
+      font-size: 15px !important;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 1px 4px #000;
+      pointer-events: none;
+    }
+
+    /* ===== Compact order list: every order fits on one screen ===== */
+    #ordersReviewSection .compact-list-card,
+    html.phone-ui #ordersReviewSection .compact-list-card {
+      padding: 8px 10px !important;
+      margin: 0 !important;
+      border-radius: 14px !important;
+      box-shadow: none;
+    }
+    #ordersReviewSection .orders-list,
+    #detectedOrdersContainer { gap: 6px !important; margin-top: 8px !important; }
+    #ordersReviewSection .order-selection-toolbar { display: flex; gap: 8px; margin: 6px 0; }
+    #ordersReviewSection .order-selection-toolbar button,
+    html.phone-ui #ordersReviewSection .order-selection-toolbar button {
+      min-height: 36px !important; font-size: 14px !important; padding: 4px 12px !important; margin: 0 !important; flex: 1;
+    }
+    #ordersReviewSection .selection-count { font-size: 13px; margin: 4px 0; }
+    #ordersReviewSection .batch-count { font-size: 15px; margin: 4px 0; }
+    #ordersReviewSection .compact-row { gap: 8px; align-items: center; min-height: 0; }
+    #ordersReviewSection .compact-summary,
+    html.phone-ui #ordersReviewSection .compact-summary {
+      font-size: 15px !important;
+      font-weight: 700;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #ordersReviewSection .order-check,
+    html.phone-ui #ordersReviewSection .order-check { width: 24px !important; height: 24px !important; flex: none; }
+    #ordersReviewSection .compact-edit-btn,
+    html.phone-ui #ordersReviewSection .compact-edit-btn {
+      min-height: 30px !important;
+      padding: 2px 12px !important;
+      font-size: 13px !important;
+      width: auto !important;
+      flex: none;
+    }
+    .order-sub {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      align-items: center;
+      margin: 4px 32px 0 0;
+    }
+    .order-sub:empty { display: none; }
+    .order-tag {
+      font-size: 11.5px;
+      line-height: 1.6;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #f3ebe4;
+      color: #5a3a3c;
+      white-space: nowrap;
+    }
+    .order-tag.warn { background: #fff4d6; color: #6b4a00; }
+    .order-tag.stop { background: #fde8e8; color: #912018; font-weight: 700; }
+    .route-buttons-wrap .route-buttons { margin: 0; gap: 4px; }
+    .route-buttons-wrap .route-btn,
+    html.phone-ui .route-buttons-wrap .route-btn {
+      min-height: 26px !important;
+      padding: 0 10px !important;
+      font-size: 12.5px !important;
+      border-width: 1px !important;
+    }
+    #ordersReviewSection .weight-box {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 10px;
+      align-items: center;
+      padding: 8px 12px !important;
+      margin: 8px 0 !important;
+    }
+    #ordersReviewSection .weight-box label[for="patientWeightInput"] { margin: 0; font-size: 14px; }
+    #ordersReviewSection .weight-box input[type="number"],
+    html.phone-ui #ordersReviewSection .weight-box input[type="number"] { min-height: 40px !important; font-size: 17px !important; }
+    #ordersReviewSection .weight-box .weight-unknown { grid-column: 1 / -1; margin: 0; font-size: 13px; }
+    #ordersReviewSection .weight-box .weight-unknown input { width: 18px !important; height: 18px !important; }
+    #ordersReviewSection #patientWeightSource { grid-column: 1 / -1; margin: 0; }
+
+    #ordersReviewSection .compact-row { min-height: 0 !important; padding: 2px 0 !important; }
+    #ordersReviewSection .order-selection-toolbar { display: flex !important; grid-template-columns: none !important; }
+    #ordersReviewSection .weight-box label,
+    html.phone-ui #ordersReviewSection .weight-box label { font-size: 14px !important; margin: 0 !important; line-height: 1.3 !important; }
+    html.phone-ui #ordersReviewSection .weight-box input[type="number"] { padding: 6px 10px !important; }
+    html.phone-ui #ordersReviewSection .batch-count,
+    html.phone-ui #ordersReviewSection .selection-count { font-size: 15px !important; }
+    #ordersReviewSection .order-sub { margin-top: 2px; }
+    #ordersReviewSection .weight-box .weight-unknown input,
+    html.phone-ui #ordersReviewSection .weight-box .weight-unknown input {
+      min-height: 0 !important; height: 18px !important; width: 18px !important; margin: 0 !important; padding: 0 !important; flex: none;
+    }
+    #ordersReviewSection .weight-box .weight-unknown { min-height: 0 !important; line-height: 1.3; }
+    #ordersReviewSection .route-buttons-wrap { display: inline-flex; }
+    #ordersReviewSection .route-buttons-wrap.hidden { display: none !important; }
+    #ordersReviewSection .route-buttons-wrap .route-buttons { display: inline-flex !important; flex-wrap: nowrap; gap: 3px !important; margin: 0 !important; }
+    #ordersReviewSection .route-buttons-wrap .route-btn,
+    html.phone-ui #ordersReviewSection .route-buttons-wrap .route-btn {
+      min-height: 22px !important; height: 22px !important; line-height: 20px !important; padding: 0 7px !important; font-size: 12px !important; margin: 0 !important;
+    }
+    #ordersReviewSection .compact-list-card,
+    html.phone-ui #ordersReviewSection .compact-list-card { padding: 6px 10px !important; margin: 0 !important; }
+    #ordersReviewSection .compact-edit-btn,
+    html.phone-ui #ordersReviewSection .compact-edit-btn { min-height: 26px !important; padding: 0 10px !important; }
+    #ordersReviewSection .order-sub { margin: 2px 32px 0 0; }
+    #ordersReviewSection .route-buttons-wrap .route-btn,
+    html.phone-ui #ordersReviewSection .route-buttons-wrap .route-btn { min-width: 0 !important; width: auto !important; }
 </style>
 </head>
 
@@ -2351,7 +2505,7 @@
 
   <div class="topbar">
     <div class="toprow">
-      <div class="brand"><b class="wm-a">MATA</b><span class="wm-b">MED</span> <span class="app-version">v6.39</span></div>
+      <div class="brand"><b class="wm-a">MATA</b><span class="wm-b">MED</span> <span class="app-version">v6.40</span></div>
       <div class="top-actions">
         <button id="nightToggle" class="top-icon" type="button" onclick="toggleNightMode()" aria-label="מצב לילה">🌙</button>
         <a class="top-logout" href="/logout" aria-label="יציאה מ-MATAMED">יציאה</a>
@@ -2436,10 +2590,6 @@
             המשקל אינו ידוע (בדיקות mg/kg לא יבוצעו)
           </label>
         </div>
-        <div class="tip">
-          סמן ✓ רק ליד התרופות שבכוונתך להכין כעת. ניתן לתקן כל שדה לפני האישור.
-        </div>
-
         <div class="order-selection-toolbar">
           <button type="button" onclick="selectAllDetectedOrders()">✓ בחר את כולן</button>
           <button type="button" onclick="clearAllDetectedOrders()">נקה בחירה</button>
@@ -2540,7 +2690,7 @@
   </section>
 
   <section id="prepareScreen" class="hidden">
-    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MATAMED v6.39 · שלב 3</div>
+    <h2>הוראות הכנה</h2><div style="font-size:12px;color:#7a8795;margin-top:-8px;">MATAMED v6.40 · שלב 3</div>
 
 
 
@@ -3069,11 +3219,7 @@ async function openOrderCamera(automatic) {
     }
 
     orderCameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      },
+      video: cameraVideoConstraints(),
       audio: false
     });
 
@@ -3110,6 +3256,19 @@ function closeOrderCamera() {
   modal.classList.add("hidden");
 }
 
+
+// Ask for a high-resolution stream in the same orientation as the phone.
+// A landscape stream on an upright phone shows only its middle strip
+// (a "zoomed-in" view) and yields a small, low-resolution capture.
+function cameraVideoConstraints() {
+  var portrait = window.innerHeight >= window.innerWidth;
+  return {
+    facingMode: { ideal: "environment" },
+    width: { ideal: portrait ? 2160 : 3840 },
+    height: { ideal: portrait ? 3840 : 2160 },
+    aspectRatio: { ideal: portrait ? 9 / 16 : 16 / 9 }
+  };
+}
 
 function mapVisibleOrderBoxToVideo(video, box) {
   var videoRect = video.getBoundingClientRect();
@@ -3574,7 +3733,7 @@ async function runOrderOcr(file) {
   status.innerHTML = "שולח את אזור ההוראות ל־OCR המקומי בשרת...";
 
   try {
-    var uploadBlob = await prepareImageForUpload(file, 1800, 0.88);
+    var uploadBlob = await prepareImageForUpload(file, 1280, 0.9);
 
     var form = new FormData();
     form.append("image", uploadBlob, "order-line.jpg");
@@ -3675,7 +3834,7 @@ async function runMedicationOcr(file) {
   try {
     // Full phone photos can be very large. Resize before upload to avoid
     // proxy/server limits and unnecessary OCR memory use.
-    var uploadBlob = await prepareImageForUpload(file, 1600, 0.82);
+    var uploadBlob = await prepareImageForUpload(file, 1280, 0.88);
     lastMedicationOcrImageBlob = uploadBlob;
 
     status.innerHTML = "שולח את תמונת התרופה ל־OCR המקומי בשרת...";
@@ -3881,6 +4040,31 @@ function promiseWithTimeout(promise, milliseconds) {
   ]);
 }
 
+async function recheckOneDoseLine(line, parsed, rawNumeric) {
+  try {
+    var crop = await makeDoseRecheckCrop(lastOrderOcrImageBlob, line.box);
+    var recheck = await promiseWithTimeout(ocrSmallOrderCrop(crop), 5000);
+    if (!recheck) return;
+
+    var candidateTexts = [];
+    if (Array.isArray(recheck.segments)) candidateTexts = candidateTexts.concat(recheck.segments);
+    if (recheck.text) candidateTexts.push(recheck.text);
+
+    for (var c = 0; c < candidateTexts.length; c++) {
+      var decimal = explicitDecimalDose(candidateTexts[c]);
+      if (!decimal || decimal.unit !== parsed.unit) continue;
+
+      if (numericDigitsOnly(decimal.numericText) === numericDigitsOnly(rawNumeric)) {
+        line.text = String(line.text).replace(/(\d{2})\s*mg\b/i, decimal.numericText + " mg");
+        line.decimalRechecked = true;
+        return;
+      }
+    }
+  } catch (error) {
+    console.warn("Dose recheck failed", error);
+  }
+}
+
 async function refineHospitalDoseLines(lines) {
   if (!lastOrderOcrImageBlob || !Array.isArray(lines) || !lines.length) {
     return lines || [];
@@ -3894,7 +4078,9 @@ async function refineHospitalDoseLines(lines) {
     return Object.assign({}, line);
   });
 
-  for (var i = 0; i < refined.length; i++) {
+  var jobs = [];
+
+  for (var i = 0; i < refined.length && jobs.length < 4; i++) {
     var line = refined[i];
     var parsed = parseDoseValue(line.text);
 
@@ -3911,45 +4097,11 @@ async function refineHospitalDoseLines(lines) {
       continue;
     }
 
-    try {
-      var crop = await makeDoseRecheckCrop(lastOrderOcrImageBlob, line.box);
-
-      var recheck = await promiseWithTimeout(
-        ocrSmallOrderCrop(crop),
-        5000
-      );
-
-      if (!recheck) continue;
-
-      var candidateTexts = [];
-
-      if (Array.isArray(recheck.segments)) {
-        candidateTexts = candidateTexts.concat(recheck.segments);
-      }
-      if (recheck.text) {
-        candidateTexts.push(recheck.text);
-      }
-
-      for (var c = 0; c < candidateTexts.length; c++) {
-        var decimal = explicitDecimalDose(candidateTexts[c]);
-        if (!decimal || decimal.unit !== parsed.unit) continue;
-
-        if (
-          numericDigitsOnly(decimal.numericText) === numericDigitsOnly(rawNumeric)
-        ) {
-          line.text = String(line.text).replace(
-            /(\d{2})\s*mg\b/i,
-            decimal.numericText + " mg"
-          );
-          line.decimalRechecked = true;
-          break;
-        }
-      }
-
-    } catch (error) {
-      console.warn("Dose recheck failed", error);
-    }
+    jobs.push(recheckOneDoseLine(line, parsed, rawNumeric));
   }
+
+  // The rechecks run together instead of one after another.
+  await Promise.all(jobs);
 
   return refined;
 }
@@ -5212,6 +5364,8 @@ function refreshOrderSummary(index) {
 
   var routeMissing = document.getElementById("orderRouteMissing_" + index);
   if (routeMissing) routeMissing.classList.toggle("hidden", !!routeEl.value);
+  var routeWrap = document.getElementById("routeWrap_" + index);
+  if (routeWrap) routeWrap.classList.toggle("hidden", !!routeEl.value);
 
   var card = summary.closest(".order-item");
   if (card) {
@@ -5288,28 +5442,26 @@ function buildOrderCard(order, index) {
     : "";
 
   var summaryText = orderSummaryText(order);
-  var notes = [];
-
-  if (order.nameMatch === "truncated") {
-    notes.push("שם התרופה קטוע במסך וזוהה כ-" + tallMan(order.drugName) + ". ודא את השם.");
-  } else if (order.nameMatch === "fuzzy") {
-    notes.push("שם התרופה נקרא חלקית וזוהה בקירוב כ-" + tallMan(order.drugName) + ". ודא את השם.");
+  // Short tags keep each order on one or two lines; the full text is in the tooltip.
+  var tags = [];
+  function tag(text, full, kind) {
+    tags.push('<span class="order-tag' + (kind ? " " + kind : "") + '" title="' + escapeHtml(full || text) + '">' + bidiHtml(text) + "</span>");
   }
-  if (order.doseMissing) notes.push("המינון לא נקרא מהמסך. יש להזין ידנית בעריכה.");
-  if (order.visionUncertain) notes.push("לא נקרא בוודאות: " + order.visionUncertain + ". בדוק מול המסך.");
-  if (order.unknownDrug) notes.push("התרופה אינה ברשימת התרופות של האפליקציה. בדיקות סיכון גבוה ו-LASA לא יחולו עליה.");
-  if (order.infusion && order.notes) notes.push(order.notes);
-  if (order.formHint) notes.push("צורת מתן לפי המסך: " + order.formHint);
 
-  var notesHtml = notes.length
-    ? '<div class="order-notes-line">' + notes.map(bidiHtml).join("<br>") + "</div>"
-    : "";
+  if (order.nameMatch === "truncated") tag("שם קטוע", "שם התרופה קטוע במסך וזוהה כ-" + tallMan(order.drugName) + ". ודא את השם.", "warn");
+  else if (order.nameMatch === "fuzzy") tag("שם בקירוב", "שם התרופה נקרא חלקית וזוהה בקירוב. ודא את השם.", "warn");
+  if (order.doseMissing) tag("מינון לא נקרא", "המינון לא נקרא מהמסך. יש להזין ידנית בעריכה.", "stop");
+  if (order.visionUncertain) tag("לא ודאי: " + order.visionUncertain, "לא נקרא בוודאות. בדוק מול המסך.", "warn");
+  if (order.unknownDrug) tag("לא ברשימה", "התרופה אינה ברשימת התרופות של האפליקציה. בדיקות סיכון גבוה ו-LASA לא יחולו עליה.", "warn");
+  if (order.infusion) tag("עירוי רציף", order.notes || "עירוי רציף", "");
+  if (order.formHint) tag(order.formHint, "צורת מתן לפי המסך: " + order.formHint, "");
 
-  notesHtml +=
-    '<div id="orderRouteMissing_' + index + '" class="order-notes-line' + (order.route ? " hidden" : "") + '">' +
-      "דרך המתן לא זוהתה. בחר:" +
-    "</div>" +
-    routeButtonsHtml(order, index);
+  var notesHtml =
+    '<div class="order-sub">' +
+      tags.join("") +
+      '<span id="orderRouteMissing_' + index + '" class="order-tag stop' + (order.route ? " hidden" : "") + '">דרך מתן?</span>' +
+      '<span class="route-buttons-wrap' + (order.route ? " hidden" : "") + '" id="routeWrap_' + index + '">' + routeButtonsHtml(order, index) + "</span>" +
+    "</div>";
 
   card.innerHTML =
     '<div class="compact-row">' +
@@ -5734,11 +5886,7 @@ async function openMedicationBatchCamera(automatic) {
     }
 
     medicationBatchCameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      },
+      video: cameraVideoConstraints(),
       audio: false
     });
 
@@ -8258,11 +8406,7 @@ async function openPreparedBatchCamera(automatic) {
 
   try {
     preparedBatchCameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 }
-      },
+      video: cameraVideoConstraints(),
       audio: false
     });
 
@@ -8366,7 +8510,7 @@ async function runPreparedOcr(file) {
   rawBox.classList.add("hidden");
 
   try {
-    var uploadBlob = await prepareImageForUpload(file, 1800, 0.86);
+    var uploadBlob = await prepareImageForUpload(file, 1280, 0.9);
 
     var form = new FormData();
     form.append("image", uploadBlob, "prepared-medications.jpg");
